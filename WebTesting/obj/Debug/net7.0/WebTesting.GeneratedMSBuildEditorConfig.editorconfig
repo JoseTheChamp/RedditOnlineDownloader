@@ -1,0 +1,97 @@
+is_global = true
+build_property.TargetFramework = net7.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = WebTesting
+build_property.RootNamespace = WebTesting
+build_property.ProjectDir = C:\Projects\C#\BCSH2_Semestralka\WebTesting\WebTesting\
+build_property.RazorLangVersion = 7.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Projects\C#\BCSH2_Semestralka\WebTesting\WebTesting
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Categories/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Categories/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Categories/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Categories/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmllc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/CategoryTemp/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/CategoryTemp/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/CategoryTemp/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/CategoryTemp/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/CategoryTemp/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/LastSavedPost.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGFzdFNhdmVkUG9zdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/LoggedIn.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nZ2VkSW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/LoginWithReddit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW5XaXRoUmVkZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_Notifications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Ob3RpZmljYXRpb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-1h76klvwfg
