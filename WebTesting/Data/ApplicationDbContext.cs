@@ -10,5 +10,6 @@ namespace WebTesting.Data
 
         }
         public DbSet<Category> Category { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

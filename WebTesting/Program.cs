@@ -8,7 +8,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
-builder.Services.AddHttpClient<RedditAPI>();
+builder.Services.AddSingleton<RedditAPI>();
+/*
+builder.Services.AddHttpClient("reddit", c => { 
+    c.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.2");
+	c.BaseAddress = new Uri("https://oauth.reddit.com/");
+});*/
+//builder.Services.Add<RedditAPI>();
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(10);

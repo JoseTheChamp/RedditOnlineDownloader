@@ -9,27 +9,22 @@ using WebTesting.Data;
 
 namespace WebTesting.Pages
 {
-    public class LastSavedPostModel : PageModel
-    {
-        public String Title { get; set; }
-        public String Type { get; set; }
-        public async Task OnGetAsync(RedditAPI reddit)
-        {
-			//Title = reddit.Client.BaseAddress.ToString();
+	public class LastSavedPostModel : PageModel
+	{
+		public String Title { get; set; }
+		public String Type { get; set; }
 
-			HttpClient client = new HttpClient();
-			string token = HttpContext.Session.GetString("token");
-			client.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.1");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", HttpContext.Session.GetString("token"));
-			/*//var response = await client.GetAsync("https://oauth.reddit.com/user/InnerPeace42/saved?limit=1");
-			var response = await client.GetAsync("https://oauth.reddit.com/api/v1/me");
+		private RedditAPI _reddit;
+		public LastSavedPostModel(RedditAPI reddit)
+		{
+			_reddit = reddit;
+		}
+		public async Task OnGetAsync(RedditAPI reddit)
+		{
+			var response = await _reddit.Client.GetAsync("user/InnerPeace42/saved?limit=1");
 			String post = await response.Content.ReadAsStringAsync();
 			dynamic jsonData = JObject.Parse(post);
-			*/
-			var response = await client.GetAsync("https://oauth.reddit.com/user/InnerPeace42/saved?limit=1");
-			String post = await response.Content.ReadAsStringAsync();
-			dynamic jsonData = JObject.Parse(post);
-            string domain = jsonData.data.children[0].data.domain;
+			string domain = jsonData.data.children[0].data.domain;
 			switch (domain)
 			{
 				case "i.redd.it":
@@ -47,5 +42,5 @@ namespace WebTesting.Pages
 			}
 			Title = jsonData.data.children[0].data.title;
 		}
-    }
+	}
 }

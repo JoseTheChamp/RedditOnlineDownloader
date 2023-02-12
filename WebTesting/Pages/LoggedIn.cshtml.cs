@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http.Headers;
@@ -10,6 +11,8 @@ using System.Net.Sockets;
 using System.Security.Policy;
 using System.Text;
 using System.Web;
+using WebTesting.Data;
+using WebTesting.Models;
 
 namespace WebTesting.Pages
 {
@@ -17,6 +20,14 @@ namespace WebTesting.Pages
 	{
 		public string Code { get; set; }
 		public string Token { get; set; }
+
+		private RedditAPI _reddit;
+		private readonly ApplicationDbContext _db;
+		public LoggedInModel(RedditAPI reddit, ApplicationDbContext applicationDbContext)
+		{
+			_reddit = reddit;
+			_db = applicationDbContext;
+		}
 		public async Task OnGetAsync()
 		{
 			if (Code == null)
@@ -34,6 +45,7 @@ namespace WebTesting.Pages
 				data.Add("code", Code);
 				data.Add("redirect_uri", "https://localhost:44335/LoggedIn");
 
+				//Getting access token
 				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
 				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(auth));
 				var response = await client.PostAsync("https://www.reddit.com/api/v1/access_token", new FormUrlEncodedContent(data));
@@ -44,33 +56,32 @@ namespace WebTesting.Pages
 					dynamic Jsondata = JObject.Parse(contents);
 					Token = Jsondata.access_token;
 				}
-
-				HttpContext.Session.SetString("token",Token);
-
-
-
-				/*
-				
-				var auth = Encoding.ASCII.GetBytes($"9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg");
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(auth));
-				//client.DefaultRequestHeaders.Append("Content-Type:application/x-www-form-urlencoded");
-				//client.DefaultRequestHeaders.Add("Content-Type", "application/x-www-form-urlencoded");
-				HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, "http://www.reddit.com/api/v1/access_token");
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-				req.Content = new StringContent("{\"grant_type\":\"authorization_code\",\"code\":\"" + Code + "\",\"redirect_uri\":\"https://localhost:44335/LoggedIn}",Encoding.UTF8, "application/x-www-form-urlencoded");
-
-				var response = client.SendAsync(req);
-
-				//var response = await client.PostAsync("http://www.reddit.com/api/v1/access_token", new FormUrlEncodedContent(data));
-				//var contents = await response.Content.ReadAsStringAsync();
-				
-				//getting token from string response
-				/*
+				var resultIdAndName = await _reddit.GetIdAndNameAsync(Token);
+				Models.User? user = await _db.Users.FirstOrDefaultAsync(e => e.RedditId.Equals(resultIdAndName.id)); ;
+				if (user != null)
 				{
-					dynamic Jsondata = JObject.Parse(contents);
-					Token = Jsondata.access_token;
+					user.LastLogin = DateTime.Now;
+					user.AccessToken = Token;
+					user.UserName = resultIdAndName.username;
+					_db.Users.Update(user);
+					await _db.SaveChangesAsync();
 				}
-				*/
+				else {
+					_reddit.SetAccessToken(Token);
+					HttpContext.Session.SetString("AccessToken", Token);
+					HttpContext.Session.SetString("UserName", resultIdAndName.username);
+
+					await _db.Users.AddAsync(new Models.User(
+						0,
+						resultIdAndName.id,
+						resultIdAndName.username,
+						Token,
+						"",
+						DateTime.Now,
+						DateTime.Now
+						));
+					await _db.SaveChangesAsync();
+				}
 			}
 		}
 	}
