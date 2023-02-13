@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebTesting.Models;
 
-namespace WebTesting.Data
+namespace WebTesting.Services
 {
     public class ApplicationDbContext : DbContext
     {

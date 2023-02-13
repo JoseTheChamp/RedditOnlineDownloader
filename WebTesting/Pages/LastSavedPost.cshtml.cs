@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using System.Net.Http.Headers;
 using System.Security.Policy;
-using WebTesting.Data;
+using WebTesting.Services;
 
 namespace WebTesting.Pages
 {
@@ -14,33 +14,18 @@ namespace WebTesting.Pages
 		public String Title { get; set; }
 		public String Type { get; set; }
 
-		private RedditAPI _reddit;
+		private readonly RedditAPI _reddit;
+
 		public LastSavedPostModel(RedditAPI reddit)
 		{
 			_reddit = reddit;
 		}
-		public async Task OnGetAsync(RedditAPI reddit)
+		public async Task OnGetAsync()
 		{
-			var response = await _reddit.Client.GetAsync("user/InnerPeace42/saved?limit=1");
-			String post = await response.Content.ReadAsStringAsync();
-			dynamic jsonData = JObject.Parse(post);
-			string domain = jsonData.data.children[0].data.domain;
-			switch (domain)
-			{
-				case "i.redd.it":
-					Type = "Reddit image.";
-					break;
-				case "v.redd.it":
-					Type = "Reddit video.";
-					break;
-				case "i.imgur.com":
-					Type = "Imgur image.";
-					break;
-				default:
-					Type = "Reddit text post.";
-					break;
-			}
-			Title = jsonData.data.children[0].data.title;
+			string json = await _reddit.GetLastSavedPost(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
+			var result = ResponseConvertor.PostToTitleType(json);
+			Title = result.title; 
+			Type = result.type;
 		}
 	}
 }

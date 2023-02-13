@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WebTesting.Data;
 using WebTesting.Models;
+using WebTesting.Services;
 
 namespace WebTesting.Pages.CategoryTemp
 {
     public class CreateModel : PageModel
     {
-        private readonly WebTesting.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public CreateModel(WebTesting.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context)
         {
             _context = context;
         }

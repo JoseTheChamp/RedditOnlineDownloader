@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebTesting.Data;
 using WebTesting.Models;
+using WebTesting.Services;
 
 namespace WebTesting.Pages.CategoryTemp
 {
     public class EditModel : PageModel
     {
-        private readonly WebTesting.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(WebTesting.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }

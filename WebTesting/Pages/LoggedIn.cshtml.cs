@@ -11,8 +11,8 @@ using System.Net.Sockets;
 using System.Security.Policy;
 using System.Text;
 using System.Web;
-using WebTesting.Data;
 using WebTesting.Models;
+using WebTesting.Services;
 
 namespace WebTesting.Pages
 {
@@ -21,7 +21,7 @@ namespace WebTesting.Pages
 		public string Code { get; set; }
 		public string Token { get; set; }
 
-		private RedditAPI _reddit;
+		private readonly RedditAPI _reddit;
 		private readonly ApplicationDbContext _db;
 		public LoggedInModel(RedditAPI reddit, ApplicationDbContext applicationDbContext)
 		{
@@ -59,7 +59,8 @@ namespace WebTesting.Pages
 						dynamic Jsondata = JObject.Parse(contents);
 						Token = Jsondata.access_token;
 					}
-					var resultIdAndName = await _reddit.GetIdAndNameAsync(Token);
+					var json = await _reddit.GetProfile(Token);
+					var resultIdAndName = ResponseConvertor.ProfileToIdName(json);
 					User? user = await _db.Users.FirstOrDefaultAsync(e => e.RedditId.Equals(resultIdAndName.id));
 					HttpContext.Session.SetString("AccessToken", Token);
 					HttpContext.Session.SetString("UserName", resultIdAndName.username);

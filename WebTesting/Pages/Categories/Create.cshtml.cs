@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using WebTesting.Data;
 using WebTesting.Models;
+using WebTesting.Services;
 
 namespace WebTesting.Pages.Categories
 {
