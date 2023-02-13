@@ -1,4 +1,6 @@
 ﻿<!DOCTYPE html>
+@using Microsoft.AspNetCore.Http.Extensions
+@inject IHttpContextAccessor Accessor
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,17 +27,29 @@
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/LoginWithReddit">LoginWithReddit</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/LastSavedPost">LastSavedPost</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Categories/Index">Categories</a>
+                            <a class="nav-link me auto" asp-area="" asp-page="/Categories/Index">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link me-auto" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
+                    </ul>
+                     <ul class="navbar-nav ms-auto">
+                        @if (Accessor.HttpContext.Session.GetString("UserName") != null)
+                        { //TODO js zprava odhlasen
+                            <p>@Accessor.HttpContext.Session.GetString("UserName")</p>
+                            <form method="post" asp-page="Logout">
+                                <input type="submit" class="btn btn-primary" asp-page="/Index" value="Logout" />
+                            </form>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="https://www.reddit.com/api/v1/authorize?client_id=9RevD-RRlRmNcGc3nsu-pg&response_type=code&state=test1&redirect_uri=https://localhost:44335/LoggedIn&duration=permanent&scope=identity,read,history">LoginWithReddit</a>
+                            </li>  
+                        }
                     </ul>
                 </div>
             </div>

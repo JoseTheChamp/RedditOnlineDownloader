@@ -9,15 +9,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 builder.Services.AddSingleton<RedditAPI>();
-/*
-builder.Services.AddHttpClient("reddit", c => { 
-    c.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.2");
-	c.BaseAddress = new Uri("https://oauth.reddit.com/");
-});*/
-//builder.Services.Add<RedditAPI>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSession(options =>
 {
-	options.IdleTimeout = TimeSpan.FromMinutes(10);
+	options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
 
 var app = builder.Build();

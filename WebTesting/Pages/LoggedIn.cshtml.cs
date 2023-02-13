@@ -32,55 +32,62 @@ namespace WebTesting.Pages
 		{
 			if (Code == null)
 			{
-				Code = HttpContext.Request.GetEncodedUrl();
-				Code = HttpUtility.ParseQueryString(Code).Get("code");
-				//TODO Figure out if successfull if not then something
-
-				HttpClient client = new HttpClient();
-
-				var auth = Encoding.ASCII.GetBytes("9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg");
-				
-				Dictionary<string, string> data = new Dictionary<string, string>();
-				data.Add("grant_type", "authorization_code");
-				data.Add("code", Code);
-				data.Add("redirect_uri", "https://localhost:44335/LoggedIn");
-
-				//Getting access token
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(auth));
-				var response = await client.PostAsync("https://www.reddit.com/api/v1/access_token", new FormUrlEncodedContent(data));
-				var contents = await response.Content.ReadAsStringAsync();
-
-				//getting token from string response
+				string url = HttpContext.Request.GetEncodedUrl();
+				string? code = HttpUtility.ParseQueryString(url).Get("code");
+				if (code != null)
 				{
-					dynamic Jsondata = JObject.Parse(contents);
-					Token = Jsondata.access_token;
-				}
-				var resultIdAndName = await _reddit.GetIdAndNameAsync(Token);
-				Models.User? user = await _db.Users.FirstOrDefaultAsync(e => e.RedditId.Equals(resultIdAndName.id)); ;
-				if (user != null)
-				{
-					user.LastLogin = DateTime.Now;
-					user.AccessToken = Token;
-					user.UserName = resultIdAndName.username;
-					_db.Users.Update(user);
-					await _db.SaveChangesAsync();
-				}
-				else {
-					_reddit.SetAccessToken(Token);
+					Code = code;
+					//TODO Figure out if successfull if not then something
+
+					HttpClient client = new HttpClient();
+
+					var auth = Encoding.ASCII.GetBytes("9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg");
+
+					Dictionary<string, string> data = new Dictionary<string, string>();
+					data.Add("grant_type", "authorization_code");
+					data.Add("code", Code);
+					data.Add("redirect_uri", "https://localhost:44335/LoggedIn");
+
+					//Getting access token
+					client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+					client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(auth));
+					var response = await client.PostAsync("https://www.reddit.com/api/v1/access_token", new FormUrlEncodedContent(data));
+					var contents = await response.Content.ReadAsStringAsync();
+
+					//getting token from string response
+					{
+						dynamic Jsondata = JObject.Parse(contents);
+						Token = Jsondata.access_token;
+					}
+					var resultIdAndName = await _reddit.GetIdAndNameAsync(Token);
+					User? user = await _db.Users.FirstOrDefaultAsync(e => e.RedditId.Equals(resultIdAndName.id));
 					HttpContext.Session.SetString("AccessToken", Token);
 					HttpContext.Session.SetString("UserName", resultIdAndName.username);
-
-					await _db.Users.AddAsync(new Models.User(
-						0,
-						resultIdAndName.id,
-						resultIdAndName.username,
-						Token,
-						"",
-						DateTime.Now,
-						DateTime.Now
-						));
-					await _db.SaveChangesAsync();
+					HttpContext.Session.SetString("RedditId", resultIdAndName.id);
+					if (user != null)
+					{
+						user.LastLogin = DateTime.Now;
+						user.AccessToken = Token;
+						user.UserName = resultIdAndName.username;
+						_db.Users.Update(user);
+						await _db.SaveChangesAsync();
+					}
+					else
+					{
+						await _db.Users.AddAsync(new User(
+							0,
+							resultIdAndName.id,
+							resultIdAndName.username,
+							Token,
+							"",
+							DateTime.Now,
+							DateTime.Now
+							));
+						await _db.SaveChangesAsync();
+					}
+				}
+				else {
+					Code = "Failed to login through reddit.";
 				}
 			}
 		}

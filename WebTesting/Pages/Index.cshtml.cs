@@ -16,5 +16,10 @@ namespace WebTesting.Pages
         {
 
         }
+
+        public void OnPost() { 
+            //TODO Mozna nejake if
+            HttpContext.Session.Clear();
+        }
     }
 }
