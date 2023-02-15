@@ -1,10 +1,42 @@
 ﻿@page
 @model IndexModel
+@using Microsoft.AspNetCore.Http.Extensions
+@inject IHttpContextAccessor Accessor
 @{
     ViewData["Title"] = "Home page";
 }
+@if (Accessor.HttpContext.Session.GetString("UserName") == null)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome 2s5</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+            <div class="row">
+            <div class="col" style="border:1px solid red">Setting for the list</div>
+            <div class="col-4" style="border:1px solid red">List of Posts/Subreddits</div>
+            <div class="col-5" style="border:1px solid red">
+                    <div class="row" style="border:1px solid red">
+                        <div class="col">
+                            <!--HERE ARE PRESETS-->
+                            Presets:
+                            <select>
+                                <option>Preset 1</option>
+                                <option>Preset 2</option>
+                            </select>
+                            <button>New</button>
+                            <button>Delete</button>
+                        </div>
+                    </div>
+                    <div class="row" style="border:1px solid red">
+                            <div class="col" style="border:1px solid red">Setting for Folder Structure</div>
+                            <div class="col" style="border:1px solid red">Folder Structure</div>
+                    </div>
+            </div>
+        </div>
+    </div>
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome 2s5</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
