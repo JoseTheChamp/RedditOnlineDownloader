@@ -1,10 +1,11 @@
 ﻿namespace WebTesting.Entities.Enums
 {
-    public enum SessionResult
+    public enum PostsResult
     {
         Success,
         UserNotLoggedIn,
         RedditApiError,
-        Working
+        Working,
+        NotFound
     }
 }

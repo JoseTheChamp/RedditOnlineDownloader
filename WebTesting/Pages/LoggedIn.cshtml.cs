@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -5,14 +6,18 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using NuGet.Common;
 using System;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Security.Policy;
 using System.Text;
 using System.Web;
+using WebTesting.Entities;
+using WebTesting.Entities.Enums;
 using WebTesting.Models;
 using WebTesting.Services;
+using WebTesting.Utils;
 
 namespace WebTesting.Pages
 {
@@ -86,8 +91,30 @@ namespace WebTesting.Pages
 							));
 						await _db.SaveChangesAsync();
 					}
-					SessionManager sm = new SessionManager();
-					sm.LoadSavedPosts(HttpContext.Session,_reddit.GetAllSavedPosts);
+					/*
+					HttpContext.Session.SetObject("PostsStatus",PostsResult.Working);
+					var sc = SynchronizationContext.Current;
+					//HttpContext ctx = this.HttpContext;
+					Thread thread = new Thread(async () => {
+						List<Post> posts = new List<Post>();
+						try
+						{
+							posts = await _reddit.GetAllSavedPosts(Token, resultIdAndName.username);
+						}
+						catch (Exception ex)
+						{
+							HttpContext.Session.SetObject("PostsStatus", PostsResult.RedditApiError);
+
+						}
+						if (posts != null)
+						{
+							HttpContext.Session.SetObject("PostsStatus", PostsResult.Success);
+							HttpContext.Session.SetObject("Posts", posts);
+						}
+					});
+					thread.Start();
+					thread.Join();
+					*/
 				}
 				else {
 					Code = "Failed to login through reddit.";
