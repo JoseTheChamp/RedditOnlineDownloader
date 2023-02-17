@@ -86,6 +86,8 @@ namespace WebTesting.Pages
 							));
 						await _db.SaveChangesAsync();
 					}
+					SessionManager sm = new SessionManager();
+					sm.LoadSavedPosts(HttpContext.Session,_reddit.GetAllSavedPosts);
 				}
 				else {
 					Code = "Failed to login through reddit.";

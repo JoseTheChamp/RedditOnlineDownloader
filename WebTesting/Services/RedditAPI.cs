@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BakalarBackend;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using NuGet.Common;
 using System.Net;
@@ -32,5 +33,16 @@ namespace WebTesting.Services
             var response = await client.SendAsync(request);
             return await response.Content.ReadAsStringAsync();
         }
-	}
+
+        public async Task<List<Post>> GetAllSavedPosts(String token, String userName)
+        {
+            //var response = await _reddit.Client.GetAsync("user/InnerPeace42/saved?limit=1");
+            /*HttpRequestMessage request = new HttpRequestMessage();
+            request.RequestUri = new Uri($"https://oauth.reddit.com/user/{userName}/saved?limit=1");
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Authorization", $"Bearer {token}");
+            var response = await client.SendAsync(request);*/
+            return null;
+        }
+    }
 }
