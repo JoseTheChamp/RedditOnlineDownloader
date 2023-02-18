@@ -26,9 +26,18 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/LastSavedPost">LastSavedPost</a>
-                        </li>
+                        @if (Accessor.HttpContext.Session.GetString("UserName") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Download/Select">Download</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Download/Progress">Progress</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/LastSavedPost">LastSavedPost</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link me auto" asp-area="" asp-page="/Categories/Index">About</a>
                         </li>
@@ -39,7 +48,7 @@
                      <ul class="navbar-nav ms-auto">
                         @if (Accessor.HttpContext.Session.GetString("UserName") != null)
                         { //TODO js zprava odhlasen
-                            <p>@Accessor.HttpContext.Session.GetString("UserName")</p>
+                                <p class="me-3">@Accessor.HttpContext.Session.GetString("UserName")</p>
                             <form method="post" asp-page="Logout">
                                 <input type="submit" class="btn btn-primary" asp-page="/Index" value="Logout" />
                             </form>

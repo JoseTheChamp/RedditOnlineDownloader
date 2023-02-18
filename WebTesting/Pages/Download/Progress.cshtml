@@ -1,0 +1,47 @@
+﻿@page
+@model WebTesting.Pages.Download.ProgressModel
+@inject IHttpContextAccessor Accessor
+@{
+}
+
+
+@if (Accessor.HttpContext.Session.GetString("UserName") == null)
+{
+            <div class="text-center">
+                <p>You are not logged in.</p>
+            </div>
+}
+else
+{   
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6">
+                <h2>Proggres of downloads</h2>
+            </div>
+            <div class="col-6 text-end">
+                Show finished downloads:
+                <input type="checkbox" class="form-check-input">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" style="border:1px solid red">
+                <ul>
+                    <div>
+                        Download1 - 18.02.2023 - 23% - **________ - 
+                        <button class="btn btn-primary">+</button>
+                        <button class="btn btn-danger">X</button>
+                    </div>
+                    <div>
+                        Download2 - 18.02.2023 - 87% - ********__ - 
+                        <button class="btn btn-primary">+</button>
+                        <button class="btn btn-danger">X</button>
+                    </div>
+                    <div>
+                        Download3 - 18.02.2023 - DONE - 
+                        <button class="btn btn-primary">+</button>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+}

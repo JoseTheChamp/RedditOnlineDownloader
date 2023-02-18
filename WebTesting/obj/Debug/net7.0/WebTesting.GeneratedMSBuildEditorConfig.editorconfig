@@ -52,6 +52,22 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcnlUZW1wXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Progress.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcUHJvZ3Jlc3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Select.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcU2VsZWN0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Structure.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcU3RydWN0dXJlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Submited.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcU3VibWl0ZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

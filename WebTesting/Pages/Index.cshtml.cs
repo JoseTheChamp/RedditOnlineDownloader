@@ -12,13 +12,17 @@ namespace WebTesting.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
 
+
+
+
+            return Page();
         }
 
         public void OnPost() { 
-            //TODO Mozna nejake if
+            //TODO Mozna nejake if nebo na asction atd
             HttpContext.Session.Clear();
         }
     }

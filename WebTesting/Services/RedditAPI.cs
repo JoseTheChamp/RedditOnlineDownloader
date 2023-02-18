@@ -87,7 +87,7 @@ namespace WebTesting.Services
                     jsonDataParse.data[i].data.id.ToString(),
                     jsonDataParse.data[i].data.title.ToString(),
                     jsonDataParse.data[i].data.selftext.ToString(),
-                    jsonDataParse.data[i].data.subreddit_name_prefixed.ToString(),
+                    jsonDataParse.data[i].data.subreddit_name_prefixed.ToString(),//subreddit
                     jsonDataParse.data[i].data.author.ToString(),
                     jsonDataParse.data[i].data.domain.ToString(),
                     jsonDataParse.data[i].data.over_18 == "True" ? true : false,

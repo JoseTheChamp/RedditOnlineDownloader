@@ -33,8 +33,9 @@ namespace WebTesting.Pages
 			_reddit = reddit;
 			_db = applicationDbContext;
 		}
-		public async Task OnGetAsync()
+		public async Task<IActionResult> OnGetAsync()
 		{
+			//TODO zrusit vypisy tudiz html atd, pri nepodareni napsat error hlasku ne code a token
 			if (Code == null)
 			{
 				string url = HttpContext.Request.GetEncodedUrl();
@@ -91,35 +92,13 @@ namespace WebTesting.Pages
 							));
 						await _db.SaveChangesAsync();
 					}
-					/*
-					HttpContext.Session.SetObject("PostsStatus",PostsResult.Working);
-					var sc = SynchronizationContext.Current;
-					//HttpContext ctx = this.HttpContext;
-					Thread thread = new Thread(async () => {
-						List<Post> posts = new List<Post>();
-						try
-						{
-							posts = await _reddit.GetAllSavedPosts(Token, resultIdAndName.username);
-						}
-						catch (Exception ex)
-						{
-							HttpContext.Session.SetObject("PostsStatus", PostsResult.RedditApiError);
-
-						}
-						if (posts != null)
-						{
-							HttpContext.Session.SetObject("PostsStatus", PostsResult.Success);
-							HttpContext.Session.SetObject("Posts", posts);
-						}
-					});
-					thread.Start();
-					thread.Join();
-					*/
+					return RedirectToPage("/LastSavedPost");
 				}
 				else {
 					Code = "Failed to login through reddit.";
 				}
 			}
+			return Page();
 		}
 	}
 }

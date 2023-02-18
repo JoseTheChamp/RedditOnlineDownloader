@@ -1,0 +1,64 @@
+﻿@page
+@using WebTesting.Entities;
+@model WebTesting.Pages.Download.SelectModel
+@inject IHttpContextAccessor Accessor
+@{
+
+}
+
+@if (Accessor.HttpContext.Session.GetString("UserName") == null)
+{
+        <div class="text-center">
+            <p>You are not logged in.</p>
+        </div>
+}
+else
+{   
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-5">
+                <h2>Select posts to download.</h2>
+            </div>
+            <div class="col" style="border:1px solid red">
+                <!--HERE ARE PRESETS-->
+                Presets:
+                <select>
+                    <option>Preset 1</option>
+                    <option>Preset 2</option>
+                </select>
+                <button>New</button>
+                <button>Delete</button>
+            </div>
+            <div class="col-3 text-end">
+                <a class="btn btn-primary" asp-area="" asp-page="/Download/Structure">Next step</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2" style="border:1px solid red">
+                <!--HERE ARE Select settings-->
+                Setting for the list
+            </div>
+            <div class="col-8" style="border:1px solid red">
+                <!--HERE ARE Posts-->
+                    <ul class="p-2">
+                    @foreach (Post post in Model.Posts)
+                    {
+                        string linkPost = "https://www.reddit.com" + post.PermaLink;
+                        string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                        string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
+                        <div>
+                            <input class="form-check-input" type="checkbox" checked>
+                            <a href="@linkSubreddit">@post.Subreddit</a> -
+                            @post.Domain - @title - 
+                            <a href="@linkPost">link</a>
+                        </div>
+                    }
+                </ul>
+            </div>
+            <div class="col-2" style="border:1px solid red">
+                <!--HERE ARE Details-->
+                Details
+            </div>
+        </div>
+    </div>
+}

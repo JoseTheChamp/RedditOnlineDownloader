@@ -1,0 +1,41 @@
+﻿@page
+@model WebTesting.Pages.Download.StructureModel
+@inject IHttpContextAccessor Accessor
+@{
+}
+
+
+@if (Accessor.HttpContext.Session.GetString("UserName") == null)
+{
+            <div class="text-center">
+                <p>You are not logged in.</p>
+            </div>
+}
+else
+{   
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <h2>Set up folder structure.</h2>
+                </div>
+                <div class="col-3 text-end">
+                    <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
+                    <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3" style="border:1px solid red">Setting for the list</div>
+                <div class="col-6" style="border:1px solid red">
+                    <ul>
+                        <li>Type1  TitleTitleTitle1</li>
+                        <li>Type2  TitleTitleTitle2</li>
+                        <li>Type1  TitleTitleTitle3</li>
+                        <li>Type2  TitleTitleTitle4</li>
+                    </ul>
+                </div>
+                <div class="col-3" style="border:1px solid red">
+                    Details
+                </div>
+            </div>
+        </div>
+}
