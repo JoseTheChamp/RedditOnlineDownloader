@@ -92,7 +92,7 @@ namespace WebTesting.Pages
 							));
 						await _db.SaveChangesAsync();
 					}
-					return RedirectToPage("/LastSavedPost");
+					return RedirectToPage("/Download/Select");
 				}
 				else {
 					Code = "Failed to login through reddit.";
