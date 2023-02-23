@@ -1,5 +1,6 @@
 ﻿@page
 @using WebTesting.Entities;
+@using WebTesting.Entities.Enums;
 @model WebTesting.Pages.Download.SelectModel
 @inject IHttpContextAccessor Accessor
 @{
@@ -22,7 +23,7 @@ else
             <div class="col" style="border:1px solid red">
                 <!--HERE ARE PRESETS-->
                 Presets:
-                <select>
+                <select asp>
                     <option>Preset 1</option>
                     <option>Preset 2</option>
                 </select>
@@ -30,30 +31,97 @@ else
                 <button>Delete</button>
             </div>
             <div class="col-3 text-end">
-                <a class="btn btn-primary" asp-area="" asp-page="/Download/Structure">Next step</a>
+                <input form="selectedPosts" type="submit" class="btn btn-primary" asp-page="/Download/Structure" value="Next step">
             </div>
         </div>
         <div class="row">
             <div class="col-2" style="border:1px solid red">
-                <!--HERE ARE Select settings-->
-                Setting for the list
+                    <!--HERE ARE Select settings-->
+                    <form method="post" asp-page-handler="Select">
+                    <label for="saved">Already saved posts:</label>
+                    <input name="saved" type="checkbox">
+                    <label for="nsfw">Nsfw/sfw:</label>
+                    <select name="nsfw">
+                        @switch (Model.Nsfw)
+                        {
+                            case SelectNsfw.SFW:
+                                    <option value="both">Both</option>
+                                    <option selected value="sfw">SFW</option>
+                                    <option value="nsfw">NSFW</option>
+                                break;
+                            case SelectNsfw.NSFW:
+                                    <option value="both">Both</option>
+                                    <option value="sfw">SFW</option>
+                                    <option selected value="nsfw">NSFW</option>
+                                break;
+                            default:
+                                    <option selected value="both">Both</option>
+                                    <option value="sfw">SFW</option>
+                                    <option value="nsfw">NSFW</option>
+                                break;
+                        }
+                        </select>
+                    <label for="mediaTypes">Media to ignore</label>
+                        <select multiple name="mediaTypes">
+                            <option>Reddit image</option>
+                            <option>Reddit video</option>
+                            <option>Imgur image</option>
+                        </select>
+                    <input type="submit" class="btn btn-primary" value="submit">
+                </form>
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
+                <form method="post" asp-page-handler="ChangeShowType">
+                    <label for="showType">Display as</label>
+                    <select name="showType">
+                        @switch (Model.ShowType)
+                        {
+                            case SelectShowType.SUBREDDIT_EXPANDED:
+                                <option value="1">Posts</option>
+                                <option selected value="2">Subreddits expanded</option>
+                                <option value="3">Subredits reduced</option>
+                                break;
+                            case SelectShowType.SUBREDDITS_REDUCED:
+                                <option value="1">Posts</option>
+                                <option value="2">Subreddits expanded</option>
+                                <option selected value="3">Subredits reduced</option>
+                                break;
+                            default:
+                                <option selected value="1">Posts</option>
+                                <option value="2">Subreddits expanded</option>
+                                <option value="3">Subredits reduced</option>
+                                break;
+                        }
+                    </select>
+                    <button type="submit">submit</button>
+                </form>
+                <form id="selectedPosts" method="post">
                     <ul class="p-2">
-                    @foreach (Post post in Model.Posts)
-                    {
-                        string linkPost = "https://www.reddit.com" + post.PermaLink;
-                        string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
-                        string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
-                        <div>
-                            <input class="form-check-input" type="checkbox" checked>
-                            <a href="@linkSubreddit">@post.Subreddit</a> -
-                            @post.Domain - @title - 
-                            <a href="@linkPost">link</a>
-                        </div>
-                    }
-                </ul>
+                        @switch(Model.ShowType){
+                            case SelectShowType.SUBREDDIT_EXPANDED:
+                                        <p>Subredits expanded.</p>
+                                break;
+                            case SelectShowType.SUBREDDITS_REDUCED:
+                                        <p>Subredits reduced.</p>
+                                break;
+                            default:
+                                @foreach (Post post in Model.Posts)
+                                {
+                                    string linkPost = "https://www.reddit.com" + post.PermaLink;
+                                    string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                                    string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
+                                        <div>
+                                            <input name="@post.Id" class="form-check-input" type="checkbox" checked>
+                                            <a href="@linkSubreddit">@post.Subreddit</a> -
+                                            @post.Domain - @title - 
+                                            <a href="@linkPost" target="_blank">link</a>
+                                        </div>
+                                }
+                                break;
+                        }
+                    </ul>
+                </form>
             </div>
             <div class="col-2" style="border:1px solid red">
                 <!--HERE ARE Details-->
@@ -61,4 +129,14 @@ else
             </div>
         </div>
     </div>
+    <!--
+    <script>
+        $('form input').change(function(){
+            $(this).closest('form').submit();
+        });
+        $('select').change(function(){
+            $(this).closest('form').submit();
+        });
+    </script>
+        -->
 }

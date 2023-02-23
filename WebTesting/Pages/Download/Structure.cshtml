@@ -1,4 +1,5 @@
 ﻿@page
+@using WebTesting.Entities;
 @model WebTesting.Pages.Download.StructureModel
 @inject IHttpContextAccessor Accessor
 @{
@@ -24,16 +25,23 @@ else
                 </div>
             </div>
             <div class="row">
-                <div class="col-3" style="border:1px solid red">Setting for the list</div>
-                <div class="col-6" style="border:1px solid red">
-                    <ul>
-                        <li>Type1  TitleTitleTitle1</li>
-                        <li>Type2  TitleTitleTitle2</li>
-                        <li>Type1  TitleTitleTitle3</li>
-                        <li>Type2  TitleTitleTitle4</li>
+                <div class="col-2" style="border:1px solid red">Setting for the list</div>
+                <div class="col-8" style="border:1px solid red">
+                    <ul class="p-2">
+                    @foreach (Post post in Model.Posts)
+                    {
+                        string linkPost = "https://www.reddit.com" + post.PermaLink;
+                        string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                        string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
+                                <div>
+                                    <a href="@linkSubreddit">@post.Subreddit</a> -
+                            @post.Domain - @title - 
+                                    <a href="@linkPost">link</a>
+                                </div>
+                    }
                     </ul>
                 </div>
-                <div class="col-3" style="border:1px solid red">
+                <div class="col-2" style="border:1px solid red">
                     Details
                 </div>
             </div>
