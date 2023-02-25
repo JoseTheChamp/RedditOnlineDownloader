@@ -17,4 +17,8 @@
     <PackageReference Include="popper.js" Version="1.16.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\DownloadableFiles\Images.zip" />
+  </ItemGroup>
+
 </Project>

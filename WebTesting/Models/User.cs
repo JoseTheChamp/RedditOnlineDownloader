@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebTesting.Models
 {
@@ -7,6 +8,8 @@ namespace WebTesting.Models
 	{
 		[Key]
 		public int Id { get; set; }
+		[Required]
+		[ForeignKey("RedditIdFK")]
 		public String RedditId { get; set; }
 		[Required]
 		[Display(Name = "Username")]

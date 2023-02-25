@@ -15,8 +15,17 @@ namespace WebTesting.Pages.Download
             }
         }
 
-        public IActionResult OnGetDownload() { 
+        public IActionResult OnGetDownload() {
             //TODO Start download procces.
+            //TODO if success.
+            TempData["success"] = "Download started.";
+            return File(@"/DownloadableFiles/Images.zip","application/zip","HokusPokus.zip");
+        }
+        public IActionResult OnGetDownloadAlt()
+        {
+            //TODO Start download procces.
+            //TODO if success.
+            TempData["success"] = "Download started.";
             return RedirectToPage("../Index");
         }
         public IActionResult OnPost()
