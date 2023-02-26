@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WebTesting.Models
 {
@@ -13,7 +14,8 @@ namespace WebTesting.Models
         public double ProgressRel { get; set; }
         [Required]
         public DateTime DownloadStart { get; set; }
-        public DateTime DownloadFinished { get; set; }
+        [AllowNull]
+        public DateTime? DownloadFinished { get; set; }
         public string Lenght { get; set; }
         public bool IsFinished { get; set; }
         [Required]
@@ -26,8 +28,13 @@ namespace WebTesting.Models
         public Download(int id, int progressAbsMax, DateTime downloadStart, User user)
         {
             Id = id;
+            ProgressAbs = 0;
             ProgressAbsMax = progressAbsMax;
+            ProgressRel = 0;
             DownloadStart = downloadStart;
+            Lenght = "Not yet finished.";
+            DownloadFinished = null;
+            IsFinished = false;
             User = user;
         }
     }

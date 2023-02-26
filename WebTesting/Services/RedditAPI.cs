@@ -36,6 +36,8 @@ namespace WebTesting.Services
             return await response.Content.ReadAsStringAsync();
         }
 
+        //public async Task<Stream> GetImage
+
         public async Task<List<Post>> GetAllSavedPosts(String token, String userName)
         {
             //Setting up request messsage
@@ -96,7 +98,7 @@ namespace WebTesting.Services
                     Int32.Parse(jsonDataParse.data[i].data.ups.ToString()),
                     Int32.Parse(jsonDataParse.data[i].data.num_comments.ToString()),
                     //links
-                    new List<string> { "AdditionalCardPersonAdressType", "AAAA" }
+                    new List<string> { jsonDataParse.data[i].data.url.ToString() }
                     ));
             }
             return posts;

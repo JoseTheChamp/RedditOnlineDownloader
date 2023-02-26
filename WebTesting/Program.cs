@@ -10,6 +10,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 	));
 builder.Services.AddSingleton<RedditAPI>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<DownloadManager>();
 //builder.Services.AddSingleton<SessionManager>(new SessionManager());
 builder.Services.AddDistributedMemoryCache(); //TODO do i need this?
 builder.Services.AddSession(options =>

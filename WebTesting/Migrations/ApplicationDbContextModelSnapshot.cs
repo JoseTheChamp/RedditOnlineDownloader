@@ -39,7 +39,7 @@ namespace WebTesting.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("WebTesting.Models.Download", b =>
@@ -79,7 +79,7 @@ namespace WebTesting.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Downloads");
+                    b.ToTable("Downloads", (string)null);
                 });
 
             modelBuilder.Entity("WebTesting.Models.User", b =>
@@ -114,7 +114,7 @@ namespace WebTesting.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("WebTesting.Models.Download", b =>
