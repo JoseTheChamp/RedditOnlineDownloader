@@ -22,6 +22,11 @@ namespace WebTesting.Entities
         public int NumberOfComments { get; }
         public List<string> Urls { get; }
 
+        public override string? ToString()
+        {
+            return "Domain: " + Domain + ", Title: " + Title + ", ID: " + Id + " - " + Urls[0];
+        }
+
         public Post(string id, string title, string selfText, string subreddit, string author, string domain, bool over18, string permaLink, double created, int ups, int numberOfComments, List<string> urls)
         {
             Id = id;

@@ -21,6 +21,9 @@ namespace WebTesting.Pages.Download
         }
         public async Task OnGetAsync()
         {
+            ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
+            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
+
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
                 Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
@@ -42,6 +45,7 @@ namespace WebTesting.Pages.Download
         {
             Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
+            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
 
             //TODO load all filters of Select
 
@@ -86,6 +90,7 @@ namespace WebTesting.Pages.Download
                     throw new Exception("In select there is nsfw that does not exist.");
             }
             HttpContext.Session.SetObject("Posts",Posts);
+            HttpContext.Session.SetObject("Nsfw", Nsfw);
             return Page();
         }
         public IActionResult OnPost()

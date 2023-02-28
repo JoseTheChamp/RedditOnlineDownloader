@@ -37,6 +37,7 @@ namespace WebTesting.Pages.Download
                 );
             _db.Downloads.AddAsync(download);
             _db.SaveChanges();
+            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             _dm.NewDownloadProcess(download.Id,Posts);
             TempData["success"] = "Download started.";
             return RedirectToPage("../Index");

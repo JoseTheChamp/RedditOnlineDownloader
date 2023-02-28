@@ -1,5 +1,6 @@
 ﻿@page
 @model WebTesting.Pages.Download.ProgressModel
+@using WebTesting.Models;
 @inject IHttpContextAccessor Accessor
 @{
 }
@@ -9,37 +10,43 @@
 {
             <div class="text-center">
                 <p>You are not logged in.</p>
-            </div>
+    </div>
 }
 else
-{   
+{
     <div class="container-fluid">
         <div class="row">
             <div class="col-6">
                 <h2>Proggres of downloads</h2>
             </div>
             <div class="col-6 text-end">
-                Show finished downloads:
-                <input type="checkbox" class="form-check-input">
+                <form method="post" asp-page-handler="ShowFinished">
+                    Show finished downloads:
+                    <input name="show" asp-for="ShowFinished" type="checkbox" class="form-check-input">
+                    <button type="submit">Submit</button>
+                </form>
             </div>
         </div>
         <div class="row">
             <div class="col" style="border:1px solid red">
                 <ul>
-                    <div>
-                        Download1 - 18.02.2023 - 23% - **________ - 
-                        <button class="btn btn-primary">+</button>
-                        <button class="btn btn-danger">X</button>
-                    </div>
-                    <div>
-                        Download2 - 18.02.2023 - 87% - ********__ - 
-                        <button class="btn btn-primary">+</button>
-                        <button class="btn btn-danger">X</button>
-                    </div>
-                    <div>
-                        Download3 - 18.02.2023 - DONE - 
-                        <button class="btn btn-primary">+</button>
-                    </div>
+                    @foreach (Download download in Model.MyDownloads)
+                    {
+                        @if (download.IsFinished)
+                        {
+                            <div>
+                                Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Done
+                                <button class="btn btn-primary">+</button>
+                            </div>
+                        } else
+                        {
+                            <div>
+                                Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - @download.ProgressRel %
+                                <button class="btn btn-primary">+</button>
+                                <button asp-page-handler="delete" asp-route-id="@download.Id" class="btn btn-danger">X</button>
+                            </div>
+                        }
+                    }
                 </ul>
             </div>
         </div>

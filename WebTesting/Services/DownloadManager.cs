@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Policy;
 using WebTesting.Entities;
 
@@ -33,28 +34,36 @@ namespace WebTesting.Services
             dp.Thread.Start();
         }
 
-        private async void DoWork(int downloadId) {
+        private async void DoWork(int downloadId)
+        {
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == downloadId);
-            for (int i = 0; i < dp.Posts.Count; i++)
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\Outputs\Images\List" + dp.DownloadId + ".txt"))
             {
-                await SavePost(dp.Posts[i]);
+                for (int i = 0; i < dp.Posts.Count; i++)
+                {
+                    sw.WriteLine(dp.Posts[i].ToString());
+                    await SavePost(dp.Posts[i],dp.DownloadId);
+                }
             }
         }
 
-        private async Task SavePost(Post post) {
+        private async Task SavePost(Post post,int id) {
             switch (post.Domain)
             {
                 case "i.redd.it":
-                    SaveImage(post);
+                    await SaveImage(post);
                     break;
                 case "v.redd.it":
-                    Debug(post);
+                    //Debug(post,id);
                     break;
                 case "i.imgur.com":
-                    Debug(post);
+                    //Debug(post,id);
                     break;
                 default:
-                    Debug(post);
+                    if (post.Domain.StartsWith("self"))
+                    {
+                        SaveTextPost(post);
+                    }
                     break;
             }
         }
@@ -67,6 +76,18 @@ namespace WebTesting.Services
                 stream.CopyTo(fileStream);
             }
         }
+        private void SaveTextPost(Post post) {
+            string name = StripName(post.Title);
+            using (StreamWriter sw = File.CreateText(@"C:\Temp\Outputs\Images\" + name + ".txt"))
+            {
+                sw.WriteLine("Title: " + post.Title);
+                sw.WriteLine("Subreddit: " + post.Subreddit);
+                sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
+                sw.WriteLine("Text: \n" + post.SelfText);
+            }
+        }
+
+
 
         private async Task Debug(Post post) {
             string name = StripName(post.Title);
@@ -75,8 +96,10 @@ namespace WebTesting.Services
 
         private String StripName(String name)
         {
-            //TODO remove ; , . and so on.
-            return name;
+            if (name.Length > 128) {
+                name = name.Substring(0,125) + "...";
+            }
+            return string.Join("_", name.Split(Path.GetInvalidFileNameChars()));
         }
     }
 }
