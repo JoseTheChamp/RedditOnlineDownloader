@@ -112,8 +112,23 @@ else
                                     string linkPost = "https://www.reddit.com" + post.PermaLink;
                                     string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
                                     string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
-                                        <div>
+                                    <div>
+                                        @if (Model.SelectedPosts != null)
+                                        {
+                                            bool selected = Model.SelectedPosts.Exists(e => e.Id == post.Id);
+                                            if (selected)
+                                            {
+                                                <input name="@post.Id" class="form-check-input" type="checkbox" checked>
+                                            } else
+                                            {
+                                                <input name="@post.Id" class="form-check-input" type="checkbox">    
+                                            }
+
+                                        }
+                                        else
+                                        {
                                             <input name="@post.Id" class="form-check-input" type="checkbox" checked>
+                                        }
                                             <a href="@linkSubreddit">@post.Subreddit</a> -
                                             @post.Domain - @title - 
                                             <a href="@linkPost" target="_blank">link</a>

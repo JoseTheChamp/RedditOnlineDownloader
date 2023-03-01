@@ -12,6 +12,7 @@ namespace WebTesting.Pages.Download
     {
         public List<Post> AllPosts { get; set; }
         public List<Post> Posts { get; set; }
+        public List<Post> SelectedPosts { get; set; }
         public SelectShowType ShowType { get; set; }
         public SelectNsfw Nsfw { get; set; }
         private readonly RedditAPI _reddit;
@@ -23,6 +24,8 @@ namespace WebTesting.Pages.Download
         {
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
+            SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            HttpContext.Session.Remove("SelectedPosts");
 
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
