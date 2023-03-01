@@ -29,16 +29,8 @@ namespace WebTesting.Pages.Download
             //TODO Start download procces.
             //TODO if success.
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
-            Models.Download download = new Models.Download(
-                0,
-                50,
-                DateTime.Now,
-                user
-                );
-            _db.Downloads.AddAsync(download);
-            _db.SaveChanges();
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            _dm.NewDownloadProcess(download.Id,Posts);
+            _dm.NewDownloadProcess(user,Posts);
             TempData["success"] = "Download started.";
             return RedirectToPage("../Index");
             

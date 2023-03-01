@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Policy;
 using WebTesting.Entities;
+using WebTesting.Models;
 
 namespace WebTesting.Services
 {
@@ -11,25 +12,33 @@ namespace WebTesting.Services
     {
         List<DownloadProcess> processes = new List<DownloadProcess>();
         private HttpClient client= new HttpClient();
-        private readonly RedditAPI _reddit;
+        private readonly RequestDelegate _next;
+        private readonly ApplicationDbContext _db;
         public class DownloadProcess{
             public int DownloadId { get; set; }
-            public int Done { get; set; }
             public List<Post> Posts { get; set; }
-
             public Thread Thread { get; set; }
         }
 
-        public DownloadManager(RedditAPI reddit)
+        public DownloadManager(ApplicationDbContext db)
         {
-            _reddit = reddit;
+            _db = db;
         }
 
-        public void NewDownloadProcess(int downloadId,List<Post> posts) {
+        public void NewDownloadProcess(User user, List<Post> posts) {
+            Models.Download download = new Models.Download(
+                0,
+                posts.Count,
+                DateTime.Now,
+                user
+                );
+            _db.Downloads.AddAsync(download);
+            _db.SaveChanges();
+
             Thread thread = new Thread(() => {
-                DoWork(downloadId);
+                DoWork(download.Id);
             });
-            DownloadProcess dp = new DownloadProcess { DownloadId = downloadId, Done = 0, Posts = posts, Thread = thread };
+            DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread };
             processes.Add(dp);
             dp.Thread.Start();
         }
@@ -39,10 +48,32 @@ namespace WebTesting.Services
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == downloadId);
             using (StreamWriter sw = File.CreateText(@"C:\Temp\Outputs\Images\List" + dp.DownloadId + ".txt"))
             {
+                int report = 1;
                 for (int i = 0; i < dp.Posts.Count; i++)
                 {
                     sw.WriteLine(dp.Posts[i].ToString());
-                    await SavePost(dp.Posts[i],dp.DownloadId);
+                    await SavePost(dp.Posts[i], dp.DownloadId);
+                    if (i/dp.Posts.Count >= report/10 || i == dp.Posts.Count-1)
+                    {
+                        if (i == dp.Posts.Count - 1)
+                        {
+                            Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
+                            download.ProgressAbs = download.ProgressAbsMax;
+                            download.ProgressRel = 100;
+                            download.IsFinished = true;
+                            download.DownloadFinished = DateTime.Now;
+                            _db.Downloads.Update(download);
+                            await _db.SaveChangesAsync();
+                        }
+                        else {
+                            report++;
+                            Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
+                            download.ProgressAbs = i + 1;
+                            download.ProgressRel = (double)(((double)(i + 1)) / dp.Posts.Count) * 100;
+                            _db.Downloads.Update(download);
+                            await _db.SaveChangesAsync();
+                        }
+                    }
                 }
             }
         }
