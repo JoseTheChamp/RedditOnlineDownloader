@@ -56,7 +56,7 @@ else
                             <div>
                                 Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - @download.ProgressRel %
                                 <a asp-page-handler="Save" asp-route-id="@download.Id" class="btn btn-danger">+</a>
-                                <a asp-page-handler="Delete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
+                                <a asp-page-handler="StopAndDelete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
                             </div>
                         }
                     }

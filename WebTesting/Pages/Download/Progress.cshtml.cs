@@ -12,9 +12,11 @@ namespace WebTesting.Pages.Download
         public List<Models.Download> MyDownloads { get; set; }
         public bool ShowFinished { get; set; }
         private readonly ApplicationDbContext _db;
-        public ProgressModel(ApplicationDbContext db)
+        private readonly DownloadManager _dm;
+        public ProgressModel(ApplicationDbContext db, DownloadManager dm)
         {
             _db = db;
+            _dm = dm;
         }
         public void OnGet()
         {
@@ -58,13 +60,25 @@ namespace WebTesting.Pages.Download
             return Page();
         }
         public IActionResult OnGetDownload(int id) {
-            int a = 5;
-            a = id;
+            string path = Environment.CurrentDirectory;
+            OnGet();
+            //TODO will have to make sure that file path will work once it will be hosted on server.
+            return File(@"/DownloadableFiles/Download" + id + ".zip", "application/zip", "Download" + id + ".zip");
+        }
+
+        public async Task<IActionResult> OnGetDeleteAsync(int id) {
+            if (await _dm.RemoveDownloadProcess(id))
+            {
+                TempData["success"] = "Download succesfully deleted.";
+            }
+            else {
+                TempData["error"] = "Failed deletion of download.";
+            }
             OnGet();
             return Page();
         }
-
-        public IActionResult OnGetDelete(int id) {
+        public IActionResult OnGetStopAndDelete(int id)
+        {
             int a = 5;
             OnGet();
             return Page();

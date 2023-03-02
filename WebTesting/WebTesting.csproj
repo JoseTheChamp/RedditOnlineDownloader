@@ -21,4 +21,8 @@
     <None Include="wwwroot\DownloadableFiles\Images.zip" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Downloads\" />
+  </ItemGroup>
+
 </Project>
