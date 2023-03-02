@@ -18,7 +18,21 @@ namespace WebTesting.Pages.Download
         }
         public void OnGet()
         {
-            ShowFinished = HttpContext.Session.GetObject<bool>("ShowFinished");
+            string res = HttpContext.Session.GetString("ShowFinished");
+            switch (res)
+            {
+                case null:
+                    ShowFinished = true;
+                    break;
+                case "true":
+                    ShowFinished = true;
+                    break;
+                case "false":
+                    ShowFinished = false;
+                    break;
+                default:
+                    break;
+            }
             if (ShowFinished)
             {
                 MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId")).ToList();
@@ -35,11 +49,29 @@ namespace WebTesting.Pages.Download
             string showFinished = Request.Form["show"];
             if (showFinished == "true")
             {
-                HttpContext.Session.SetObject("ShowFinished", true);
+                HttpContext.Session.SetString("ShowFinished", "true");
             }
             else {
-                HttpContext.Session.SetObject("ShowFinished", false);
+                HttpContext.Session.SetString("ShowFinished", "false");
             }
+            OnGet();
+            return Page();
+        }
+        public IActionResult OnGetDownload(int id) {
+            int a = 5;
+            a = id;
+            OnGet();
+            return Page();
+        }
+
+        public IActionResult OnGetDelete(int id) {
+            int a = 5;
+            OnGet();
+            return Page();
+        }
+        public IActionResult OnGetSave(int id)
+        {
+            int a = 5;
             OnGet();
             return Page();
         }

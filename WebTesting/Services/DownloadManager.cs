@@ -62,6 +62,7 @@ namespace WebTesting.Services
                             download.ProgressRel = 100;
                             download.IsFinished = true;
                             download.DownloadFinished = DateTime.Now;
+                            download.IsDownloadable = true;
                             _db.Downloads.Update(download);
                             await _db.SaveChangesAsync();
                         }
