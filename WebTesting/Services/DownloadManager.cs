@@ -52,12 +52,12 @@ namespace WebTesting.Services
             Directory.CreateDirectory(DownloadPath + "\\Download" + downloadId);
             using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + downloadId + "\\List" + dp.DownloadId + ".txt"))
             {
-                int report = 1;
+                int interval = dp.Posts.Count / ((dp.Posts.Count / 15) + 10);
                 for (int i = 0; i < dp.Posts.Count; i++)
                 {
                     sw.WriteLine(dp.Posts[i].ToString());
                     await SavePost(dp.Posts[i], dp.DownloadId);
-                    if (i/dp.Posts.Count >= report/10 || i == dp.Posts.Count-1)
+                    if (i%interval == 0 || i == dp.Posts.Count-1)
                     {
                         if (i == dp.Posts.Count - 1)
                         {
@@ -71,10 +71,9 @@ namespace WebTesting.Services
                             await _db.SaveChangesAsync();
                         }
                         else {
-                            report++;
                             Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
                             download.ProgressAbs = i + 1;
-                            download.ProgressRel = (double)(((double)(i + 1)) / dp.Posts.Count) * 100;
+                            download.ProgressRel = Math.Round((double)(((double)(i + 1)) / dp.Posts.Count) * 100,1);
                             _db.Downloads.Update(download);
                             await _db.SaveChangesAsync();
                         }
