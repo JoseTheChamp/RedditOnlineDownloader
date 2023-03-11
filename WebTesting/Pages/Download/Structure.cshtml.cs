@@ -31,11 +31,12 @@ namespace WebTesting.Pages.Download
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             _dm.NewDownloadProcess(user,Posts);
+            HttpContext.Session.Remove("DownloadedIds");
             TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
             return RedirectToPage("../Index");
             
         }
-        public IActionResult OnGetDownloadAlt()
+        /*public IActionResult OnGetDownloadAlt()
         {
             //TODO Start download procces.
             //TODO if success.
@@ -43,7 +44,7 @@ namespace WebTesting.Pages.Download
             TempData["success"] = "Download started.";
             return File(@"/DownloadableFiles/Images.zip", "application/zip", "PPPPPP.zip");
             
-        }
+        }*/
         public IActionResult OnPost()
         {
             var form = Request.Form;

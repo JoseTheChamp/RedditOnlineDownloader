@@ -12,5 +12,6 @@ namespace WebTesting.Services
         public DbSet<Category> Category { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Download> Downloads { get; set; }
+        public DbSet<DownloadHistory> downloadHistories { get; set; }
     }
 }

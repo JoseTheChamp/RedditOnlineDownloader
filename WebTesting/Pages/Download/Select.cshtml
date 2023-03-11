@@ -38,8 +38,15 @@ else
             <div class="col-2" style="border:1px solid red">
                     <!--HERE ARE Select settings-->
                     <form method="post" asp-page-handler="Select">
-                    <label for="saved">Already saved posts:</label>
-                    <input name="saved" type="checkbox">
+                    <label for="showDownloaded">Show downloaded posts:</label>
+                    @if (Model.ShowDownloaded == true)
+                    {
+                        <input name="showDownloaded" type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input name="showDownloaded" type="checkbox">
+                    }
                     <label for="nsfw">Nsfw/sfw:</label>
                     <select name="nsfw">
                         @switch (Model.Nsfw)
@@ -118,10 +125,10 @@ else
                                             bool selected = Model.SelectedPosts.Exists(e => e.Id == post.Id);
                                             if (selected)
                                             {
-                                                <input name="@post.Id" class="form-check-input" type="checkbox" checked>
+                                                <input name="@post.Id" post class="form-check-input" type="checkbox" checked>
                                             } else
                                             {
-                                                <input name="@post.Id" class="form-check-input" type="checkbox">    
+                                                <input name="@post.Id" post class="form-check-input" type="checkbox">    
                                             }
 
                                         }
@@ -129,8 +136,16 @@ else
                                         {
                                             <input name="@post.Id" class="form-check-input" type="checkbox" checked>
                                         }
-                                            <a href="@linkSubreddit">@post.Subreddit</a> -
-                                            @post.Domain - @title - 
+                                        @if (Model.DownloadedIds.Contains(post.Id))
+                                        {
+                                            <span>X - </span>
+                                        }
+                                        <a href="@linkSubreddit">@post.Subreddit</a> -
+                                            @if (post.Over18)
+                                            {
+                                                <span>18+ - </span>
+                                            }
+                                        @post.Domain - @title - 
                                             <a href="@linkPost" target="_blank">link</a>
                                         </div>
                                 }
@@ -148,28 +163,15 @@ else
     </div>
     <script>
         var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        var count = 0;
-
-        for (var i = 0; i < checkboxes.length; i++) {
-          if (checkboxes[i].checked) {
-            count++;
-          }
-        }
+        var count = document.querySelectorAll('input[type="checkbox"]:checked').length
 
         var countElement = document.getElementById('count');
         countElement.textContent = 'Checked: ' + count;
 
         for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].addEventListener('change', function() {
-        var count = 0;
-
-        for (var j = 0; j < checkboxes.length; j++) {
-            if (checkboxes[j].checked) {
-            count++;
-            }
-        }
-
-        countElement.textContent = 'Checked: ' + count;
+            var count = document.querySelectorAll('input[type="checkbox"]:checked').length
+            countElement.textContent = 'Checked: ' + count;
         });
         }
     </script>
