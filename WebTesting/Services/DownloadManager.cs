@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Client;
 using NuGet.Protocol;
 using System;
 using System.Diagnostics;
@@ -28,6 +29,8 @@ namespace WebTesting.Services
             public Thread Thread { get; set; }
             public string UserId { get; set; }
             public CancellationTokenSource TokenSource { get; set; }
+
+            public DownloadHistory DownloadHistory;
         }
 
         public DownloadManager(ApplicationDbContext db)
@@ -45,7 +48,7 @@ namespace WebTesting.Services
                 }
             }
         }
-        public void NewDownloadProcess(User user, List<Post> posts) {
+        public async Task NewDownloadProcessAsync(User user, List<Post> posts) {
             if (RemoveTimer == null) {
                 RemoveTimer = new System.Timers.Timer(1800000); //TODO Parametr
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -58,7 +61,7 @@ namespace WebTesting.Services
                 user
                 );
             _db.Downloads.AddAsync(download);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             Thread thread = new Thread(() => {
@@ -66,6 +69,18 @@ namespace WebTesting.Services
             });
             DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread, UserId = user.RedditId, TokenSource = tokenSource};
             processes.Add(dp);
+
+            //Save Download History
+            List<string> ids = new List<string>();
+            foreach (Post post in dp.Posts)
+            {
+                ids.Add(post.Id);
+            }
+            var a = ids.ToJson();
+            DownloadHistory dh = new DownloadHistory(0, dp.UserId, ids.ToJson(), DateTime.Now);
+            _db.downloadHistories.Add(dh);
+            await _db.SaveChangesAsync();
+            dp.DownloadHistory= dh;
             dp.Thread.Start();
         }
 
@@ -80,6 +95,9 @@ namespace WebTesting.Services
                 for (int i = 0; i < dp.Posts.Count; i++)
                 {
                     if (token.IsCancellationRequested) {
+                        Debug.WriteLine("CLOSE---------------------------------");
+                        sw.Dispose();
+                        sw.Close();
                         break;
                     }
                     sw.WriteLine(dp.Posts[i].ToString());
@@ -117,16 +135,6 @@ namespace WebTesting.Services
                     throw ex;
                 }
 
-                //Save Download History
-                List<string> ids = new List<string>();
-                foreach (Post post in dp.Posts)
-                {
-                    ids.Add(post.Id);
-                }
-                var a = ids.ToJson();
-                DownloadHistory dh = new DownloadHistory(0, dp.UserId, ids.ToJson(), DateTime.Now);
-                _db.downloadHistories.Add(dh);
-
                 //Allow files to be downloaded
                 Download downloadDownloadable = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
                 downloadDownloadable.IsDownloadable = true;
@@ -156,6 +164,9 @@ namespace WebTesting.Services
                 case "i.imgur.com":
                     await SaveImage(post, id);
                     break;
+                case "reddit.com":
+                    await SaveMultipleImages(post, id);
+                    break;
                 default:
                     if (post.Domain.StartsWith("self"))
                     {
@@ -171,6 +182,18 @@ namespace WebTesting.Services
             using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(post.Urls[0])))
             {
                 stream.CopyTo(fileStream);
+            }
+        }
+        private async Task SaveMultipleImages(Post post, int id)
+        {
+            string name = StripName(post.Title);
+            for (int i = 0; i < post.Urls.Count; i++)
+            {
+                Stream stream = await client.GetStreamAsync(post.Urls[i]);
+                using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + "_" + i + Path.GetExtension(post.Urls[i])))
+                {
+                    stream.CopyTo(fileStream);
+                }
             }
         }
         private void SaveTextPost(Post post, int id) {
@@ -212,21 +235,38 @@ namespace WebTesting.Services
             return true;
         }
 
-        public async Task<bool> StopAndRemoveDownloadProcess(int id) {
+        public async Task StopAndRemoveDownloadProcess(int id) {
+
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == id);
             dp.TokenSource.Cancel();
+            dp.Thread.Join(20);
+            dp.TokenSource.Dispose();
             _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
+            _db.downloadHistories.Remove(dp.DownloadHistory);
             await _db.SaveChangesAsync();
-            processes.Remove(processes.FirstOrDefault(e => e.DownloadId == id));
+            processes.Remove(dp);
+            Thread thread = new Thread(() => {
+                DeleteDownloadFiles(id);
+            });
+            thread.Start();
+        }
+        private void DeleteDownloadFiles(int id)
+        {
+            int tries = 0;
+            start:
             try
             {
                 Directory.Delete(DownloadPath + "\\Download" + id, true);
             }
             catch (Exception ex)
             {
-                return false;
+                tries++;
+                if (tries > 10) {
+                    throw ex;
+                }
+                Thread.Sleep(200);
+                goto start;
             }
-            return true;
         }
     }
 }

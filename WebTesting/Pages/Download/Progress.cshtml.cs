@@ -79,14 +79,9 @@ namespace WebTesting.Pages.Download
         }
         public async Task<IActionResult> OnGetStopAndDeleteAsync(int id)
         {
-            if (await _dm.StopAndRemoveDownloadProcess(id))
-            {
-                TempData["success"] = "Download succesfully deleted.";
-            }
-            else
-            {
-                TempData["error"] = "Failed deletion of download.";
-            }
+            await _dm.StopAndRemoveDownloadProcess(id);          
+            TempData["success"] = "Download succesfully deleted.";
+            HttpContext.Session.Remove("DownloadedIds");
             OnGet();
             return Page();
         }

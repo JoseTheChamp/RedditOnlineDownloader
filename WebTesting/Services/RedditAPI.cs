@@ -100,8 +100,32 @@ namespace WebTesting.Services
             int numberOfPosts = Int32.Parse(jsonDataParse.NumberOfPosts.ToString());
             for (int i = 0; i < numberOfPosts; i++)
             {
+                if (jsonDataParse.data[i].data.removed_by_category != null)
+                {
+                    continue; //TODO Maybe some reporting how many were removed
+                }
+                /*Debug.WriteLine(i);
+                if (i == 84) {
+                    int abf = 5;
+                }*/
                 if (jsonDataParse.data[i].kind == "t1") {
                     continue; //TODO allow for saving comments
+                }
+                List<string> urls = new List<string>();
+                dynamic post = jsonDataParse.data[i];
+                if (jsonDataParse.data[i].data.domain == "reddit.com")
+                {
+                    foreach (dynamic media in jsonDataParse.data[i].data.media_metadata)
+                    {
+                        JObject jo = (JObject)((JProperty)media).Value;
+                        string m = (string)jo["m"];
+                        string ext = m.Substring(m.IndexOf('/') + 1);
+                        string id = (string)jo["id"];
+                        urls.Add("https://i.redd.it/" + id + "." + ext);
+                    }
+                }
+                else {
+                    urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
                 }
                 posts.Add(new Post(
                     jsonDataParse.data[i].data.id.ToString(),
@@ -116,7 +140,7 @@ namespace WebTesting.Services
                     Int32.Parse(jsonDataParse.data[i].data.ups.ToString()),
                     Int32.Parse(jsonDataParse.data[i].data.num_comments.ToString()),
                     //links
-                    new List<string> { jsonDataParse.data[i].data.url.ToString() }
+                    urls
                     ));
             }
             int a = 5;
