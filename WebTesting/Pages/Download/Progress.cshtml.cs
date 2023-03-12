@@ -77,9 +77,16 @@ namespace WebTesting.Pages.Download
             OnGet();
             return Page();
         }
-        public IActionResult OnGetStopAndDelete(int id)
+        public async Task<IActionResult> OnGetStopAndDeleteAsync(int id)
         {
-            int a = 5;
+            if (await _dm.StopAndRemoveDownloadProcess(id))
+            {
+                TempData["success"] = "Download succesfully deleted.";
+            }
+            else
+            {
+                TempData["error"] = "Failed deletion of download.";
+            }
             OnGet();
             return Page();
         }

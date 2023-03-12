@@ -27,6 +27,7 @@ namespace WebTesting.Services
             public List<Post> Posts { get; set; }
             public Thread Thread { get; set; }
             public string UserId { get; set; }
+            public CancellationTokenSource TokenSource { get; set; }
         }
 
         public DownloadManager(ApplicationDbContext db)
@@ -59,15 +60,16 @@ namespace WebTesting.Services
             _db.Downloads.AddAsync(download);
             _db.SaveChanges();
 
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
             Thread thread = new Thread(() => {
-                DoWork(download.Id);
+                DoWork(download.Id, tokenSource.Token);
             });
-            DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread, UserId = user.RedditId };
+            DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread, UserId = user.RedditId, TokenSource = tokenSource};
             processes.Add(dp);
             dp.Thread.Start();
         }
 
-        private async void DoWork(int downloadId)
+        private async void DoWork(int downloadId, CancellationToken token)
         {
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == downloadId);
             Directory.CreateDirectory(DownloadPath + "\\Download" + downloadId);
@@ -77,6 +79,9 @@ namespace WebTesting.Services
                 if (interval == 0) interval = 1;
                 for (int i = 0; i < dp.Posts.Count; i++)
                 {
+                    if (token.IsCancellationRequested) {
+                        break;
+                    }
                     sw.WriteLine(dp.Posts[i].ToString());
                     await SavePost(dp.Posts[i], dp.DownloadId);
                     if (i%interval == 0 || i == dp.Posts.Count-1)
@@ -101,40 +106,42 @@ namespace WebTesting.Services
                     }
                 }
             }
+            if (!token.IsCancellationRequested) {
+                ZipFile.CreateFromDirectory(DownloadPath + "\\Download" + downloadId, DownloadablePath + "\\Download" + downloadId + ".zip");
+                try
+                {
+                    Directory.Delete(DownloadPath + "\\Download" + downloadId, true);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
 
-            ZipFile.CreateFromDirectory(DownloadPath + "\\Download" + downloadId, DownloadablePath + "\\Download" + downloadId + ".zip");
-            try
-            {
-                Directory.Delete(DownloadPath + "\\Download" + downloadId, true);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+                //Save Download History
+                List<string> ids = new List<string>();
+                foreach (Post post in dp.Posts)
+                {
+                    ids.Add(post.Id);
+                }
+                var a = ids.ToJson();
+                DownloadHistory dh = new DownloadHistory(0, dp.UserId, ids.ToJson(), DateTime.Now);
+                _db.downloadHistories.Add(dh);
 
-            //Save Download History
-            List<string> ids = new List<string>(); 
-            foreach (Post post in dp.Posts)
-            {
-                ids.Add(post.Id);
-            }
-            var a = ids.ToJson();
-            DownloadHistory dh = new DownloadHistory(0,dp.UserId,ids.ToJson(),DateTime.Now);
-            _db.downloadHistories.Add(dh);
+                //Allow files to be downloaded
+                Download downloadDownloadable = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
+                downloadDownloadable.IsDownloadable = true;
+                _db.Downloads.Update(downloadDownloadable);
 
-            //Allow files to be downloaded
-            Download downloadDownloadable = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
-            downloadDownloadable.IsDownloadable = true;
-            _db.Downloads.Update(downloadDownloadable);
-
-            //Check number of downloads if above x then remove oldest.
-            List<Download> downloads = _db.Downloads.Where(e => e.User.RedditId == dp.UserId).ToList();
-            if (downloads.Count > 5) { //TODO Parameter 
-                Download download = downloads.OrderBy(e => e.DownloadFinished).FirstOrDefault();
-                await RemoveDownloadProcess(download.Id);
+                //Check number of downloads if above x then remove oldest.
+                List<Download> downloads = _db.Downloads.Where(e => e.User.RedditId == dp.UserId).ToList();
+                if (downloads.Count > 5)
+                { //TODO Parameter 
+                    Download download = downloads.OrderBy(e => e.DownloadFinished).FirstOrDefault();
+                    await RemoveDownloadProcess(download.Id);
+                }
+                //Save changes to database
+                await _db.SaveChangesAsync();
             }
-            //Save changes to database
-            await _db.SaveChangesAsync();
         }
 
         private async Task SavePost(Post post,int id) {
@@ -205,8 +212,21 @@ namespace WebTesting.Services
             return true;
         }
 
-        public void StopAndRemoveDownloadProcess(int id) { 
-        
+        public async Task<bool> StopAndRemoveDownloadProcess(int id) {
+            DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == id);
+            dp.TokenSource.Cancel();
+            _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
+            await _db.SaveChangesAsync();
+            processes.Remove(processes.FirstOrDefault(e => e.DownloadId == id));
+            try
+            {
+                Directory.Delete(DownloadPath + "\\Download" + id, true);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
