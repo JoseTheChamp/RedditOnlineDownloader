@@ -79,6 +79,7 @@ else
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
+                    <input type="checkbox" class="form-check-input" id="select-all-checkboxes" value="Select All">
                 <form method="post" asp-page-handler="ChangeShowType">
                     <label for="showType">Display as</label>
                     <select name="showType">
@@ -125,16 +126,16 @@ else
                                             bool selected = Model.SelectedPosts.Exists(e => e.Id == post.Id);
                                             if (selected)
                                             {
-                                                <input name="@post.Id" post class="form-check-input" type="checkbox" checked>
+                                                <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox" checked>
                                             } else
                                             {
-                                                <input name="@post.Id" post class="form-check-input" type="checkbox">    
+                                                <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox">    
                                             }
 
                                         }
                                         else
                                         {
-                                            <input name="@post.Id" class="form-check-input" type="checkbox" checked>
+                                            <input name="@post.Id" id="checkbox" class="form-check-input" type="checkbox" checked>
                                         }
                                         @if (Model.DownloadedIds.Contains(post.Id))
                                         {
@@ -162,17 +163,74 @@ else
         </div>
     </div>
     <script>
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        var count = document.querySelectorAll('input[type="checkbox"]:checked').length
+        //Counting checked posts
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
+        const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
+        var count = 0;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+          if (checkboxes[i].checked) {
+            count++;
+          }
+        }
 
         var countElement = document.getElementById('count');
         countElement.textContent = 'Checked: ' + count;
 
         for (var i = 0; i < checkboxes.length; i++) {
-        checkboxes[i].addEventListener('change', function() {
-            var count = document.querySelectorAll('input[type="checkbox"]:checked').length
+          checkboxes[i].addEventListener('change', function() {
+            var count = 0;
+
+            for (var j = 0; j < checkboxes.length; j++) {
+              if (checkboxes[j].checked) {
+                count++;
+              }
+            }
+
             countElement.textContent = 'Checked: ' + count;
-        });
+          });
         }
+
+        selectAllCheckboxes.addEventListener('change', function() {
+            var count = 0;
+            if(selectAllCheckboxes.checked){
+                count = checkboxes.length;
+            }else{
+                count = 0;
+            }
+            countElement.textContent = 'Checked: ' + count;
+          });
+
+
+        //select/deselect all
+        selectAllCheckboxes.addEventListener("change", function() {
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = selectAllCheckboxes.checked;
+            });
+        });
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener("change", function() {
+                let allChecked = true;
+                let allUnchecked = true;
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        allUnchecked = false;
+                    } else {
+                        allChecked = false;
+                    }
+                });
+                if (allChecked) {
+                    selectAllCheckboxes.checked = true;
+                    selectAllCheckboxes.indeterminate = false;
+                } else if (allUnchecked) {
+                    selectAllCheckboxes.checked = false;
+                    selectAllCheckboxes.indeterminate = false;
+                } else {
+                    selectAllCheckboxes.checked = false;
+                    selectAllCheckboxes.indeterminate = true;
+                }
+            });
+        });
     </script>
 }
