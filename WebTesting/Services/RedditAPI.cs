@@ -112,20 +112,25 @@ namespace WebTesting.Services
                     continue; //TODO allow for saving comments
                 }
                 List<string> urls = new List<string>();
-                dynamic post = jsonDataParse.data[i];
-                if (jsonDataParse.data[i].data.domain == "reddit.com")
+                //dynamic post = jsonDataParse.data[i];
+                switch (jsonDataParse.data[i].data.domain.ToString())
                 {
-                    foreach (dynamic media in jsonDataParse.data[i].data.media_metadata)
-                    {
-                        JObject jo = (JObject)((JProperty)media).Value;
-                        string m = (string)jo["m"];
-                        string ext = m.Substring(m.IndexOf('/') + 1);
-                        string id = (string)jo["id"];
-                        urls.Add("https://i.redd.it/" + id + "." + ext);
-                    }
-                }
-                else {
-                    urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
+                    case "reddit.com":
+                        foreach (dynamic media in jsonDataParse.data[i].data.media_metadata)
+                        {
+                            JObject jo = (JObject)((JProperty)media).Value;
+                            string m = (string)jo["m"];
+                            string ext = m.Substring(m.IndexOf('/') + 1);
+                            string id = (string)jo["id"];
+                            urls.Add("https://i.redd.it/" + id + "." + ext);
+                        }
+                        break;
+                    case "v.redd.it":
+                        urls = new List<string> { jsonDataParse.data[i].data.secure_media.reddit_video.fallback_url.ToString() };
+                        break;
+                    default:
+                        urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
+                        break;
                 }
                 posts.Add(new Post(
                     jsonDataParse.data[i].data.id.ToString(),

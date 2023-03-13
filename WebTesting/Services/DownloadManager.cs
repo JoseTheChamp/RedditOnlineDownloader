@@ -159,7 +159,7 @@ namespace WebTesting.Services
                     await SaveImage(post,id);
                     break;
                 case "v.redd.it":
-                    //Debug(post,id);
+                    await SaveVideo(post,id);
                     break;
                 case "i.imgur.com":
                     await SaveImage(post, id);
@@ -173,6 +173,20 @@ namespace WebTesting.Services
                         SaveTextPost(post,id);
                     }
                     break;
+            }
+        }
+
+        private async Task SaveVideo(Post post, int id) {
+            string url = post.Urls[0].Substring(0, post.Urls[0].IndexOf('?'));
+            string name = StripName(post.Title);
+
+            int len = url.LastIndexOf('.') - url.LastIndexOf('_') - 1;
+            string audioUrl = url.Remove(url.LastIndexOf('_') + 1, len);
+            audioUrl = audioUrl.Insert(audioUrl.LastIndexOf('_') + 1, "audio");
+            Stream streamVideoCombined = await client.GetStreamAsync(@"https://sd.redditsave.com/download.php?permalink=https://reddit.com/&video_url=" + url + "&audio_url=" + audioUrl);
+            using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(url)))
+            {
+                streamVideoCombined.CopyTo(fileStream);
             }
         }
 
