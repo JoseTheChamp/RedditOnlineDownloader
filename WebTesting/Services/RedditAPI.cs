@@ -108,18 +108,34 @@ namespace WebTesting.Services
                     }
                     if (jsonDataParse.data[i].kind == "t1")
                     {
+                        posts.Add(new Post(
+                        jsonDataParse.data[i].data.id.ToString(),
+                        jsonDataParse.data[i].data.body.ToString(),
+                        "",
+                        jsonDataParse.data[i].data.subreddit_name_prefixed.ToString(),//subreddit
+                        jsonDataParse.data[i].data.author.ToString(),
+                        "comment",
+                        false,
+                        jsonDataParse.data[i].data.permalink.ToString(),
+                        Double.Parse(jsonDataParse.data[i].data.created_utc.ToString()),
+                        Int32.Parse(jsonDataParse.data[i].data.ups.ToString()),
+                        0,
+                        new List<string>() { "https://www.reddit.com/" + jsonDataParse.data[i].data.permalink.ToString() }
+                        ));
                         continue; //TODO allow for saving comments
                     }
                     List<string> urls = new List<string>();
 
 
                     //debug
+                    /*
                     Debug.WriteLine(i);
                     if (i == 1)
                     {
                         int a = 5;
                     }
                     dynamic post = jsonDataParse.data[i];
+                    */
 
 
                     string domain = jsonDataParse.data[i].data.domain.ToString();

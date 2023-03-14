@@ -168,7 +168,10 @@ namespace WebTesting.Services
                     await SaveMultipleImages(post, id);
                     break;
                 case "link":
-                        SaveLinkPost(post, id);
+                    SaveLinkPost(post, id);
+                    break;
+                case "comment":
+                    SaveComment(post, id);   
                     break;
                 default:
                     if (post.Domain.StartsWith("self"))
@@ -221,6 +224,17 @@ namespace WebTesting.Services
                 sw.WriteLine("Subreddit: " + post.Subreddit);
                 sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
                 sw.WriteLine("Text: \n" + post.SelfText);
+            }
+        }
+
+        private void SaveComment(Post post, int id)
+        {
+            string name = StripName(post.Title);
+            using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + id + "\\Comment_" + name + ".txt"))
+            {
+                sw.WriteLine("Comment: " + post.Title);
+                sw.WriteLine("Subreddit: " + post.Subreddit);
+                sw.WriteLine("PermaLink to a comment: www.reddit.com" + post.PermaLink);
             }
         }
 
