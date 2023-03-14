@@ -155,11 +155,9 @@ namespace WebTesting.Services
         private async Task SavePost(Post post,int id) {
             switch (post.Domain)
             {
+                //Images
                 case "i.redd.it":
                     await SaveImage(post,id);
-                    break;
-                case "v.redd.it":
-                    await SaveVideo(post,id);
                     break;
                 case "i.imgur.com":
                     await SaveImage(post, id);
@@ -167,6 +165,14 @@ namespace WebTesting.Services
                 case "reddit.com":
                     await SaveMultipleImages(post, id);
                     break;
+                //Videos
+                case "v.redd.it":
+                    await SaveVideo(post, id);
+                    break;
+                case "gfycat.com":
+                    await SaveVideo(post, id);
+                    break;
+                //txt files
                 case "link":
                     SaveLinkPost(post, id);
                     break;
@@ -183,7 +189,10 @@ namespace WebTesting.Services
         }
 
         private async Task SaveVideo(Post post, int id) {
-            string url = post.Urls[0].Substring(0, post.Urls[0].IndexOf('?'));
+            string url = post.Urls[0];
+            if (url.Contains('?')) {
+                url = url.Substring(0, url.IndexOf('?'));
+            }
             string name = StripName(post.Title);
 
             int len = url.LastIndexOf('.') - url.LastIndexOf('_') - 1;

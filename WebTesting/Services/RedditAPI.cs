@@ -128,14 +128,14 @@ namespace WebTesting.Services
 
 
                     //debug
-                    /*
+                    
                     Debug.WriteLine(i);
-                    if (i == 1)
+                    if (jsonDataParse.data[i].data.domain.ToString() == "gfycat.com")
                     {
                         int a = 5;
                     }
                     dynamic post = jsonDataParse.data[i];
-                    */
+                    
 
 
                     string domain = jsonDataParse.data[i].data.domain.ToString();
@@ -174,6 +174,9 @@ namespace WebTesting.Services
                             {
                                 urls = new List<string> { jsonDataParse.data[i].data.secure_media.reddit_video.fallback_url.ToString() };
                             }
+                            break;
+                        case "gfycat.com":
+                            urls = new List<string> { jsonDataParse.data[i].data.preview.reddit_video_preview.fallback_url.ToString() };
                             break;
                         default:
                             urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
