@@ -167,6 +167,9 @@ namespace WebTesting.Services
                 case "reddit.com":
                     await SaveMultipleImages(post, id);
                     break;
+                case "link":
+                        SaveLinkPost(post, id);
+                    break;
                 default:
                     if (post.Domain.StartsWith("self"))
                     {
@@ -212,12 +215,28 @@ namespace WebTesting.Services
         }
         private void SaveTextPost(Post post, int id) {
             string name = StripName(post.Title);
-            using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + id + "\\" + name + ".txt"))
+            using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + id + "\\Text_" + name + ".txt"))
             {
                 sw.WriteLine("Title: " + post.Title);
                 sw.WriteLine("Subreddit: " + post.Subreddit);
                 sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
                 sw.WriteLine("Text: \n" + post.SelfText);
+            }
+        }
+
+        private void SaveLinkPost(Post post, int id)
+        {
+            string name = StripName(post.Title);
+            using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + id + "\\Link_" + name + ".txt"))
+            {
+                sw.WriteLine("Title: " + post.Title);
+                sw.WriteLine("Subreddit: " + post.Subreddit);
+                sw.WriteLine("PermaLink to a post: www.reddit.com" + post.PermaLink);
+                if (post.SelfText != "")
+                {
+                    sw.WriteLine("Text: \n" + post.SelfText);
+                }
+                sw.WriteLine("Link: \n" + post.Urls[0]);
             }
         }
 

@@ -17,20 +17,12 @@
       "PackagePath": "staticwebassets\\DownloadableFiles\\Download4056.zip"
     },
     {
+      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download5056.zip",
+      "PackagePath": "staticwebassets\\DownloadableFiles\\Download5056.zip"
+    },
+    {
       "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Images.zip",
       "PackagePath": "staticwebassets\\DownloadableFiles\\Images.zip"
-    },
-    {
-      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Downloads\\Download4053\\List4053.txt",
-      "PackagePath": "staticwebassets\\Downloads\\Download4053\\List4053.txt"
-    },
-    {
-      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Downloads\\Download4054\\List4054.txt",
-      "PackagePath": "staticwebassets\\Downloads\\Download4054\\List4054.txt"
-    },
-    {
-      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Downloads\\Download4055\\List4055.txt",
-      "PackagePath": "staticwebassets\\Downloads\\Download4055\\List4055.txt"
     },
     {
       "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\css\\bootswatch_cyborg.css",
