@@ -198,10 +198,27 @@ namespace WebTesting.Services
             int len = url.LastIndexOf('.') - url.LastIndexOf('_') - 1;
             string audioUrl = url.Remove(url.LastIndexOf('_') + 1, len);
             audioUrl = audioUrl.Insert(audioUrl.LastIndexOf('_') + 1, "audio");
-            Stream streamVideoCombined = await client.GetStreamAsync(@"https://sd.redditsave.com/download.php?permalink=https://reddit.com/&video_url=" + url + "&audio_url=" + audioUrl);
-            using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(url)))
+            bool audioExists = false;
+            try
             {
-                streamVideoCombined.CopyTo(fileStream);
+                Stream streamAudio = await client.GetStreamAsync(audioUrl);
+                audioExists = true;
+            }
+            catch (Exception){}
+            if (audioExists)
+            {
+                Stream streamVideoCombined = await client.GetStreamAsync(@"https://sd.redditsave.com/download.php?permalink=https://reddit.com/&video_url=" + url + "&audio_url=" + audioUrl);
+                using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(url)))
+                {
+                    streamVideoCombined.CopyTo(fileStream);
+                }
+            }
+            else {
+                Stream streamVideo = await client.GetStreamAsync(url);
+                using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(url)))
+                {
+                    streamVideo.CopyTo(fileStream);
+                }
             }
         }
 
