@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Hosting;
 using NuGet.Protocol;
+using System.Runtime.Intrinsics.Arm;
 using WebTesting.Entities;
 using WebTesting.Entities.Enums;
 using WebTesting.Models;
@@ -175,6 +176,23 @@ namespace WebTesting.Pages.Download
             Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             int a = 5;
+            return Page();
+        }
+
+        public async Task<IActionResult> OnGetRefresh()
+        {
+            //Fetch new posts from reddit
+            List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
+            HttpContext.Session.SetObject("AllPosts", posts);
+            HttpContext.Session.SetObject("Posts", posts);
+            AllPosts = posts;
+            Posts = posts;
+
+            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
+            ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
+            ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
+            await ManageDownloadedIdsAsync();
+            Posts = filterPosts(Posts);
             return Page();
         }
     }
