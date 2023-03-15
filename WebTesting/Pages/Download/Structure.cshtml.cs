@@ -30,7 +30,7 @@ namespace WebTesting.Pages.Download
             //TODO if success.
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            _dm.NewDownloadProcessAsync(user,Posts);
+            _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList());
             HttpContext.Session.Remove("DownloadedIds");
             TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
             return RedirectToPage("../Index");

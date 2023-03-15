@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Hosting;
+using NuGet.Packaging.Signing;
 using NuGet.Protocol;
 using System.Runtime.Intrinsics.Arm;
 using WebTesting.Entities;
@@ -64,7 +65,6 @@ namespace WebTesting.Pages.Download
                 downloadedIds = new List<string>();
                 List<DownloadHistory> downloadHistories = _db.downloadHistories.Where(e => e.UserId.Equals(HttpContext.Session.GetString("RedditId"))).ToList();
                 downloadHistories = downloadHistories.OrderByDescending(e => e.DownloadTime).ToList();
-                List<int> hits = new List<int>(new int[downloadHistories.Count]);
                 foreach (Post post in AllPosts)
                 {
                     for (int i = 0; i < downloadHistories.Count; i++)
@@ -72,18 +72,9 @@ namespace WebTesting.Pages.Download
                         List<string> ids = downloadHistories[i].DownloadedPosts.FromJson<List<string>>();
                         if (ids.Contains(post.Id))
                         {
-                            hits[i]++;
                             downloadedIds.Add(post.Id);
                             break;
                         }
-                    }
-                }
-                for (int i = 0; i < hits.Count; i++)
-                {
-                    if (hits[i] == 0)
-                    {
-                        _db.downloadHistories.Remove(downloadHistories[i]);
-                        await _db.SaveChangesAsync();
                     }
                 }
                 HttpContext.Session.SetObject("DownloadedIds", downloadedIds);

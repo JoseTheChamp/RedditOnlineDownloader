@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Policy;
 using System.Threading;
@@ -48,7 +49,7 @@ namespace WebTesting.Services
                 }
             }
         }
-        public async Task NewDownloadProcessAsync(User user, List<Post> posts) {
+        public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds) {
             if (RemoveTimer == null) {
                 RemoveTimer = new System.Timers.Timer(1800000); //TODO Parametr
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -65,7 +66,7 @@ namespace WebTesting.Services
 
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             Thread thread = new Thread(() => {
-                DoWork(download.Id, tokenSource.Token);
+                DoWork(download.Id, tokenSource.Token, AllIds);
             });
             DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread, UserId = user.RedditId, TokenSource = tokenSource};
             processes.Add(dp);
@@ -80,11 +81,11 @@ namespace WebTesting.Services
             DownloadHistory dh = new DownloadHistory(0, dp.UserId, ids.ToJson(), DateTime.Now);
             _db.downloadHistories.Add(dh);
             await _db.SaveChangesAsync();
-            dp.DownloadHistory= dh;
+            dp.DownloadHistory = dh;
             dp.Thread.Start();
         }
 
-        private async void DoWork(int downloadId, CancellationToken token)
+        private async void DoWork(int downloadId, CancellationToken token, List<string> AllIds)
         {
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == downloadId);
             Directory.CreateDirectory(DownloadPath + "\\Download" + downloadId);
@@ -100,28 +101,38 @@ namespace WebTesting.Services
                         sw.Close();
                         break;
                     }
-                    sw.WriteLine(dp.Posts[i].ToString());
-                    await SavePost(dp.Posts[i], dp.DownloadId);
-                    if (i%interval == 0 || i == dp.Posts.Count-1)
+                    try
                     {
-                        if (i == dp.Posts.Count - 1)
+                        sw.WriteLine(dp.Posts[i].ToString());
+                        await SavePost(dp.Posts[i], dp.DownloadId);
+                        if (i % interval == 0 || i == dp.Posts.Count - 1)
                         {
-                            Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
-                            download.ProgressAbs = download.ProgressAbsMax;
-                            download.ProgressRel = 100;
-                            download.IsFinished = true;
-                            download.DownloadFinished = DateTime.Now;
-                            _db.Downloads.Update(download);
-                            await _db.SaveChangesAsync();
-                        }
-                        else {
-                            Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
-                            download.ProgressAbs = i + 1;
-                            download.ProgressRel = Math.Round((double)(((double)(i + 1)) / dp.Posts.Count) * 100,1);
-                            _db.Downloads.Update(download);
-                            await _db.SaveChangesAsync();
+                            if (i == dp.Posts.Count - 1)
+                            {
+                                Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
+                                if (download != null)
+                                {
+                                    download.ProgressAbs = download.ProgressAbsMax;
+                                    download.ProgressRel = 100;
+                                    download.IsFinished = true;
+                                    download.DownloadFinished = DateTime.Now;
+                                    _db.Downloads.Update(download);
+                                    await _db.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                Download download = _db.Downloads.FirstOrDefault(e => e.Id == downloadId);
+                                if (download != null) {
+                                    download.ProgressAbs = i + 1;
+                                    download.ProgressRel = Math.Round((double)(((double)(i + 1)) / dp.Posts.Count) * 100, 1);
+                                    _db.Downloads.Update(download);
+                                    await _db.SaveChangesAsync();
+                                }
+                            }
                         }
                     }
+                    catch { }
                 }
             }
             if (!token.IsCancellationRequested) {
@@ -147,6 +158,32 @@ namespace WebTesting.Services
                     Download download = downloads.OrderBy(e => e.DownloadFinished).FirstOrDefault();
                     await RemoveDownloadProcess(download.Id);
                 }
+
+                //Removal of needless downloadHistories
+                List<DownloadHistory> downloadHistories = _db.downloadHistories.Where(e => e.UserId.Equals(dp.UserId)).ToList();
+                downloadHistories = downloadHistories.OrderByDescending(e => e.DownloadTime).ToList();
+                List<int> hits = new List<int>(new int[downloadHistories.Count]);
+                foreach (string id in AllIds)
+                {
+                    for (int i = 0; i < downloadHistories.Count; i++)
+                    {
+                        List<string> ids = downloadHistories[i].DownloadedPosts.FromJson<List<string>>();
+                        if (ids.Contains(id))
+                        {
+                            hits[i]++;
+                            break;
+                        }
+                    }
+                }
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    if (hits[i] == 0)
+                    {
+                        _db.downloadHistories.Remove(downloadHistories[i]);
+                        await _db.SaveChangesAsync();
+                    }
+                }
+
                 //Save changes to database
                 await _db.SaveChangesAsync();
             }
@@ -312,7 +349,6 @@ namespace WebTesting.Services
 
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == id);
             dp.TokenSource.Cancel();
-            dp.Thread.Join(20);
             dp.TokenSource.Dispose();
             _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
             _db.downloadHistories.Remove(dp.DownloadHistory);
@@ -337,9 +373,10 @@ namespace WebTesting.Services
                 if (tries > 10) {
                     throw ex;
                 }
-                Thread.Sleep(200);
+                Thread.Sleep(2000);
                 goto start;
             }
+
         }
     }
 }
