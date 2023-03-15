@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Security.Policy;
 using System.Text;
 using WebTesting.Entities;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebTesting.Services
 {
@@ -130,11 +131,12 @@ namespace WebTesting.Services
                     //debug
                     
                     Debug.WriteLine(i);
+                    dynamic post = jsonDataParse.data[i];
                     if (jsonDataParse.data[i].data.domain.ToString() == "gfycat.com")
                     {
                         int a = 5;
                     }
-                    dynamic post = jsonDataParse.data[i];
+                    //dynamic post = jsonDataParse.data[i];
                     
 
 
@@ -142,14 +144,29 @@ namespace WebTesting.Services
                     switch (domain)
                     {
                         case "reddit.com":
+                            List<string> ids = new List<string>();
+                            List<string> extensions = new List<string>();
+                            List<string> orderIds = new List<string>();
+                            int j = 0;
                             foreach (dynamic media in jsonDataParse.data[i].data.media_metadata)
                             {
                                 JObject jo = (JObject)((JProperty)media).Value;
-                                string m = (string)jo["m"];
-                                string ext = m.Substring(m.IndexOf('/') + 1);
-                                string id = (string)jo["id"];
-                                urls.Add("https://i.redd.it/" + id + "." + ext);
+                                string m = (string)jo["m"]; //TODO catch errors??
+                                extensions.Add(m.Substring(m.IndexOf('/') + 1));
+                                ids.Add((string)jo["id"]);
+                                j++;
+                                //urls.Add("https://i.redd.it/" + id + "." + ext);
                             }
+                            foreach (dynamic item in jsonDataParse.data[i].data.gallery_data.items)
+                            {
+                                orderIds.Add(item.media_id.ToString());
+                            }
+                            for (int k = 0; k < ids.Count; k++)
+                            {
+                                int index = ids.IndexOf(orderIds[k]);
+                                urls.Add("https://i.redd.it/" + ids[index] + "." + extensions[index]);
+                            }
+
                             break;
                         case "v.redd.it":
                             string crosspostUrl = "";
