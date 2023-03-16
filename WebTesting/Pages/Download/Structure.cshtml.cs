@@ -54,7 +54,7 @@ namespace WebTesting.Pages.Download
             {
                 var res = form[name].ToString;
                 var resInvoked = res.Invoke();
-                if (resInvoked == "on") {
+                if (resInvoked == "on" && name != "showDownloaded" && name != "selectAll") { //TODO bad design - based on names in htlm checkboxes on/off in select
                     Posts.Add(PostsToChooseFrom.FirstOrDefault(e => e.Id == name));
                 }
             }

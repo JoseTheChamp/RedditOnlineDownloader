@@ -15,6 +15,7 @@
 }
 else
 {   
+    <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
     <div class="container-fluid">
         <div class="row">
             <div class="col-5">
@@ -38,18 +39,17 @@ else
         <div class="row">
             <div class="col-2" style="border:1px solid red">
                     <!--HERE ARE Select settings-->
-                    <form method="post" asp-page-handler="Select">
                     <label for="showDownloaded">Show downloaded posts:</label>
                     @if (Model.ShowDownloaded == true)
                     {
-                        <input name="showDownloaded" type="checkbox" checked>
+                        <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
                     }
                     else
                     {
-                        <input name="showDownloaded" type="checkbox">
+                        <input form="selectedPosts" name="showDownloaded" type="checkbox">
                     }
                     <label for="nsfw">Nsfw/sfw:</label>
-                    <select name="nsfw">
+                    <select form="selectedPosts" name="nsfw">
                         @switch (Model.Nsfw)
                         {
                             case SelectNsfw.SFW:
@@ -70,52 +70,59 @@ else
                         }
                         </select>
                     <label for="mediaTypes">Media to ignore</label>
-                        <select multiple name="mediaTypes">
+                        <select form="selectedPosts" multiple name="mediaTypes">
                             <option>Reddit image</option>
                             <option>Reddit video</option>
                             <option>Imgur image</option>
                         </select>
-                        <input type="submit" class="btn btn-primary" id="the-submit" value="submit">
-                </form>
+                        <!--<input type="submit" class="btn btn-primary" id="the-submit" value="submit">-->
+                        <input form="selectedPosts" type="submit" class="btn btn-primary" value="Submit">
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
-                    <input type="checkbox" class="form-check-input" id="select-all-checkboxes" value="Select All">
-                <form method="post" asp-page-handler="ChangeShowType">
+                    <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
+                <!--<form method="post" asp-page-handler="ChangeShowType">
                     <label for="showType">Display as</label>
                     <select name="showType">
-                        @switch (Model.ShowType)
-                        {
-                            case SelectShowType.SUBREDDIT_EXPANDED:
-                                <option value="1">Posts</option>
-                                <option selected value="2">Subreddits expanded</option>
-                                <option value="3">Subredits reduced</option>
-                                break;
-                            case SelectShowType.SUBREDDITS_REDUCED:
-                                <option value="1">Posts</option>
-                                <option value="2">Subreddits expanded</option>
-                                <option selected value="3">Subredits reduced</option>
-                                break;
-                            default:
-                                <option selected value="1">Posts</option>
-                                <option value="2">Subreddits expanded</option>
-                                <option value="3">Subredits reduced</option>
-                                break;
-                        }
+                @{
+                    /*
+    switch (Model.ShowType)
+    {
+        case SelectShowType.SUBREDDIT_EXPANDED:
+                <option value="1">Posts</option>
+                <option selected value="2">Subreddits expanded</option>
+                <option value="3">Subredits reduced</option>
+                break;
+        case SelectShowType.SUBREDDITS_REDUCED:
+                <option value="1">Posts</option>
+                <option value="2">Subreddits expanded</option>
+                <option selected value="3">Subredits reduced</option>
+                break;
+        default:
+                <option selected value="1">Posts</option>
+                <option value="2">Subreddits expanded</option>
+                <option value="3">Subredits reduced</option>
+                break;
+    }
+    */
+                    int a = 5;
+                }
                     </select>
                     <button type="submit">submit</button>
-                        <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
-                </form>
-                <form id="selectedPosts" method="post">
+                    <input form="selectedPosts" type="submit" class="btn btn-primary" asp-asp-page-handler="ChangeShowType" value="Submit">
+                    <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
+                    </form>-->
+                <form id="selectedPosts" method="post" asp-page-handler="Select">
                     <ul class="p-2">
-                        @switch(Model.ShowType){
+                        @{
+                            /*switch(Model.ShowType){
                             case SelectShowType.SUBREDDIT_EXPANDED:
                                         <p>Subredits expanded.</p>
                                 break;
                             case SelectShowType.SUBREDDITS_REDUCED:
                                         <p>Subredits reduced.</p>
                                 break;
-                            default:
+                            default:*/
                                 @foreach (Post post in Model.Posts)
                                 {
                                     string linkPost = "https://www.reddit.com" + post.PermaLink;
@@ -151,7 +158,8 @@ else
                                             <a href="@linkPost" target="_blank">link</a>
                                         </div>
                                 }
-                                break;
+                                //break;
+                        //} 
                         }
                     </ul>
                 </form>
@@ -162,13 +170,32 @@ else
                 <div id="count"></div>
             </div>
         </div>
+        <div class="row">
+            <p id="test">Test</p>
+            <p id="print">Print</p>
+        </div>
     </div>
     <script>
         //Counting checked posts
         var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
         const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
         const submitButton = document.getElementById("the-submit");
+        const test = document.getElementById("test");
+        const print = document.getElementById("print");
+        const sessionInput = document.getElementById("hdnSession");
         var count = 0;
+
+        //---------------------
+        test.textContent = 'Success';
+        
+        //Fetch List<Post> from server
+        var value = sessionInput.value;
+        var posts = JSON.parse(value);
+        print.textContent = posts;
+        print.textContent = posts[0].Title;
+        //print.textContent = 'Success';
+
+        //------------------------
 
         for (var i = 0; i < checkboxes.length; i++) {
           if (checkboxes[i].checked) {

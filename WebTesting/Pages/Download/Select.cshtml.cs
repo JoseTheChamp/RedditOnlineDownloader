@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using NuGet.Packaging.Signing;
 using NuGet.Protocol;
 using System.Runtime.Intrinsics.Arm;
@@ -16,6 +18,7 @@ namespace WebTesting.Pages.Download
     {
         public List<Post> AllPosts { get; set; }
         public List<Post> Posts { get; set; }
+        public string PostsJson { get; set; }
         public List<Post> SelectedPosts { get; set; }
         public List<string> DownloadedIds { get; set; }
         public SelectShowType ShowType { get; set; }
@@ -35,7 +38,9 @@ namespace WebTesting.Pages.Download
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
 
-            HttpContext.Session.Remove("SelectedPosts");
+            string test = HttpContext.Session.GetString("Testing");
+
+            //HttpContext.Session.Remove("SelectedPosts");
 
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
@@ -53,6 +58,7 @@ namespace WebTesting.Pages.Download
             await ManageDownloadedIdsAsync();
 
             Posts = filterPosts(Posts);
+            PostsJson = JsonConvert.SerializeObject(Posts);
         }
         public void OnGetChangeShowType() {
             int a = 5;
@@ -83,10 +89,12 @@ namespace WebTesting.Pages.Download
         }
         public async Task<IActionResult> OnPostChangeShowTypeAsync(string showType)
         {
+            /*
             Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
+            SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             await ManageDownloadedIdsAsync();
 
             //TODO load all filters of Select
@@ -107,13 +115,16 @@ namespace WebTesting.Pages.Download
             }
 
             Posts = filterPosts(Posts);
+            PostsJson = JsonConvert.SerializeObject(Posts);
             HttpContext.Session.SetObject("ShowType", ShowType);
+            */
             return Page();
         }
         public async Task<IActionResult> OnPostSelectAsync()
         {
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             Posts = AllPosts;
+            SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             await ManageDownloadedIdsAsync();
 
@@ -138,6 +149,7 @@ namespace WebTesting.Pages.Download
             if (downloaded == "on") ShowDownloaded = true;
 
             Posts = filterPosts(Posts);
+            PostsJson = JsonConvert.SerializeObject(Posts);
 
             HttpContext.Session.SetObject("ShowDownloaded", ShowDownloaded);
             HttpContext.Session.SetObject("Posts", Posts);
@@ -165,6 +177,7 @@ namespace WebTesting.Pages.Download
         public IActionResult OnPost()
         {
             Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
+            PostsJson = JsonConvert.SerializeObject(Posts);
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             int a = 5;
             return Page();
@@ -184,6 +197,7 @@ namespace WebTesting.Pages.Download
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             await ManageDownloadedIdsAsync();
             Posts = filterPosts(Posts);
+            PostsJson = JsonConvert.SerializeObject(Posts);
             return Page();
         }
     }
