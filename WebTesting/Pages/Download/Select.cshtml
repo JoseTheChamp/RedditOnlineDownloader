@@ -168,6 +168,11 @@ else
                 <!--HERE ARE Details-->
                 Details:
                 <div id="count"></div>
+                <div id="subreddits"></div>
+                Domains:
+                <ul id="domains"></ul>
+                Nsfw/sfw:
+                <ul id="nsfwDetail"></ul>
             </div>
         </div>
         <div class="row">
@@ -176,27 +181,26 @@ else
         </div>
     </div>
     <script>
-        //Counting checked posts
         var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
         const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
         const submitButton = document.getElementById("the-submit");
         const test = document.getElementById("test");
         const print = document.getElementById("print");
         const sessionInput = document.getElementById("hdnSession");
-        var count = 0;
+        
 
-        //---------------------
-        test.textContent = 'Success';
+        //details
+        var domains = document.getElementById("domains");
+        var subreddits = document.getElementById("subreddits");
+        var nsfw = document.getElementById("nsfwDetail");
+        var countAlt = 0;
+        var count = 0;
         
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-        print.textContent = posts;
-        print.textContent = posts[0].Title;
-        //print.textContent = 'Success';
 
-        //------------------------
-
+        //Counting checked items
         for (var i = 0; i < checkboxes.length; i++) {
           if (checkboxes[i].checked) {
             count++;
@@ -205,6 +209,7 @@ else
 
         var countElement = document.getElementById('count');
         countElement.textContent = 'Checked: ' + count;
+        calculateDetails(true);
 
         for (var i = 0; i < checkboxes.length; i++) {
           checkboxes[i].addEventListener('change', function() {
@@ -215,8 +220,8 @@ else
                 count++;
               }
             }
-
             countElement.textContent = 'Checked: ' + count;
+            calculateDetails(true);
           });
         }
 
@@ -227,7 +232,15 @@ else
             }else{
                 count = 0;
             }
+            var countAlt = 0;
+            if(selectAllCheckboxes.checked){
+                countAlt = checkboxes.length;
+            }else{
+                countAlt = 0;
+            }
             countElement.textContent = 'Checked: ' + count;
+            print.textContent = countAlt;
+            calculateDetails(false);
           });
 
 
@@ -260,6 +273,38 @@ else
                     selectAllCheckboxes.indeterminate = true;
                 }
             });
-    });
+        });
+        function calculateDetails(doCount){
+            var counting = 0;
+            checkboxes.forEach(function(checkbox) {
+                if(checkbox.checked){
+                    posts.forEach(function(post){
+                        if(post.Id == checkbox.name){
+                                counting++;
+                        }
+                    });
+                }
+            });
+            if(doCount){
+                countAlt = counting;
+                print.textContent = countAlt;
+                if(countAlt == posts.lenght){
+                    selectAllCheckboxes.checked = true;
+                    selectAllCheckboxes.indeterminate = false;
+                }else if(countAlt == 0){
+                    selectAllCheckboxes.checked = false;
+                    selectAllCheckboxes.indeterminate = false;
+                }else{
+                    selectAllCheckboxes.checked = false;
+                    selectAllCheckboxes.indeterminate = true;
+                }
+            }
+        }
+        /*
+        var domains = document.getElementById("domains");
+        var subreddits = document.getElementById("subreddits");
+        var nsfw = document.getElementById("nsfwDetail");
+        var count = 0;
+        */
     </script>
 }
