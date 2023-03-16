@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 using WebTesting.Entities;
 using WebTesting.Models;
 using WebTesting.Services;
@@ -11,6 +13,7 @@ namespace WebTesting.Pages.Download
     {
         public List<Post> Posts { get; set; }
         private readonly ApplicationDbContext _db;
+        public string PostsJson { get; set; }
         private readonly DownloadManager _dm;
         public StructureModel(ApplicationDbContext db, DownloadManager dm)
         {
@@ -30,6 +33,7 @@ namespace WebTesting.Pages.Download
             //TODO if success.
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            PostsJson = JsonConvert.SerializeObject(Posts);
             _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList());
             HttpContext.Session.Remove("DownloadedIds");
             TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
@@ -59,6 +63,7 @@ namespace WebTesting.Pages.Download
                 }
             }
             HttpContext.Session.SetObject("SelectedPosts",Posts);
+            PostsJson = JsonConvert.SerializeObject(Posts);
             return Page();
         }
     }

@@ -14,36 +14,120 @@
 }
 else
 {   
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <h2>Set up folder structure.</h2>
-                </div>
-                <div class="col-3 text-end">
-                    <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
-                    <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
-                </div>
+    <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h2>Set up folder structure.</h2>
             </div>
-            <div class="row">
-                <div class="col-2" style="border:1px solid red">Setting for the list</div>
-                <div class="col-8" style="border:1px solid red">
-                    <ul class="p-2">
-                    @foreach (Post post in Model.Posts)
-                    {
-                        string linkPost = "https://www.reddit.com" + post.PermaLink;
-                        string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
-                        string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
-                                <div>
-                                    <a href="@linkSubreddit">@post.Subreddit</a> -
-                            @post.Domain - @title - 
-                                    <a href="@linkPost">link</a>
-                                </div>
-                    }
-                    </ul>
-                </div>
-                <div class="col-2" style="border:1px solid red">
-                    Details
-                </div>
+            <div class="col-3 text-end">
+                <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
+                <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
             </div>
         </div>
+        <div class="row">
+            <div class="col-2" style="border:1px solid red">Setting for the list</div>
+            <div class="col-8" style="border:1px solid red">
+                <ul class="p-2">
+                @foreach (Post post in Model.Posts)
+                {
+                    string linkPost = "https://www.reddit.com" + post.PermaLink;
+                    string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                    string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
+                            <div>
+                                <a href="@linkSubreddit">@post.Subreddit</a> -
+                        @post.Domain - @title - 
+                                <a href="@linkPost">link</a>
+                            </div>
+                }
+                </ul>
+            </div>
+            <div class="col-2" style="border:1px solid red">
+                Details:
+                <div id="count"></div>
+                Domains:
+                <ul id="domains"></ul>
+                Nsfw/sfw:
+                <ul id="nsfwDetail"></ul>
+                <div id="subreddits"></div>
+                <div id="subredditsList"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var domainsList = document.getElementById("domains");
+        var subredditsList = document.getElementById("subredditsList");
+        var subredditsCount = document.getElementById("subreddits");
+        var nsfwList = document.getElementById("nsfwDetail");
+        var countAltText = document.getElementById("count");
+        var count = 0;
+        const sessionInput = document.getElementById("hdnSession");
+
+        //Fetch List<Post> from server
+        var value = sessionInput.value;
+        var posts = JSON.parse(value);
+
+        count = posts.length;
+
+        //Calculating details on the richt side of screen
+        let subreddits = {};
+        var domains = {};
+        let nsfw = {};
+        posts.forEach(function(post) {
+            if(!domains[post.Domain]){
+                domains[post.Domain] = 0;
+            }
+            domains[post.Domain]++;
+            if(!nsfw[post.Over18]){
+                nsfw[post.Over18] = 0;
+            }
+            nsfw[post.Over18]++;
+            if(!subreddits[post.Subreddit]){
+                subreddits[post.Subreddit] = 0;
+            }
+            subreddits[post.Subreddit]++;
+        });
+        //alert(Object.keys(domains) + '   ' + Object.values(domains));
+
+        //Merge all self.xxxx posts to one.
+        var domainsGrouped = domains;
+        let selfIndex = -1;
+        Object.keys(domains).forEach(function(domain) {
+            let postType = domain.slice(0,5);
+            if(postType == 'self.'){
+                if(selfIndex == -1){
+                    domainsGrouped['self.'] = domainsGrouped[domain]
+                    selfIndex = 'self.';
+                    delete domainsGrouped[domain];
+                }else{
+                    domainsGrouped[selfIndex] += domains[domain];
+                    domainsGrouped[domain] = 'null';
+                }
+            }
+        });
+
+        //Creating html content for the details
+        domainsList.innerHTML = "";
+        for(let i = 0; i < Object.values(domainsGrouped).length; i++){
+            if(Object.values(domainsGrouped)[i] != 'null'){
+                let li = document.createElement('li');
+                li.innerText = Object.keys(domainsGrouped)[i] + ' - ' + Object.values(domainsGrouped)[i];
+                domainsList.appendChild(li);
+            }
+        }
+        nsfwList.innerHTML = "";
+        for(let i = 0; i < Object.values(nsfw).length; i++){
+            let li = document.createElement('li');
+            li.innerText = Object.keys(nsfw)[i] + ' - ' + Object.values(nsfw)[i];
+            nsfwList.appendChild(li);
+        }
+        subredditsList.innerHTML = "";
+        for(let i = 0; i < Object.values(subreddits).length; i++){
+            let li = document.createElement('li');
+            li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
+            subredditsList.appendChild(li);
+        }
+        subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
+        
+    </script>
 }

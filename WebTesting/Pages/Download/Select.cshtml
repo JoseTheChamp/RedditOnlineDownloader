@@ -165,7 +165,7 @@ else
                 </form>
             </div>
             <div class="col-2" style="border:1px solid red">
-                <!--HERE ARE Details-->
+                <!--HERE ARE Details--> 
                 Details:
                 <div id="count"></div>
                 Domains:
@@ -225,6 +225,7 @@ else
             });
         });
 
+        //Calculating details on the richt side of screen
         function calculateDetails(doCount){
             let counting = 0;
             let subreddits = {};
@@ -251,12 +252,33 @@ else
                     });
                 }
             });
-            //alert(Object.keys(domains) + '   ' + Object.values(domains));
+            
+            //Merge all self.xxxx posts to one.
+            var domainsGrouped = domains;
+            let selfIndex = -1;
+            Object.keys(domains).forEach(function(domain) {
+                let postType = domain.slice(0,5);
+                if(postType == 'self.'){
+                    if(selfIndex == -1){
+                        domainsGrouped['self.'] = domainsGrouped[domain]
+                        selfIndex = 'self.';
+                        delete domainsGrouped[domain];
+                    }else{
+                        domainsGrouped[selfIndex] += domains[domain];
+                        domainsGrouped[domain] = 'null';
+                    }
+                }
+            });
+
+            //generating html for details
             domainsList.innerHTML = "";
-            for(let i = 0; i < Object.values(domains).length; i++){
-                let li = document.createElement('li');
-                li.innerText = Object.keys(domains)[i] + ' - ' + Object.values(domains)[i];
-                domainsList.appendChild(li);
+            //alert(Object.keys(domainsGrouped) + '  ' + Object.values(domainsGrouped));
+            for(let i = 0; i < Object.values(domainsGrouped).length; i++){
+                if(Object.values(domainsGrouped)[i] != 'null'){
+                    let li = document.createElement('li');
+                    li.innerText = Object.keys(domainsGrouped)[i] + ' - ' + Object.values(domainsGrouped)[i];
+                    domainsList.appendChild(li);
+                }    
             }
             nsfwList.innerHTML = "";
             for(let i = 0; i < Object.values(nsfw).length; i++){
@@ -270,14 +292,9 @@ else
                 li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
                 subredditsList.appendChild(li);
             }
-            /*subredditsList.innerHTML = "";
-            var listOfSubreddits = subreddits.sort((a, b) => (a.value > b.value) ? 1 : -1);
-            for(let i = 0; i < listOfSubreddits.length; i++){
-                let li = document.createElement('li');
-                li.innerText = Object.keys(listOfSubreddits)[i] + ' - ' + Object.values(listOfSubreddits)[i];
-                subredditsList.appendChild(li);
-            }*/
             subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
+
+            //Change checkbox selectAll to proper state
             if(doCount){
                 count = counting;
                 countAltText.textContent = 'Count - ' + count;
