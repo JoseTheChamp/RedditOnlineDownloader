@@ -168,16 +168,13 @@ else
                 <!--HERE ARE Details-->
                 Details:
                 <div id="count"></div>
-                <div id="subreddits"></div>
                 Domains:
                 <ul id="domains"></ul>
                 Nsfw/sfw:
                 <ul id="nsfwDetail"></ul>
+                <div id="subreddits"></div>
+                <div id="subredditsList"></div>
             </div>
-        </div>
-        <div class="row">
-            <p id="test">Test</p>
-            <p id="print">Print</p>
         </div>
     </div>
     <script>
@@ -190,40 +187,24 @@ else
         
 
         //details
-        var domains = document.getElementById("domains");
-        var subreddits = document.getElementById("subreddits");
-        var nsfw = document.getElementById("nsfwDetail");
-        var countAlt = 0;
+        var domainsList = document.getElementById("domains");
+        var subredditsList = document.getElementById("subredditsList");
+        var subredditsCount = document.getElementById("subreddits");
+        var nsfwList = document.getElementById("nsfwDetail");
+        var countAltText = document.getElementById("count");
         var count = 0;
         
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
 
-        //Counting checked items
-        for (var i = 0; i < checkboxes.length; i++) {
-          if (checkboxes[i].checked) {
-            count++;
-          }
-        }
-
-        var countElement = document.getElementById('count');
-        countElement.textContent = 'Checked: ' + count;
         calculateDetails(true);
 
-        for (var i = 0; i < checkboxes.length; i++) {
-          checkboxes[i].addEventListener('change', function() {
-            var count = 0;
-
-            for (var j = 0; j < checkboxes.length; j++) {
-              if (checkboxes[j].checked) {
-                count++;
-              }
-            }
-            countElement.textContent = 'Checked: ' + count;
-            calculateDetails(true);
-          });
-        }
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener("change", function() {
+                calculateDetails(true);
+            });
+        });
 
         selectAllCheckboxes.addEventListener('change', function() {
             var count = 0;
@@ -232,14 +213,7 @@ else
             }else{
                 count = 0;
             }
-            var countAlt = 0;
-            if(selectAllCheckboxes.checked){
-                countAlt = checkboxes.length;
-            }else{
-                countAlt = 0;
-            }
-            countElement.textContent = 'Checked: ' + count;
-            print.textContent = countAlt;
+            countAltText.textContent = 'Count - ' + count;
             calculateDetails(false);
           });
 
@@ -251,47 +225,66 @@ else
             });
         });
 
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener("change", function() {
-                let allChecked = true;
-                let allUnchecked = true;
-                checkboxes.forEach(function(checkbox) {
-                    if (checkbox.checked) {
-                        allUnchecked = false;
-                    } else {
-                        allChecked = false;
-                    }
-                });
-                if (allChecked) {
-                    selectAllCheckboxes.checked = true;
-                    selectAllCheckboxes.indeterminate = false;
-                } else if (allUnchecked) {
-                    selectAllCheckboxes.checked = false;
-                    selectAllCheckboxes.indeterminate = false;
-                } else {
-                    selectAllCheckboxes.checked = false;
-                    selectAllCheckboxes.indeterminate = true;
-                }
-            });
-        });
         function calculateDetails(doCount){
-            var counting = 0;
+            let counting = 0;
+            let subreddits = {};
+            var domains = {};
+            let nsfw = {};
             checkboxes.forEach(function(checkbox) {
                 if(checkbox.checked){
                     posts.forEach(function(post){
                         if(post.Id == checkbox.name){
-                                counting++;
+                            counting++;
+                            if(!domains[post.Domain]){
+                                domains[post.Domain] = 0;
+                            }
+                            domains[post.Domain]++;
+                            if(!nsfw[post.Over18]){
+                                nsfw[post.Over18] = 0;
+                            }
+                            nsfw[post.Over18]++;
+                            if(!subreddits[post.Subreddit]){
+                                subreddits[post.Subreddit] = 0;
+                            }
+                            subreddits[post.Subreddit]++;
                         }
                     });
                 }
             });
+            //alert(Object.keys(domains) + '   ' + Object.values(domains));
+            domainsList.innerHTML = "";
+            for(let i = 0; i < Object.values(domains).length; i++){
+                let li = document.createElement('li');
+                li.innerText = Object.keys(domains)[i] + ' - ' + Object.values(domains)[i];
+                domainsList.appendChild(li);
+            }
+            nsfwList.innerHTML = "";
+            for(let i = 0; i < Object.values(nsfw).length; i++){
+                let li = document.createElement('li');
+                li.innerText = Object.keys(nsfw)[i] + ' - ' + Object.values(nsfw)[i];
+                nsfwList.appendChild(li);
+            }
+            subredditsList.innerHTML = "";
+            for(let i = 0; i < Object.values(subreddits).length; i++){
+                let li = document.createElement('li');
+                li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
+                subredditsList.appendChild(li);
+            }
+            /*subredditsList.innerHTML = "";
+            var listOfSubreddits = subreddits.sort((a, b) => (a.value > b.value) ? 1 : -1);
+            for(let i = 0; i < listOfSubreddits.length; i++){
+                let li = document.createElement('li');
+                li.innerText = Object.keys(listOfSubreddits)[i] + ' - ' + Object.values(listOfSubreddits)[i];
+                subredditsList.appendChild(li);
+            }*/
+            subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
             if(doCount){
-                countAlt = counting;
-                print.textContent = countAlt;
-                if(countAlt == posts.lenght){
+                count = counting;
+                countAltText.textContent = 'Count - ' + count;
+                if(count == posts.length){
                     selectAllCheckboxes.checked = true;
                     selectAllCheckboxes.indeterminate = false;
-                }else if(countAlt == 0){
+                }else if(count == 0){
                     selectAllCheckboxes.checked = false;
                     selectAllCheckboxes.indeterminate = false;
                 }else{
