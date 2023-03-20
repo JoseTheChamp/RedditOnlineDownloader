@@ -206,24 +206,14 @@ else
             });
         });
 
+
+        //select deselect all
         selectAllCheckboxes.addEventListener('change', function() {
-            var count = 0;
-            if(selectAllCheckboxes.checked){
-                count = checkboxes.length;
-            }else{
-                count = 0;
-            }
-            countAltText.textContent = 'Count - ' + count;
-            calculateDetails(false);
-          });
-
-
-        //select/deselect all
-        selectAllCheckboxes.addEventListener("change", function() {
             checkboxes.forEach(function(checkbox) {
                 checkbox.checked = selectAllCheckboxes.checked;
             });
-        });
+            calculateDetails(true);
+          });
 
         //Calculating details on the richt side of screen
         function calculateDetails(doCount){
@@ -283,31 +273,45 @@ else
             nsfwList.innerHTML = "";
             for(let i = 0; i < Object.values(nsfw).length; i++){
                 let li = document.createElement('li');
-                li.innerText = Object.keys(nsfw)[i] + ' - ' + Object.values(nsfw)[i];
+                let key = Object.keys(nsfw)[i];
+                if(key == 'true'){
+                    key = 'nsfw';
+                }else{
+                    key = 'sfw';
+                }
+                li.innerText = key + ' - ' + Object.values(nsfw)[i];
                 nsfwList.appendChild(li);
             }
             subredditsList.innerHTML = "";
-            for(let i = 0; i < Object.values(subreddits).length; i++){
+            let subKeys = Object.keys(subreddits);
+            let subValues = Object.values(subreddits);
+            let data = [];
+            for (let i = 0; i < subKeys.length; i++) {
+                data.push({
+                    key: subKeys[i],
+                    value: subValues[i]
+                });
+            }
+            data.sort((a,b) => b.value - a.value);
+            for(let i = 0; i < data.length; i++){
                 let li = document.createElement('li');
-                li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
+                li.innerText = data[i].key + ' - ' + data[i].value;
                 subredditsList.appendChild(li);
             }
             subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
 
+            countAltText.textContent = 'Count - ' + counting;
+
             //Change checkbox selectAll to proper state
-            if(doCount){
-                count = counting;
-                countAltText.textContent = 'Count - ' + count;
-                if(count == posts.length){
-                    selectAllCheckboxes.checked = true;
-                    selectAllCheckboxes.indeterminate = false;
-                }else if(count == 0){
-                    selectAllCheckboxes.checked = false;
-                    selectAllCheckboxes.indeterminate = false;
-                }else{
-                    selectAllCheckboxes.checked = false;
-                    selectAllCheckboxes.indeterminate = true;
-                }
+            if(counting == posts.length){
+                selectAllCheckboxes.checked = true;
+                selectAllCheckboxes.indeterminate = false;
+            }else if(counting == 0){
+                selectAllCheckboxes.checked = false;
+                selectAllCheckboxes.indeterminate = false;
+            }else{
+                selectAllCheckboxes.checked = false;
+                selectAllCheckboxes.indeterminate = true;
             }
         }
         /*

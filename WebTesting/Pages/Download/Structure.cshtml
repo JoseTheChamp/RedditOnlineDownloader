@@ -118,13 +118,37 @@ else
         nsfwList.innerHTML = "";
         for(let i = 0; i < Object.values(nsfw).length; i++){
             let li = document.createElement('li');
-            li.innerText = Object.keys(nsfw)[i] + ' - ' + Object.values(nsfw)[i];
+            let key = Object.keys(nsfw)[i];
+            if(key == 'true'){
+                key = 'nsfw';
+            }else{
+                key = 'sfw';
+            }
+            li.innerText = key + ' - ' + Object.values(nsfw)[i];
             nsfwList.appendChild(li);
         }
         subredditsList.innerHTML = "";
-        for(let i = 0; i < Object.values(subreddits).length; i++){
+        let subKeys = Object.keys(subreddits);
+        let subValues = Object.values(subreddits);
+        let data = [];
+        for (let i = 0; i < subKeys.length; i++) {
+            data.push({
+                key: subKeys[i],
+                value: subValues[i]
+            });
+        }
+        data.sort((a,b) => b.value - a.value);
+        alert(data);
+        //let subArr = subKeys.map((key,i) => ({key, value: subValues[i]}));
+        //subArr.sort((a,b) => a.value - b.value);
+        /*for(let i = 0; i < Object.keys(subreddits).length; i++){
             let li = document.createElement('li');
             li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
+            subredditsList.appendChild(li);
+        }*/
+        for(let i = 0; i < data.length; i++){
+            let li = document.createElement('li');
+            li.innerText = data[i].key + ' - ' + data[i].value;
             subredditsList.appendChild(li);
         }
         subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
