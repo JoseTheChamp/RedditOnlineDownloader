@@ -138,14 +138,6 @@ else
             });
         }
         data.sort((a,b) => b.value - a.value);
-        alert(data);
-        //let subArr = subKeys.map((key,i) => ({key, value: subValues[i]}));
-        //subArr.sort((a,b) => a.value - b.value);
-        /*for(let i = 0; i < Object.keys(subreddits).length; i++){
-            let li = document.createElement('li');
-            li.innerText = Object.keys(subreddits)[i] + ' - ' + Object.values(subreddits)[i];
-            subredditsList.appendChild(li);
-        }*/
         for(let i = 0; i < data.length; i++){
             let li = document.createElement('li');
             li.innerText = data[i].key + ' - ' + data[i].value;

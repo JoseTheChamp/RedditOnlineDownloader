@@ -69,13 +69,20 @@ else
                                 break;
                         }
                         </select>
-                    <label for="mediaTypes">Media to ignore</label>
+                        <label for="mediaTypes">Media to ignore</label>
                         <select form="selectedPosts" multiple name="mediaTypes">
                             <option>Reddit image</option>
                             <option>Reddit video</option>
                             <option>Imgur image</option>
                         </select>
                         <!--<input type="submit" class="btn btn-primary" id="the-submit" value="submit">-->
+                        <label for="mediaTypes">Media to show</label> 
+                        <br/>
+                        <select id='tags' data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='tags[]'>
+                            <option selected>Alpha</option>
+                            <option selected>Beta</option>
+                        </select>
+                        <br/>
                         <input form="selectedPosts" type="submit" class="btn btn-primary" value="Submit">
             </div>
             <div class="col-8" style="border:1px solid red">
@@ -177,6 +184,9 @@ else
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+    <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
     <script>
         var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
         const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
@@ -314,11 +324,13 @@ else
                 selectAllCheckboxes.indeterminate = true;
             }
         }
-        /*
-        var domains = document.getElementById("domains");
-        var subreddits = document.getElementById("subreddits");
-        var nsfw = document.getElementById("nsfwDetail");
-        var count = 0;
-        */
+        alert('Ahoj1');
+
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, nothing found!"
+        })
+
+        alert('Ahoj2');
+
     </script>
 }
