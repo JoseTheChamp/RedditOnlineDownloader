@@ -200,7 +200,10 @@ namespace WebTesting.Services
                             break;
                     }
                     string title = jsonDataParse.data[i].data.title.ToString();
-                    bool selfPost = !domain.StartsWith("self.");
+                    if (domain.StartsWith("self."))
+                    {
+                        domain = "text";
+                    }
                     //TODO potencial problems, not all posts have post_hint
                     string hint = "";
                     try

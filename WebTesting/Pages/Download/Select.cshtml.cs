@@ -23,6 +23,8 @@ namespace WebTesting.Pages.Download
         public List<string> DownloadedIds { get; set; }
         public SelectShowType ShowType { get; set; }
         public SelectNsfw Nsfw { get; set; }
+        public List<string> Domains { get; set; }
+        public List<string> SelectedDomains { get; set; }
         public bool ShowDownloaded { get; set; }
         private readonly RedditAPI _reddit;
         private readonly ApplicationDbContext _db;
@@ -37,6 +39,7 @@ namespace WebTesting.Pages.Download
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
+            
 
             string test = HttpContext.Session.GetString("Testing");
 
@@ -56,6 +59,16 @@ namespace WebTesting.Pages.Download
                 Posts = posts;
             }
             await ManageDownloadedIdsAsync();
+
+            Domains = new List<string>();
+            foreach (Post post in AllPosts)
+            {
+                if (!Domains.Contains(post.Domain)) { 
+                    Domains.Add(post.Domain);
+                }
+            }
+            SelectedDomains = HttpContext.Session.GetObject<List<string>>("SelectedDomains");
+            if (SelectedDomains == null) SelectedDomains = Domains; 
 
             Posts = filterPosts(Posts);
             PostsJson = JsonConvert.SerializeObject(Posts);
@@ -143,6 +156,12 @@ namespace WebTesting.Pages.Download
                 default:
                     throw new Exception("In select there is nsfw that does not exist.");
             }
+
+            var postedDomains = Request.Form;
+            int a = 5;
+            var tdt = Request.Form["multipleSelect[]"];
+            a = 6;
+            List<string> tds = Request.Form["multipleSelect[]"].ToList();
 
             string downloaded = Request.Form["showDownloaded"];
             ShowDownloaded = false;

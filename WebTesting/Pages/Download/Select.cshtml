@@ -39,17 +39,20 @@ else
         <div class="row">
             <div class="col-2" style="border:1px solid red">
                     <!--HERE ARE Select settings-->
-                    <label for="showDownloaded">Show downloaded posts:</label>
-                    @if (Model.ShowDownloaded == true)
-                    {
-                        <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
-                    }
-                    else
-                    {
-                        <input form="selectedPosts" name="showDownloaded" type="checkbox">
-                    }
-                    <label for="nsfw">Nsfw/sfw:</label>
-                    <select form="selectedPosts" name="nsfw">
+                    <div class="row pb-2">
+                        <label for="showDownloaded">Show downloaded posts:</label>
+                        @if (Model.ShowDownloaded == true)
+                        {
+                            <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
+                        }
+                        else
+                        {
+                            <input form="selectedPosts" name="showDownloaded" type="checkbox">
+                        }
+                    </div>
+                    <div class="row pb-2">
+                        <label for="nsfw">Nsfw/sfw:</label>
+                        <select form="selectedPosts" name="nsfw">
                         @switch (Model.Nsfw)
                         {
                             case SelectNsfw.SFW:
@@ -69,21 +72,23 @@ else
                                 break;
                         }
                         </select>
-                        <label for="mediaTypes">Media to ignore</label>
-                        <select form="selectedPosts" multiple name="mediaTypes">
-                            <option>Reddit image</option>
-                            <option>Reddit video</option>
-                            <option>Imgur image</option>
-                        </select>
-                        <!--<input type="submit" class="btn btn-primary" id="the-submit" value="submit">-->
+                    </div>
+                    <div class="row pb-2">
                         <label for="mediaTypes">Media to show</label> 
-                        <br/>
-                        <select id='tags' data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='tags[]'>
-                            <option selected>Alpha</option>
-                            <option selected>Beta</option>
+                        <select form="selectedPosts" id='multipleSelect' data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
+                        @foreach (string domain in Model.Domains)
+                        {
+                            if (Model.SelectedDomains.Contains(domain)) {
+                                <option selected>@domain</option>
+                            } else { 
+                                <option>@domain</option>
+                            }
+                        }
                         </select>
-                        <br/>
+                    </div>
+                    <div class="row">
                         <input form="selectedPosts" type="submit" class="btn btn-primary" value="Submit">
+                    </div>           
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
@@ -194,6 +199,7 @@ else
         const test = document.getElementById("test");
         const print = document.getElementById("print");
         const sessionInput = document.getElementById("hdnSession");
+        const multipleSelect = document.getElementById("multipleSelect");
         
 
         //details
@@ -208,8 +214,8 @@ else
         var value = sessionInput.value;
         var posts = JSON.parse(value);
 
+        //Calculate details of selected posts
         calculateDetails(true);
-
         checkboxes.forEach(function(checkbox) {
             checkbox.addEventListener("change", function() {
                 calculateDetails(true);
@@ -253,30 +259,22 @@ else
                 }
             });
             
-            //Merge all self.xxxx posts to one.
-            var domainsGrouped = domains;
-            let selfIndex = -1;
-            Object.keys(domains).forEach(function(domain) {
-                let postType = domain.slice(0,5);
-                if(postType == 'self.'){
-                    if(selfIndex == -1){
-                        domainsGrouped['self.'] = domainsGrouped[domain]
-                        selfIndex = 'self.';
-                        delete domainsGrouped[domain];
-                    }else{
-                        domainsGrouped[selfIndex] += domains[domain];
-                        domainsGrouped[domain] = 'null';
-                    }
-                }
-            });
-
             //generating html for details
             domainsList.innerHTML = "";
-            //alert(Object.keys(domainsGrouped) + '  ' + Object.values(domainsGrouped));
-            for(let i = 0; i < Object.values(domainsGrouped).length; i++){
-                if(Object.values(domainsGrouped)[i] != 'null'){
+            let subKeysDomains = Object.keys(domains);
+            let subValuesDomains = Object.values(domains);
+            let dataDomains = [];
+            for (let i = 0; i < subKeysDomains.length; i++) {
+                dataDomains.push({
+                    key: subKeysDomains[i],
+                    value: subValuesDomains[i]
+                });
+            }
+            dataDomains.sort((a,b) => b.value - a.value);
+            for(let i = 0; i < dataDomains.length; i++){
+                if(Object.values(domains)[i] != 'null'){
                     let li = document.createElement('li');
-                    li.innerText = Object.keys(domainsGrouped)[i] + ' - ' + Object.values(domainsGrouped)[i];
+                    li.innerText = dataDomains[i].key + ' - ' + dataDomains[i].value;
                     domainsList.appendChild(li);
                 }    
             }
@@ -324,13 +322,8 @@ else
                 selectAllCheckboxes.indeterminate = true;
             }
         }
-        alert('Ahoj1');
-
         $(".chosen-select").chosen({
             no_results_text: "Oops, nothing found!"
         })
-
-        alert('Ahoj2');
-
     </script>
 }
