@@ -51,7 +51,7 @@ namespace WebTesting.Services
         }
         public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds) {
             if (RemoveTimer == null) {
-                RemoveTimer = new System.Timers.Timer(1800000); //TODO Parametr
+                RemoveTimer = new System.Timers.Timer(180000); //TODO Parametr - set to something like 1800000 add 0
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 RemoveTimer.Start();
             }
@@ -216,11 +216,12 @@ namespace WebTesting.Services
                 case "comment":
                     SaveComment(post, id);   
                     break;
+                case "text":
+                    SaveTextPost(post, id);
+                    break;
+                //default makes ERROR txt file
                 default:
-                    if (post.Domain.StartsWith("self"))
-                    {
-                        SaveTextPost(post,id);
-                    }
+                    SaveErrorPost(post, id);
                     break;
             }
         }
@@ -265,6 +266,16 @@ namespace WebTesting.Services
             using (var fileStream = File.Create(DownloadPath + "\\Download" + id + "\\" + name + Path.GetExtension(post.Urls[0])))
             {
                 stream.CopyTo(fileStream);
+            }
+        }
+        private async Task SaveErrorPost(Post post, int id)
+        {
+            string name = StripName(post.Title);
+            using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + id + "\\ERROR_DOMAIN_UNRECOGNIZED_" + name + ".txt"))
+            {
+                sw.WriteLine("Title: " + post.Title);
+                sw.WriteLine("Subreddit: " + post.Subreddit);
+                sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
             }
         }
         private async Task SaveMultipleImages(Post post, int id)

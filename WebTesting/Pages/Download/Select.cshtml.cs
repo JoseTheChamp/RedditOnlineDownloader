@@ -67,6 +67,7 @@ namespace WebTesting.Pages.Download
                     Domains.Add(post.Domain);
                 }
             }
+            HttpContext.Session.SetObject("Domains", Domains);
             SelectedDomains = HttpContext.Session.GetObject<List<string>>("SelectedDomains");
             if (SelectedDomains == null) SelectedDomains = Domains; 
 
@@ -139,6 +140,7 @@ namespace WebTesting.Pages.Download
             Posts = AllPosts;
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
+            Domains = HttpContext.Session.GetObject<List<string>>("Domains");
             await ManageDownloadedIdsAsync();
 
             string nsfw = Request.Form["nsfw"];
@@ -157,11 +159,7 @@ namespace WebTesting.Pages.Download
                     throw new Exception("In select there is nsfw that does not exist.");
             }
 
-            var postedDomains = Request.Form;
-            int a = 5;
-            var tdt = Request.Form["multipleSelect[]"];
-            a = 6;
-            List<string> tds = Request.Form["multipleSelect[]"].ToList();
+            SelectedDomains = Request.Form["multipleSelect[]"].ToList();
 
             string downloaded = Request.Form["showDownloaded"];
             ShowDownloaded = false;
@@ -173,6 +171,7 @@ namespace WebTesting.Pages.Download
             HttpContext.Session.SetObject("ShowDownloaded", ShowDownloaded);
             HttpContext.Session.SetObject("Posts", Posts);
             HttpContext.Session.SetObject("Nsfw", Nsfw);
+            HttpContext.Session.SetObject("SelectedDomains", SelectedDomains);
             return Page();
         }
         private List<Post> filterPosts(List<Post> posts) {
@@ -191,6 +190,15 @@ namespace WebTesting.Pages.Download
                 default:
                     throw new Exception("In select there is nsfw that does not exist.");
             }
+            List<Post> temp = new List<Post>();
+            foreach (Post post in posts)
+            {
+                if (SelectedDomains.Contains(post.Domain))
+                {
+                    temp.Add(post);
+                }
+            }
+            posts = temp;
             return posts;
         }
         public IActionResult OnPost()
