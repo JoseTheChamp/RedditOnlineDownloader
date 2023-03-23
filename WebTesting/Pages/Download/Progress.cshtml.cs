@@ -20,44 +20,8 @@ namespace WebTesting.Pages.Download
         }
         public void OnGet()
         {
-            string res = HttpContext.Session.GetString("ShowFinished");
-            switch (res)
-            {
-                case null:
-                    ShowFinished = true;
-                    break;
-                case "true":
-                    ShowFinished = true;
-                    break;
-                case "false":
-                    ShowFinished = false;
-                    break;
-                default:
-                    break;
-            }
-            if (ShowFinished)
-            {
-                MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId")).ToList();
-                MyDownloads = MyDownloads.OrderByDescending(e => e.DownloadStart).ToList();
-            }
-            else {
-                MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId") && !e.IsFinished).ToList();
-                MyDownloads = MyDownloads.OrderByDescending(e => e.DownloadStart).ToList();
-            }
-        }
-
-        public IActionResult OnPostShowFinished() {
-
-            string showFinished = Request.Form["show"];
-            if (showFinished == "true")
-            {
-                HttpContext.Session.SetString("ShowFinished", "true");
-            }
-            else {
-                HttpContext.Session.SetString("ShowFinished", "false");
-            }
-            OnGet();
-            return Page();
+            MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId")).ToList();
+            MyDownloads = MyDownloads.OrderByDescending(e => e.DownloadStart).ToList();
         }
         public IActionResult OnGetDownload(int id) {
             string path = Environment.CurrentDirectory;

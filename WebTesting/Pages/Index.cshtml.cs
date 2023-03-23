@@ -6,6 +6,7 @@ namespace WebTesting.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        public string UserName { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger)
         {
@@ -14,10 +15,7 @@ namespace WebTesting.Pages
 
         public IActionResult OnGet()
         {
-
-
-
-
+            UserName = HttpContext.Session.GetString("UserName");
             return Page();
         }
 
