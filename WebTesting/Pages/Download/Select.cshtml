@@ -33,7 +33,7 @@ else
             </div>
             <div class="col-3 text-end">
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
-                <input form="selectedPosts" type="submit" class="btn btn-primary" asp-page="/Download/Structure" value="Next step">
+                <input id="nextStep" form="selectedPosts" type="submit" class="btn btn-primary" asp-page="/Download/Structure" value="Next step">
             </div>
         </div>
         <div class="row">
@@ -73,8 +73,16 @@ else
                         }
                         </select>
                     </div>
-                    <div class="row pb-2">
-                        <label for="mediaTypes">Media to show</label> 
+                    <div class="row pb-2 pt-3">
+                        <div class="col-6 pl-0">
+                            <label for="mediaTypes">Media to show:</label> 
+                        </div>
+                        <div class="col-3 pl-0">
+                            <input type="button" name="Button" value="All" onclick="selectAll(true)" />
+                        </div>
+                        <div class="col-2 p-0">
+                            <input type="button" name="Button" value="None" onclick="selectAll(false)" />
+                        </div>
                         <select form="selectedPosts" id='multipleSelect' data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
                         @foreach (string domain in Model.Domains)
                         {
@@ -86,7 +94,7 @@ else
                         }
                         </select>
                     </div>
-                    <div class="row">
+                    <div class="row pt-3">
                         <input form="selectedPosts" type="submit" class="btn btn-primary" value="Submit">
                     </div>           
             </div>
@@ -101,76 +109,84 @@ else
     switch (Model.ShowType)
     {
         case SelectShowType.SUBREDDIT_EXPANDED:
-                <option value="1">Posts</option>
-                <option selected value="2">Subreddits expanded</option>
-                <option value="3">Subredits reduced</option>
-                break;
+                            <option value="1">Posts</option>
+                            <option selected value="2">Subreddits expanded</option>
+                            <option value="3">Subredits reduced</option>
+                            break;
         case SelectShowType.SUBREDDITS_REDUCED:
-                <option value="1">Posts</option>
-                <option value="2">Subreddits expanded</option>
-                <option selected value="3">Subredits reduced</option>
-                break;
+                            <option value="1">Posts</option>
+                            <option value="2">Subreddits expanded</option>
+                            <option selected value="3">Subredits reduced</option>
+                            break;
         default:
-                <option selected value="1">Posts</option>
-                <option value="2">Subreddits expanded</option>
-                <option value="3">Subredits reduced</option>
-                break;
+                            <option selected value="1">Posts</option>
+                            <option value="2">Subreddits expanded</option>
+                            <option value="3">Subredits reduced</option>
+                            break;
     }
     */
                     int a = 5;
                 }
-                    </select>
-                    <button type="submit">submit</button>
-                    <input form="selectedPosts" type="submit" class="btn btn-primary" asp-asp-page-handler="ChangeShowType" value="Submit">
-                    <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
-                    </form>-->
+                </select>
+                <button type="submit">submit</button>
+                <input form="selectedPosts" type="submit" class="btn btn-primary" asp-asp-page-handler="ChangeShowType" value="Submit">
+                <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
+                </form>-->
                 <form id="selectedPosts" method="post" asp-page-handler="Select">
                     <ul class="p-2">
                         @{
-                            /*switch(Model.ShowType){
+                        /*switch(Model.ShowType){
                             case SelectShowType.SUBREDDIT_EXPANDED:
-                                        <p>Subredits expanded.</p>
+                                <p>Subredits expanded.</p>
+                            break;
+                        case SelectShowType.SUBREDDITS_REDUCED:
+                            <p>Subredits reduced.</p>
                                 break;
-                            case SelectShowType.SUBREDDITS_REDUCED:
-                                        <p>Subredits reduced.</p>
-                                break;
-                            default:*/
+                                default:*/
+                            if (Model.Posts.Count == 0)
+                            {
+                                <div>Oops no posts were found. It would seem that your filters are filtering one post too many.</div>
+                            }
+                            else
+                            {
                                 @foreach (Post post in Model.Posts)
                                 {
                                     string linkPost = "https://www.reddit.com" + post.PermaLink;
                                     string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
                                     string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
-                                    <div>
+                                                <div>
                                         @if (Model.SelectedPosts != null)
                                         {
                                             bool selected = Model.SelectedPosts.Exists(e => e.Id == post.Id);
                                             if (selected)
                                             {
-                                                <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox" checked>
-                                            } else
+                                                                    <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox" checked>
+                                            }
+                                            else
                                             {
-                                                <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox">    
+                                                                    <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox">    
                                             }
 
                                         }
                                         else
                                         {
-                                            <input name="@post.Id" id="checkbox" class="form-check-input" type="checkbox" checked>
+                                                            <input name="@post.Id" id="checkbox" class="form-check-input" type="checkbox" checked>
                                         }
                                         @if (Model.DownloadedIds.Contains(post.Id))
                                         {
-                                            <span>X - </span>
+                                                            <span>X - </span>
                                         }
-                                        <a href="@linkSubreddit" target="_blank">@post.Subreddit</a> -
-                                            @if (post.Over18)
-                                            {
-                                                <span>18+ - </span>
-                                            }
+                                                    <a href="@linkSubreddit" target="_blank">@post.Subreddit</a> -
+                                        @if (post.Over18)
+                                        {
+                                                                <span>18+ - </span>
+                                        }
                                         @post.Domain - @title - 
-                                            <a href="@linkPost" target="_blank">link</a>
-                                        </div>
+                                                        <a href="@linkPost" target="_blank">link</a>
+                                                    </div>
                                 }
-                                //break;
+                            }
+                            //break;
                         //} 
                         }
                     </ul>
@@ -200,6 +216,7 @@ else
         const print = document.getElementById("print");
         const sessionInput = document.getElementById("hdnSession");
         const multipleSelect = document.getElementById("multipleSelect");
+        const nextStepButton = document.getElementById("nextStep");
         
 
         //details
@@ -231,6 +248,14 @@ else
             calculateDetails(true);
           });
 
+        function selectAll(value) { 
+            let multipleSelect = document.getElementById("multipleSelect");
+            for (let i = 0; i < multipleSelect.options.length; i++) { 
+                multipleSelect.options[i].selected = value; 
+            } 
+            $('#multipleSelect').trigger("chosen:updated");
+        }
+
         //Calculating details on the richt side of screen
         function calculateDetails(doCount){
             let counting = 0;
@@ -258,6 +283,13 @@ else
                     });
                 }
             });
+
+            //Disabling/Enabling next step button
+            if(counting != 0){
+                nextStepButton.disabled = false;
+            }else{
+                nextStepButton.disabled = true;
+            }
             
             //generating html for details
             domainsList.innerHTML = "";
