@@ -25,10 +25,66 @@ else
                 <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-2" style="border:1px solid red">Setting for the list</div>
-            <div class="col-8" style="border:1px solid red">
-                <ul class="p-2">
+        <div class="row" style="border:1px solid red">
+            <div class="col-2" style="border:1px solid red">
+                <form id="structure" method="post" asp-page-handler="Structure">
+                    <h4>Name:</h4>
+                    <label>Numbering:</label><br>
+                    <input type="radio" id="ids" name="numbering" value="ids" checked>
+                    <label for="ids">Ids</label><br>
+                    <input type="radio" id="standard" name="numbering" value="standard">
+                    <label for="standard">Standard</label><br>
+                    <input type="radio" id="none" name="numbering" value="none">
+                    <label for="none">None</label>
+                    <h5>Name contents:</h5>
+                    <div class="row">
+                        <div class="col-5">
+                            <br>
+                            Subreddit:<br>
+                            Domain:
+                        </div>
+                        <div class="col-3">
+                            y/n<br>
+                            <input name="subredditName" type="checkbox"><br>
+                            <input name="domainName" type="checkbox">
+                        
+                        </div>
+                        <div class="col-4">
+                            Priority<br>
+                            <input type="radio" id="subredditPriorityName" name="priorityName" value="subredditPriorityName" checked><br>
+                            <input type="radio" id="domainPriorityName" name="priorityName" value="domainPriorityName">
+                        </div>
+                    </div>
+                    <label class="pt-2" for="title">Title:</label>
+                    <div class="row">
+                        <input type="number" id="title" name="title" value="20">
+                    </div>
+                    <hr class="solid">
+                    <h4>Folders:</h4>
+                    <label>Group by:</label>
+                    <div class="row">
+                        <div class="col-5">
+                            <br>
+                            Subreddits:<br>
+                            Domains:
+                        </div>
+                        <div class="col-3">
+                            y/n<br>
+                            <input name="subredditFolder" type="checkbox" checked><br>
+                            <input name="domainFolder" type="checkbox">
+                        </div>
+                        <div class="col-4">
+                            Priority<br>
+                            <input type="radio" id="subredditPriorityFolder" name="priorityFolder" value="subredditPriorityFolder" checked><br>
+                            <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
+                        </div>
+                    </div>
+                    <label class="pt-2" for="split">Split by nsfw/sfw:</label>
+                    <input type="checkbox" id="split" name="split"> 
+                </form>
+            </div>
+            <div class="col-8">
+                <ul id="postList" class="p-2">
                 @foreach (Post post in Model.Posts)
                 {
                     string linkPost = "https://www.reddit.com" + post.PermaLink;
@@ -62,56 +118,124 @@ else
         var countAltText = document.getElementById("count");
         var count = 0;
         const sessionInput = document.getElementById("hdnSession");
+        var postList = document.getElementById("postList");
+        var offset = 0;
 
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-
         count = posts.length;
 
-        //Calculating details on the richt side of screen
-        let subreddits = {};
-        var domains = {};
-        let nsfw = {};
-        posts.forEach(function(post) {
-            if(!domains[post.Domain]){
-                domains[post.Domain] = 0;
+        //Generating list of posts
+        //Getting all inputs
+        const i_numbering = document.getElementsByName('numbering');
+        const i_priorityName = document.getElementsByName('priorityName');
+        const i_priorityFolder = document.getElementsByName('priorityFolder');
+        const i_title = document.getElementsByName('title')[0];
+        const i_subredditName = document.getElementsByName('subredditName')[0];
+        const i_domainName = document.getElementsByName('domainName')[0];
+        const i_subredditFolder = document.getElementsByName('subredditFolder')[0];
+        const i_domainFolder = document.getElementsByName('domainFolder')[0];
+        const i_split = document.getElementById('split');
+        var v_numbering = "ids";//TODO values set directly
+        var v_priorityName = "subredditPriorityName";
+        var v_priorityFolder = "subredditPriorityFolder"; 
+        var v_title = 20;
+        var v_subredditName = "off";
+        var v_domainName = "off";
+        var v_subredditFolder = "on";
+        var v_domainFolder = "off";
+        var v_split = "off";
+        //adding on change functions that will trigger reddrawing of the list
+        i_domainName.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_domainName = true;
+            } else {
+                v_domainName = false;
             }
-            domains[post.Domain]++;
+            redraw();
+        });
+        i_subredditFolder.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_subredditFolder = true;
+            } else {
+                v_subredditFolder = false;
+            }
+             redraw();
+        });
+        i_domainFolder.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_domainFolder = true;
+            } else {
+                v_domainFolder = false;
+            }
+            redraw();
+        });
+        i_split.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_split = true;
+            } else {
+                v_split = false;
+            }
+            redraw();
+        });
+        i_subredditName.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_subredditName = true;
+            } else {
+                v_subredditName = false;
+            }
+            redraw();
+        });
+        i_title.addEventListener('change', function() {
+            v_title = this.value;
+            redraw();
+        });
+        i_numbering.forEach(button => {
+            button.addEventListener('change', function() {
+                v_numbering = this.value;
+                redraw();
+            });
+        });
+        i_priorityFolder.forEach(button => {
+            button.addEventListener('change', function() {
+                v_priorityFolder = this.value;
+                redraw();
+            });
+        });
+        i_priorityName.forEach(button => {
+            button.addEventListener('change', function() {
+                v_priorityName = this.value;
+                redraw();
+            });
+        });
+
+        //Calculating details on the richt side of screen
+        var subredditsObj = {};
+        var domainsObj = {};
+        var nsfw = {};
+        posts.forEach(function(post) {
+            if(!domainsObj[post.Domain]){
+                domainsObj[post.Domain] = 0;
+            }
+            domainsObj[post.Domain]++;
             if(!nsfw[post.Over18]){
                 nsfw[post.Over18] = 0;
             }
             nsfw[post.Over18]++;
-            if(!subreddits[post.Subreddit]){
-                subreddits[post.Subreddit] = 0;
+            if(!subredditsObj[post.Subreddit]){
+                subredditsObj[post.Subreddit] = 0;
             }
-            subreddits[post.Subreddit]++;
-        });
-        //alert(Object.keys(domains) + '   ' + Object.values(domains));
-
-        //Merge all self.xxxx posts to one.
-        var domainsGrouped = domains;
-        let selfIndex = -1;
-        Object.keys(domains).forEach(function(domain) {
-            let postType = domain.slice(0,5);
-            if(postType == 'self.'){
-                if(selfIndex == -1){
-                    domainsGrouped['self.'] = domainsGrouped[domain]
-                    selfIndex = 'self.';
-                    delete domainsGrouped[domain];
-                }else{
-                    domainsGrouped[selfIndex] += domains[domain];
-                    domainsGrouped[domain] = 'null';
-                }
-            }
+            subredditsObj[post.Subreddit]++;
         });
 
         //Creating html content for the details
         domainsList.innerHTML = "";
-        for(let i = 0; i < Object.values(domainsGrouped).length; i++){
-            if(Object.values(domainsGrouped)[i] != 'null'){
+        var domains = Object.entries(domainsObj);
+        for(let i = 0; i < Object.values(domainsObj).length; i++){
+            if(Object.values(domainsObj)[i] != 'null'){
                 let li = document.createElement('li');
-                li.innerText = Object.keys(domainsGrouped)[i] + ' - ' + Object.values(domainsGrouped)[i];
+                li.innerText = Object.keys(domainsObj)[i] + ' - ' + Object.values(domainsObj)[i];
                 domainsList.appendChild(li);
             }
         }
@@ -128,22 +252,110 @@ else
             nsfwList.appendChild(li);
         }
         subredditsList.innerHTML = "";
-        let subKeys = Object.keys(subreddits);
-        let subValues = Object.values(subreddits);
-        let data = [];
-        for (let i = 0; i < subKeys.length; i++) {
-            data.push({
-                key: subKeys[i],
-                value: subValues[i]
-            });
-        }
-        data.sort((a,b) => b.value - a.value);
-        for(let i = 0; i < data.length; i++){
+        var subreddits = Object.entries(subredditsObj);
+        subreddits.sort((a,b) => b[1] - a[1]);
+        for(let i = 0; i < subreddits.length; i++){
             let li = document.createElement('li');
-            li.innerText = data[i].key + ' - ' + data[i].value;
+            li.innerText = subreddits[i][0] + ' - ' + subreddits[i][1];
             subredditsList.appendChild(li);
         }
-        subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
+        subredditsCount.textContent = 'Subreddits: ' + Object.values(subredditsObj).length;
+
+        redraw();
         
+        function redraw(){
+            //alert('redraw - start  ' + v_split);
+            postList.innerHTML = "";
+            offset = 0;
+            if(v_split == 'on'){
+                postList.appendChild(makediv("sfw"));
+                offset++;
+                drawPart('sfw');
+                offset--;
+                postList.appendChild(makediv("nsfw"));
+                offset++;
+                drawPart('nsfw');
+            }else{
+                drawPart('none');
+            }
+            alert('redraw - end');
+        }
+
+        function drawPart(typeSfw){
+            //alert('drawPart - ' + v_subredditFolder + '  ' + v_domainFolder);
+            if(v_subredditFolder == 'on' || v_domainFolder == 'on'){
+                if(v_subredditFolder == 'on'){
+                    if(v_domainFolder == 'on'){
+                    //oba
+                    }else{
+                        //alert('Here     - ' + subreddits.length);
+                        for (let i = 0; i < subreddits.length; i++) {
+                            //alert('InFor ' + i);
+                            postList.appendChild(makediv(subreddits[i][0]));
+                            offset++;
+                            //alert('Here2 for sub - ' + subreddits[i][0]);
+                            drawPosts(typeSfw,subreddits[i][0],'any');
+                            offset--;
+                        }
+                    }
+                }else{
+                    for (let i = 0; i < domains.length; i++) {
+                        makediv(domains[i][0]);
+                        offset++;
+                        drawPosts(typeSfw,'any',domains[i][0]);
+                        offset--;
+                    }
+                }
+            }else{
+                drawPosts(typeSfw,'any','any');
+            }
+
+        }
+
+        function drawPosts(typeSfw,subreddit,domain){
+            //alert("here3" + typeSfw + ' ' + subreddit + ' ' + domain);
+            for (let i = 0; i < posts.length; i++) {
+                //alert("here3.5" + posts[i].Over18 + ' ' + posts[i].Subreddit + ' ' + posts[i].Domain);
+                if(typeSfw == 'sfw' && posts[i].Over18 == true){
+                    //alert("is not sfw");
+                    continue;
+                }
+                if(typeSfw == 'nsfw' && posts[i].Over18 == false){
+                    //alert("is not nsfw");
+                    continue;
+                }
+                if(subreddit != 'any' && subreddit != posts[i].Subreddit){
+                    //alert("is not subreddit is not " + subreddit);
+                    continue;
+                }
+                if(domain != 'any' && domain != posts[i].Domain){
+                    //alert("is not domain is not *" + domain + '* becouse it is *' + posts[i].Domain + '*');
+                    continue;
+                }
+                //alert('Here4');
+                postList.appendChild(makediv(posts[i].Subreddit + ' - ' + posts[i].Domain + ' - ' + posts[i].Title));
+                //alert('Here5');
+            }
+        }
+
+        function makediv(text){
+            let element = document.createElement('div');
+            for (let i = 0; i < offset; i++) {
+                text = '&emsp;&emsp;' + text;
+            }
+            element.innerHTML = text;
+            return element;
+        }
+
+        function createName(post){
+        
+        }
+
+        /*
+        document.createElement('li');
+            li.innerText = data[i].key + ' - ' + data[i].value;
+            subredditsList.appendChild(li);
+        */
+
     </script>
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using WebTesting.Entities;
+using WebTesting.Entities.Enums;
 using WebTesting.Models;
 using WebTesting.Services;
 using WebTesting.Utils;
@@ -15,6 +16,17 @@ namespace WebTesting.Pages.Download
         private readonly ApplicationDbContext _db;
         public string PostsJson { get; set; }
         private readonly DownloadManager _dm;
+
+        public Numbering Numbering { get; set; }
+        public bool SubredditName { get; set; }
+        public bool DomainName { get; set; }
+        public bool NamePriorityIsSubreddit { get; set; }
+        public int Title { get; set; }
+        public bool SubredditFolder { get; set; }
+        public bool DomainFolder { get; set; }
+        public bool FolderPriorityIsSubreddit { get; set; }
+        public bool Split { get; set; }
+
         public StructureModel(ApplicationDbContext db, DownloadManager dm)
         {
             _db = db;
@@ -40,16 +52,64 @@ namespace WebTesting.Pages.Download
             return RedirectToPage("../Index");
             
         }
-        /*public IActionResult OnGetDownloadAlt()
+        public async Task<IActionResult> OnPostStructureAsync()
         {
-            //TODO Start download procces.
-            //TODO if success.
+            foreach (string key in Request.Form.Keys)
+            {
+                string value = Request.Form[key];
+                switch (key) {
+                    case "numbering":
+                        switch (value)
+                        {
+                            case "ids":
+                                Numbering = Numbering.Ids;
+                                break;
+                            case "standard":
+                                Numbering = Numbering.Standard;
+                                break;
+                            case "none":
+                                Numbering = Numbering.None;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "subredditName":
+                        if (value == "on") SubredditName = true;
+                        break;
+                    case "domainName":
+                        if (value == "on") DomainName = true;
+                        break;
+                    case "priorityName":
+                        if (value == "subredditPriorityName") NamePriorityIsSubreddit = true;
+                        break;
+                    case "title":
+                        Title = Int32.Parse(value); //TODO somecheck? maybe do on html/js side
+                        break;
+                    case "subredditFolder":
+                        if (value == "on") SubredditFolder = true;
+                        break;
+                    case "domainFolder":
+                        if (value == "on") DomainFolder = true;
+                        break;
+                    case "priorityFolder":
+                        if (value == "subredditPriorityFolder") FolderPriorityIsSubreddit = true;
+                        break;
+                    case "split":
 
-            TempData["success"] = "Download started.";
-            return File(@"/DownloadableFiles/Images.zip", "application/zip", "PPPPPP.zip");
-            
-        }*/
-        public IActionResult OnPost()
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            PostsJson = JsonConvert.SerializeObject(Posts);
+            return Page();
+        }
+
+
+            public IActionResult OnPost()
         {
             var form = Request.Form;
             Posts = new List<Post>();

@@ -323,19 +323,11 @@ else
                 nsfwList.appendChild(li);
             }
             subredditsList.innerHTML = "";
-            let subKeys = Object.keys(subreddits);
-            let subValues = Object.values(subreddits);
-            let data = [];
-            for (let i = 0; i < subKeys.length; i++) {
-                data.push({
-                    key: subKeys[i],
-                    value: subValues[i]
-                });
-            }
-            data.sort((a,b) => b.value - a.value);
+            let data = Object.entries(subreddits);
+            data.sort((a,b) => b[1] - a[1]);
             for(let i = 0; i < data.length; i++){
                 let li = document.createElement('li');
-                li.innerText = data[i].key + ' - ' + data[i].value;
+                li.innerText = data[i][0] + ' - ' + data[i][1];
                 subredditsList.appendChild(li);
             }
             subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
