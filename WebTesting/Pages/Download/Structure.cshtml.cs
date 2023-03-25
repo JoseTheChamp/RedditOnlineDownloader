@@ -25,6 +25,7 @@ namespace WebTesting.Pages.Download
         public bool SubredditFolder { get; set; }
         public bool DomainFolder { get; set; }
         public bool FolderPriorityIsSubreddit { get; set; }
+        public bool Empty { get; set; }
         public bool Split { get; set; }
 
         public StructureModel(ApplicationDbContext db, DownloadManager dm)
@@ -40,24 +41,15 @@ namespace WebTesting.Pages.Download
             }
         }
 
-        public IActionResult OnGetDownload() {
+        public IActionResult OnPostDownload() {
             //TODO Start download procces.
             //TODO if success.
-            User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
-            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            PostsJson = JsonConvert.SerializeObject(Posts);
-            _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList());
-            HttpContext.Session.Remove("DownloadedIds");
-            TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
-            return RedirectToPage("../Index");
-            
-        }
-        public async Task<IActionResult> OnPostStructureAsync()
-        {
+
             foreach (string key in Request.Form.Keys)
             {
                 string value = Request.Form[key];
-                switch (key) {
+                switch (key)
+                {
                     case "numbering":
                         switch (value)
                         {
@@ -95,13 +87,52 @@ namespace WebTesting.Pages.Download
                     case "priorityFolder":
                         if (value == "subredditPriorityFolder") FolderPriorityIsSubreddit = true;
                         break;
+                    case "empty":
+                        if (value == "on") Empty = true;
+                        break;
                     case "split":
-
+                        if (value == "on") Split = true;
                         break;
                     default:
                         break;
                 }
             }
+            DownloadParameters downloadParameters = new DownloadParameters(
+            Numbering,
+            SubredditName,
+            DomainName,
+            NamePriorityIsSubreddit,
+            Title,
+            SubredditFolder,
+            DomainFolder,
+            FolderPriorityIsSubreddit,
+            Empty,
+            Split);
+
+            User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
+            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            PostsJson = JsonConvert.SerializeObject(Posts);
+            _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), downloadParameters);
+            HttpContext.Session.Remove("DownloadedIds");
+            TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
+            return RedirectToPage("../Index");
+            
+        }
+        public IActionResult OnGetDownload()
+        {
+            //TODO Start download procces.
+            //TODO if success.
+            User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
+            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            PostsJson = JsonConvert.SerializeObject(Posts);
+            _dm.NewDownloadProcessAsync(user, Posts, HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), null);
+            HttpContext.Session.Remove("DownloadedIds");
+            TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
+            return RedirectToPage("../Index");
+
+        }
+        public async Task<IActionResult> OnPostStructureAsync()
+        {
 
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             PostsJson = JsonConvert.SerializeObject(Posts);

@@ -219,6 +219,17 @@ namespace WebTesting.Pages.Download
             AllPosts = posts;
             Posts = posts;
 
+            Domains = new List<string>();
+            foreach (Post post in AllPosts)
+            {
+                if (!Domains.Contains(post.Domain))
+                {
+                    Domains.Add(post.Domain);
+                }
+            }
+            SelectedDomains = HttpContext.Session.GetObject<List<string>>("SelectedDomains");
+            if (SelectedDomains == null) SelectedDomains = Domains;
+
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");

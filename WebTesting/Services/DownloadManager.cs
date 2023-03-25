@@ -49,7 +49,7 @@ namespace WebTesting.Services
                 }
             }
         }
-        public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds) {
+        public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
             if (RemoveTimer == null) {
                 RemoveTimer = new System.Timers.Timer(180000); //TODO Parametr - set to something like 1800000 add 0
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -66,7 +66,7 @@ namespace WebTesting.Services
 
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             Thread thread = new Thread(() => {
-                DoWork(download.Id, tokenSource.Token, AllIds);
+                DoWork(download.Id, tokenSource.Token, AllIds, downloadParams);
             });
             DownloadProcess dp = new DownloadProcess { DownloadId = download.Id, Posts = posts, Thread = thread, UserId = user.RedditId, TokenSource = tokenSource};
             processes.Add(dp);
@@ -85,8 +85,9 @@ namespace WebTesting.Services
             dp.Thread.Start();
         }
 
-        private async void DoWork(int downloadId, CancellationToken token, List<string> AllIds)
+        private async void DoWork(int downloadId, CancellationToken token, List<string> AllIds, DownloadParameters downloadParams)
         {
+            int a = 5;
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == downloadId);
             Directory.CreateDirectory(DownloadPath + "\\Download" + downloadId);
             using (StreamWriter sw = File.CreateText(DownloadPath + "\\Download" + downloadId + "\\List" + dp.DownloadId + ".txt"))

@@ -23,11 +23,12 @@ else
             <div class="col-3 text-end">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
                 <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
+                <input class="btn btn-primary" form="structure" type="submit"></input>
             </div>
         </div>
         <div class="row" style="border:1px solid red">
             <div class="col-2" style="border:1px solid red">
-                <form id="structure" method="post" asp-page-handler="Structure">
+                <form id="structure" method="post" asp-page-handler="Download">
                     <h4>Name:</h4>
                     <label>Numbering:</label><br>
                     <input type="radio" id="ids" name="numbering" value="ids" checked>
@@ -57,7 +58,7 @@ else
                     </div>
                     <label class="pt-2" for="title">Title:</label>
                     <div class="row">
-                        <input type="number" id="title" name="title" value="20">
+                        <input type="number" id="title" name="title" value="60">
                     </div>
                     <hr class="solid">
                     <h4>Folders:</h4>
@@ -82,7 +83,7 @@ else
                     <label class="pt-2" for="empty">Remove empty folders:</label>
                     <input type="checkbox" id="empty" name="empty" checked><br>
                     <label class="pt-2" for="split">Split by nsfw/sfw:</label>
-                    <input type="checkbox" id="split" name="split"> 
+                    <input type="checkbox" id="split" name="split" checked> 
                 </form>
             </div>
             <div class="col-8">
@@ -113,6 +114,19 @@ else
         </div>
     </div>
     <script>
+        /*
+        alert('start');
+        var pokus = new Array();
+        pokus = ["Banana", "Orange", "Apple", "Mango"];
+        pokus.push("jop");
+        if(pokus.includes('8')){
+            alert('ano');
+        }else{
+            alert("ne");
+        }
+        alert('Konec');
+        */
+
         var domainsList = document.getElementById("domains");
         var subredditsList = document.getElementById("subredditsList");
         var subredditsCount = document.getElementById("subreddits");
@@ -122,6 +136,8 @@ else
         const sessionInput = document.getElementById("hdnSession");
         var postList = document.getElementById("postList");
         var offset = 0;
+        var masterIndex = 0;
+        var namesTaken = new Array();
 
         //Fetch List<Post> from server
         var value = sessionInput.value;
@@ -143,13 +159,13 @@ else
         var v_numbering = "ids";//TODO values set directly
         var v_priorityName = "subredditPriorityName";
         var v_priorityFolder = "subredditPriorityFolder"; 
-        var v_title = 20;
+        var v_title = 60;
         var v_subredditName = false;
         var v_domainName = false;
         var v_subredditFolder = true;
         var v_domainFolder = false;
         var v_empty = true;
-        var v_split = false;
+        var v_split = true;
         //adding on change functions that will trigger reddrawing of the list
         i_domainName.addEventListener('change', (event) => {
             if (event.currentTarget.checked) {
@@ -276,14 +292,16 @@ else
         redraw();
         
         function redraw(){
+            masterIndex = 0;
+
             postList.innerHTML = "";
             offset = 0;
             if(v_split == true){
-                postList.appendChild(makediv("sfw"));
+                postList.appendChild(makediv1("sfw"));
                 offset++;
                 drawPart('sfw');
                 offset--;
-                postList.appendChild(makediv("nsfw"));
+                postList.appendChild(makediv1("nsfw"));
                 offset++;
                 let remove = drawPart('nsfw');
                 offset--;
@@ -304,11 +322,11 @@ else
                             //priority subreddits
                             let outerRemoval = 0;
                             for (let i = 0; i < subreddits.length; i++) {
-                                postList.appendChild(makediv(subreddits[i][0]));
+                                postList.appendChild(makediv2(subreddits[i][0]));
                                 offset++;
                                 let innerRemoval = 0;
                                 for (let j = 0; j < domains.length; j++) {
-                                    postList.appendChild(makediv(domains[j][0]));
+                                    postList.appendChild(makediv3(domains[j][0]));
                                     offset++;
                                     let remove = drawPosts(typeSfw,subreddits[i][0],domains[j][0]);
                                     offset--;
@@ -330,11 +348,11 @@ else
                             //priority domains
                             let outerRemoval = 0;
                             for (let i = 0; i < domains.length; i++) {
-                                postList.appendChild(makediv(domains[i][0]));
+                                postList.appendChild(makediv2(domains[i][0]));
                                 offset++;
                                 let innerRemoval = 0;
                                 for (let j = 0; j < subreddits.length; j++) {
-                                    postList.appendChild(makediv(subreddits[j][0]));
+                                    postList.appendChild(makediv3(subreddits[j][0]));
                                     offset++;
                                     let remove = drawPosts(typeSfw,subreddits[j][0],domains[i][0]);
                                     offset--;
@@ -358,7 +376,7 @@ else
                         //subreddit folders
                         let removal = 0;
                         for (let i = 0; i < subreddits.length; i++) {
-                            postList.appendChild(makediv(subreddits[i][0]));
+                            postList.appendChild(makediv2(subreddits[i][0]));
                             offset++;
                             let remove = drawPosts(typeSfw,subreddits[i][0],'any');
                             offset--;
@@ -375,7 +393,7 @@ else
                     //domain folders
                     let removal = 0;
                     for (let i = 0; i < domains.length; i++) {
-                        postList.appendChild(makediv(domains[i][0]));
+                        postList.appendChild(makediv2(domains[i][0]));
                         offset++;
                         let remove = drawPosts(typeSfw,'any',domains[i][0]);
                         offset--;
@@ -395,7 +413,9 @@ else
         }
 
         function drawPosts(typeSfw,subreddit,domain){
+            namesTaken = ['','']
             let remove = true;
+            let postWritten = 1;
             for (let i = 0; i < posts.length; i++) {
                 if(typeSfw == 'sfw' && posts[i].Over18 == true){
                     //alert("is not sfw");
@@ -413,15 +433,34 @@ else
                     //alert("is not domain is not *" + domain + '* becouse it is *' + posts[i].Domain + '*');
                     continue;
                 }
-                postList.appendChild(makedivPost(posts[i]));
+                postList.appendChild(makedivPost(posts[i],postWritten++));
                 remove = false;
                 //alert('prvek nalezen');
             }
             return remove;
         }
 
-           function makediv(text){
+        function makediv1(text){
             let element = document.createElement('div');
+            text = '<b>&#x2023;&ensp;' + text + '</b>';
+            for (let i = 0; i < offset; i++) {
+                text = '&emsp;&emsp;' + text;
+            }
+            element.innerHTML = text;
+            return element;
+        }
+        function makediv2(text){
+            let element = document.createElement('div');
+            text = '<b>&#x2022;&ensp;' + text + '</b>';
+            for (let i = 0; i < offset; i++) {
+                text = '&emsp;&emsp;' + text;
+            }
+            element.innerHTML = text;
+            return element;
+        }
+        function makediv3(text){
+            let element = document.createElement('div');
+                text = '<b>&#x2043;&ensp;' + text + '</b>';
             for (let i = 0; i < offset; i++) {
                 text = '&emsp;&emsp;' + text;
             }
@@ -429,9 +468,9 @@ else
             return element;
         }
 
-        function makedivPost(post){
+        function makedivPost(post,index){
             let element = document.createElement('div');
-            let text = createName(post);
+            let text = createName(post,index);
             for (let i = 0; i < offset; i++) {
                 text = '&emsp;&emsp;' + text;
             }
@@ -439,15 +478,65 @@ else
             return element;
         }
 
-        function createName(post){
-            return post.Title;
+        function createName(post,index){
+            let name = '';
+            if(v_numbering == 'ids'){
+                name = post.Id;
+            }else if(v_numbering == 'standard'){
+                name = index;
+            }
+            if(name != ''){
+                name = name + '__';
+            }
+            if(v_subredditName == true || v_domainName == true){
+                if(v_subredditName == true){
+                    if(v_domainName == true){
+                        if(v_priorityName == 'subredditPriorityName'){
+                            //subreddit priority
+                            name = name + post.Subreddit + '__' + post.Domain;
+                        }else{
+                            //doamin priority
+                            name = name + post.Domain + '__' + post.Subreddit;
+                        }
+                    }else{
+                        //subreddit name
+                        name = name + post.Subreddit;
+                    }
+                }else{
+                    //domain name
+                    name = name + post.Domain;
+                }
+                name = name + '__';
+            }else if(name != ''){
+                name = name + '__';
+            }
+            if(v_title > 0){
+                if(v_title <= post.Title.length){
+                    name = name + post.Title.slice(0,v_title); 
+                }else{
+                    name = name + post.Title;
+                }
+            }
+            if(name == ''){
+                name = masterIndex++;
+            }
+            if(name[name.length-1] == '_'){
+                name = name.slice(0,name.length-2);
+            }
+            if(name[name.length-1] == '_'){
+                name = name.slice(0,name.length-2);
+            }
+
+            //checking if filename already exists
+            if(namesTaken.includes(name)){
+                name = name + '_' + index++;
+            }
+            while(namesTaken.includes(name)){
+                name = name.slice(0,name.length-2);
+                name = name + '_' + index++;
+            }
+            namesTaken.push(name);
+            return name;
         }
-
-        /*
-        document.createElement('li');
-            li.innerText = data[i].key + ' - ' + data[i].value;
-            subredditsList.appendChild(li);
-        */
-
     </script>
 }
