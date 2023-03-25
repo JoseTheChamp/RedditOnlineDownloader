@@ -79,6 +79,8 @@ else
                             <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
                         </div>
                     </div>
+                    <label class="pt-2" for="empty">Remove empty folders:</label>
+                    <input type="checkbox" id="empty" name="empty" checked><br>
                     <label class="pt-2" for="split">Split by nsfw/sfw:</label>
                     <input type="checkbox" id="split" name="split"> 
                 </form>
@@ -136,16 +138,18 @@ else
         const i_domainName = document.getElementsByName('domainName')[0];
         const i_subredditFolder = document.getElementsByName('subredditFolder')[0];
         const i_domainFolder = document.getElementsByName('domainFolder')[0];
+        const i_empty = document.getElementById('empty');
         const i_split = document.getElementById('split');
         var v_numbering = "ids";//TODO values set directly
         var v_priorityName = "subredditPriorityName";
         var v_priorityFolder = "subredditPriorityFolder"; 
         var v_title = 20;
-        var v_subredditName = "off";
-        var v_domainName = "off";
-        var v_subredditFolder = "on";
-        var v_domainFolder = "off";
-        var v_split = "off";
+        var v_subredditName = false;
+        var v_domainName = false;
+        var v_subredditFolder = true;
+        var v_domainFolder = false;
+        var v_empty = true;
+        var v_split = false;
         //adding on change functions that will trigger reddrawing of the list
         i_domainName.addEventListener('change', (event) => {
             if (event.currentTarget.checked) {
@@ -168,6 +172,14 @@ else
                 v_domainFolder = true;
             } else {
                 v_domainFolder = false;
+            }
+            redraw();
+        });
+        i_empty.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_empty = true;
+            } else {
+                v_empty = false;
             }
             redraw();
         });
@@ -264,58 +276,127 @@ else
         redraw();
         
         function redraw(){
-            //alert('redraw - start  ' + v_split);
             postList.innerHTML = "";
             offset = 0;
-            if(v_split == 'on'){
+            if(v_split == true){
                 postList.appendChild(makediv("sfw"));
                 offset++;
                 drawPart('sfw');
                 offset--;
                 postList.appendChild(makediv("nsfw"));
                 offset++;
-                drawPart('nsfw');
+                let remove = drawPart('nsfw');
+                offset--;
+                if(v_empty && remove){
+                    postList.removeChild(postList.lastElementChild);
+                }
             }else{
                 drawPart('none');
             }
-            alert('redraw - end');
         }
 
         function drawPart(typeSfw){
-            //alert('drawPart - ' + v_subredditFolder + '  ' + v_domainFolder);
-            if(v_subredditFolder == 'on' || v_domainFolder == 'on'){
-                if(v_subredditFolder == 'on'){
-                    if(v_domainFolder == 'on'){
-                    //oba
+            if(v_subredditFolder == true || v_domainFolder == true){
+                if(v_subredditFolder == true){
+                    if(v_domainFolder == true){
+                        //Both folders
+                        if(v_priorityFolder == "subredditPriorityFolder"){
+                            //priority subreddits
+                            let outerRemoval = 0;
+                            for (let i = 0; i < subreddits.length; i++) {
+                                postList.appendChild(makediv(subreddits[i][0]));
+                                offset++;
+                                let innerRemoval = 0;
+                                for (let j = 0; j < domains.length; j++) {
+                                    postList.appendChild(makediv(domains[j][0]));
+                                    offset++;
+                                    let remove = drawPosts(typeSfw,subreddits[i][0],domains[j][0]);
+                                    offset--;
+                                    if(v_empty && remove){
+                                        postList.removeChild(postList.lastElementChild);
+                                        innerRemoval++;
+                                    }
+                                }
+                                offset--;
+                                if(innerRemoval == domains.length){
+                                    postList.removeChild(postList.lastElementChild);
+                                    outerRemoval++;
+                                }
+                            }
+                            if(outerRemoval == subreddits.length){
+                                postList.removeChild(postList.lastElementChild);
+                            }
+                        }else{
+                            //priority domains
+                            let outerRemoval = 0;
+                            for (let i = 0; i < domains.length; i++) {
+                                postList.appendChild(makediv(domains[i][0]));
+                                offset++;
+                                let innerRemoval = 0;
+                                for (let j = 0; j < subreddits.length; j++) {
+                                    postList.appendChild(makediv(subreddits[j][0]));
+                                    offset++;
+                                    let remove = drawPosts(typeSfw,subreddits[j][0],domains[i][0]);
+                                    offset--;
+                                    //alert('odstranit - ' + remove);
+                                    if(v_empty && remove){
+                                        postList.removeChild(postList.lastElementChild);
+                                        innerRemoval++;
+                                    }
+                                }
+                                offset--;
+                                if(innerRemoval == subreddits.length){
+                                    postList.removeChild(postList.lastElementChild);
+                                    outerRemoval++;
+                                }
+                            }
+                            if(outerRemoval == domains.length){
+                                postList.removeChild(postList.lastElementChild);
+                            }
+                        }
                     }else{
-                        //alert('Here     - ' + subreddits.length);
+                        //subreddit folders
+                        let removal = 0;
                         for (let i = 0; i < subreddits.length; i++) {
-                            //alert('InFor ' + i);
                             postList.appendChild(makediv(subreddits[i][0]));
                             offset++;
-                            //alert('Here2 for sub - ' + subreddits[i][0]);
-                            drawPosts(typeSfw,subreddits[i][0],'any');
+                            let remove = drawPosts(typeSfw,subreddits[i][0],'any');
                             offset--;
+                            if(v_empty && remove){
+                                postList.removeChild(postList.lastElementChild);
+                                removal++;
+                            }
+                        }
+                        if(removal == subreddits.length){
+                            return true;
                         }
                     }
                 }else{
+                    //domain folders
+                    let removal = 0;
                     for (let i = 0; i < domains.length; i++) {
-                        makediv(domains[i][0]);
+                        postList.appendChild(makediv(domains[i][0]));
                         offset++;
-                        drawPosts(typeSfw,'any',domains[i][0]);
+                        let remove = drawPosts(typeSfw,'any',domains[i][0]);
                         offset--;
+                        if(v_empty && remove){
+                            postList.removeChild(postList.lastElementChild);
+                            removal++;
+                        }
+                    }
+                    if(removal == domains.length){
+                        return true;
                     }
                 }
             }else{
-                drawPosts(typeSfw,'any','any');
+                return drawPosts(typeSfw,'any','any');
             }
 
         }
 
         function drawPosts(typeSfw,subreddit,domain){
-            //alert("here3" + typeSfw + ' ' + subreddit + ' ' + domain);
+            let remove = true;
             for (let i = 0; i < posts.length; i++) {
-                //alert("here3.5" + posts[i].Over18 + ' ' + posts[i].Subreddit + ' ' + posts[i].Domain);
                 if(typeSfw == 'sfw' && posts[i].Over18 == true){
                     //alert("is not sfw");
                     continue;
@@ -332,13 +413,14 @@ else
                     //alert("is not domain is not *" + domain + '* becouse it is *' + posts[i].Domain + '*');
                     continue;
                 }
-                //alert('Here4');
-                postList.appendChild(makediv(posts[i].Subreddit + ' - ' + posts[i].Domain + ' - ' + posts[i].Title));
-                //alert('Here5');
+                postList.appendChild(makedivPost(posts[i]));
+                remove = false;
+                //alert('prvek nalezen');
             }
+            return remove;
         }
 
-        function makediv(text){
+           function makediv(text){
             let element = document.createElement('div');
             for (let i = 0; i < offset; i++) {
                 text = '&emsp;&emsp;' + text;
@@ -347,8 +429,18 @@ else
             return element;
         }
 
+        function makedivPost(post){
+            let element = document.createElement('div');
+            let text = createName(post);
+            for (let i = 0; i < offset; i++) {
+                text = '&emsp;&emsp;' + text;
+            }
+            element.innerHTML = text;
+            return element;
+        }
+
         function createName(post){
-        
+            return post.Title;
         }
 
         /*
