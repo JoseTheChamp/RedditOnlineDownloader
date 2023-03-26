@@ -22,7 +22,6 @@ else
             </div>
             <div class="col-3 text-end">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
-                <a class="btn btn-primary" asp-page-handler="Download" >Download</a>
                 <input class="btn btn-primary" form="structure" type="submit"></input>
             </div>
         </div>
@@ -299,11 +298,14 @@ else
             if(v_split == true){
                 postList.appendChild(makediv1("sfw"));
                 offset++;
-                drawPart('sfw');
+                let remove = drawPart('sfw');
                 offset--;
+                if(v_empty && remove){
+                    postList.removeChild(postList.lastElementChild);
+                }
                 postList.appendChild(makediv1("nsfw"));
                 offset++;
-                let remove = drawPart('nsfw');
+                remove = drawPart('nsfw');
                 offset--;
                 if(v_empty && remove){
                     postList.removeChild(postList.lastElementChild);
@@ -481,34 +483,28 @@ else
         function createName(post,index){
             let name = '';
             if(v_numbering == 'ids'){
-                name = post.Id;
+                name = post.Id + "__";
             }else if(v_numbering == 'standard'){
-                name = index;
-            }
-            if(name != ''){
-                name = name + '__';
+                name = index + '__';
             }
             if(v_subredditName == true || v_domainName == true){
                 if(v_subredditName == true){
                     if(v_domainName == true){
                         if(v_priorityName == 'subredditPriorityName'){
                             //subreddit priority
-                            name = name + post.Subreddit + '__' + post.Domain;
+                            name = name + post.Subreddit + '__' + post.Domain + '__';
                         }else{
                             //doamin priority
-                            name = name + post.Domain + '__' + post.Subreddit;
+                            name = name + post.Domain + '__' + post.Subreddit + '__';
                         }
                     }else{
                         //subreddit name
-                        name = name + post.Subreddit;
+                        name = name + post.Subreddit + '__';
                     }
                 }else{
                     //domain name
-                    name = name + post.Domain;
+                    name = name + post.Domain + '__';
                 }
-                name = name + '__';
-            }else if(name != ''){
-                name = name + '__';
             }
             if(v_title > 0){
                 if(v_title <= post.Title.length){
@@ -519,9 +515,6 @@ else
             }
             if(name == ''){
                 name = masterIndex++;
-            }
-            if(name[name.length-1] == '_'){
-                name = name.slice(0,name.length-2);
             }
             if(name[name.length-1] == '_'){
                 name = name.slice(0,name.length-2);
