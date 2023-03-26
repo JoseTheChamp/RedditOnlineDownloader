@@ -54,7 +54,7 @@ namespace WebTesting.Services
             foreach (Download download in downloads)
             {
                 if (download.DownloadFinished != null) {
-                    if (DateTime.Now.Subtract((DateTime)download.DownloadFinished).TotalHours > 5) //TODO Parametr
+                    if (DateTime.Now.Subtract((DateTime)download.DownloadFinished).TotalHours > 72) //TODO Parametr
                     {
                         RemoveDownloadProcess(download.Id);
                     }
@@ -63,7 +63,7 @@ namespace WebTesting.Services
         }
         public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
             if (RemoveTimer == null) {
-                RemoveTimer = new System.Timers.Timer(30000); //TODO Parametr - set to something like 1800000 add 0
+                RemoveTimer = new System.Timers.Timer(60000); //TODO Parametr - set to something like 1800000 add 0
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 RemoveTimer.Start();
             }
@@ -336,7 +336,7 @@ namespace WebTesting.Services
                         Download download = _db.Downloads.FirstOrDefault(e => e.Id == dp.DownloadId);
                         if (download != null)
                         {
-                            download.ProgressAbs = dp.PostIndex + 1;
+                            download.ProgressAbs = dp.Posts.Count;
                             download.ProgressRel = Math.Round((double)(((double)(dp.PostIndex + 1)) / dp.Posts.Count) * 100, 1);
                             _db.Downloads.Update(download);
                             await _db.SaveChangesAsync();
@@ -494,9 +494,9 @@ namespace WebTesting.Services
             } else if (dParams.Numbering == Entities.Enums.Numbering.Standard) {
                 sb.Append(indexInFolder + "_");
             }
-            if (dParams.SubredditName || dParams.DomainFolder) {
+            if (dParams.SubredditName || dParams.DomainName) {
                 if (dParams.SubredditName) {
-                    if (dParams.DomainFolder) {
+                    if (dParams.DomainName) {
                         //both names
                         if (dParams.NamePriorityIsSubreddit) {
                             //subreddit priority
