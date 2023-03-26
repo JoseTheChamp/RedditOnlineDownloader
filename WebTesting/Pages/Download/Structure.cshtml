@@ -101,14 +101,14 @@ else
                 </ul>
             </div>
             <div class="col-2" style="border:1px solid red">
-                Details:
-                <div id="count"></div>
-                Domains:
-                <ul id="domains"></ul>
-                Nsfw/sfw:
-                <ul id="nsfwDetail"></ul>
-                <div id="subreddits"></div>
-                <div id="subredditsList"></div>
+                    <b>Details:</b>
+                    <div id="count"></div>
+                    <b>Domains:</b>
+                    <div id="domains"></div>
+                    <b>Nsfw/sfw:</b>
+                    <div id="nsfwDetail"></div>
+                    <div id="subreddits"></div>
+                    <div id="subredditsList"></div>
             </div>
         </div>
     </div>
@@ -130,7 +130,7 @@ else
         var subredditsList = document.getElementById("subredditsList");
         var subredditsCount = document.getElementById("subreddits");
         var nsfwList = document.getElementById("nsfwDetail");
-        var countAltText = document.getElementById("count");
+        var countText = document.getElementById("count");
         var count = 0;
         const sessionInput = document.getElementById("hdnSession");
         var postList = document.getElementById("postList");
@@ -141,7 +141,7 @@ else
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-        count = posts.length;
+        countText.innerHTML = '<b>Count: </b>' + posts.length;
 
         //Generating list of posts
         //Getting all inputs
@@ -261,32 +261,32 @@ else
         var domains = Object.entries(domainsObj);
         for(let i = 0; i < Object.values(domainsObj).length; i++){
             if(Object.values(domainsObj)[i] != 'null'){
-                let li = document.createElement('li');
-                li.innerText = Object.keys(domainsObj)[i] + ' - ' + Object.values(domainsObj)[i];
+                let li = document.createElement('div');
+                        li.innerHTML = '&emsp;' +  Object.keys(domainsObj)[i] + ' - ' + Object.values(domainsObj)[i] + '<br>';
                 domainsList.appendChild(li);
             }
         }
         nsfwList.innerHTML = "";
         for(let i = 0; i < Object.values(nsfw).length; i++){
-            let li = document.createElement('li');
+            let li = document.createElement('div');
             let key = Object.keys(nsfw)[i];
             if(key == 'true'){
                 key = 'nsfw';
             }else{
                 key = 'sfw';
             }
-            li.innerText = key + ' - ' + Object.values(nsfw)[i];
+            li.innerHTML = '&emsp;' +  key + ' - ' + Object.values(nsfw)[i] + '<br>';
             nsfwList.appendChild(li);
         }
         subredditsList.innerHTML = "";
         var subreddits = Object.entries(subredditsObj);
         subreddits.sort((a,b) => b[1] - a[1]);
         for(let i = 0; i < subreddits.length; i++){
-            let li = document.createElement('li');
-            li.innerText = subreddits[i][0] + ' - ' + subreddits[i][1];
+            let li = document.createElement('dv');
+                li.innerHTML = '&emsp;' +  subreddits[i][0] + ' - ' + subreddits[i][1] + '<br>';
             subredditsList.appendChild(li);
         }
-        subredditsCount.textContent = 'Subreddits: ' + Object.values(subredditsObj).length;
+        subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subredditsObj).length;
 
         redraw();
         

@@ -194,12 +194,12 @@ else
             </div>
             <div class="col-2" style="border:1px solid red">
                 <!--HERE ARE Details--> 
-                Details:
+                <b>Details:</b>
                 <div id="count"></div>
-                Domains:
-                <ul id="domains"></ul>
-                Nsfw/sfw:
-                <ul id="nsfwDetail"></ul>
+                <b>Domains:</b>
+                <div id="domains"></div>
+                <b>Nsfw/sfw:</b>
+                <div id="nsfwDetail"></div>
                 <div id="subreddits"></div>
                 <div id="subredditsList"></div>
             </div>
@@ -305,34 +305,34 @@ else
             dataDomains.sort((a,b) => b.value - a.value);
             for(let i = 0; i < dataDomains.length; i++){
                 if(Object.values(domains)[i] != 'null'){
-                    let li = document.createElement('li');
-                    li.innerText = dataDomains[i].key + ' - ' + dataDomains[i].value;
+                    let li = document.createElement('div');
+                    li.innerHTML = '&emsp;' + dataDomains[i].key + ' - ' + dataDomains[i].value + '<br>';
                     domainsList.appendChild(li);
                 }    
             }
             nsfwList.innerHTML = "";
             for(let i = 0; i < Object.values(nsfw).length; i++){
-                let li = document.createElement('li');
+                let li = document.createElement('div');
                 let key = Object.keys(nsfw)[i];
                 if(key == 'true'){
                     key = 'nsfw';
                 }else{
                     key = 'sfw';
                 }
-                li.innerText = key + ' - ' + Object.values(nsfw)[i];
+                li.innerHTML = '&emsp;' + key + ' - ' + Object.values(nsfw)[i] + '<br>';
                 nsfwList.appendChild(li);
             }
             subredditsList.innerHTML = "";
             let data = Object.entries(subreddits);
             data.sort((a,b) => b[1] - a[1]);
             for(let i = 0; i < data.length; i++){
-                let li = document.createElement('li');
-                li.innerText = data[i][0] + ' - ' + data[i][1];
+                let li = document.createElement('div');
+                li.innerHTML = '&emsp;' + data[i][0] + ' - ' + data[i][1] + '<br>';
                 subredditsList.appendChild(li);
             }
-            subredditsCount.textContent = 'Subreddits: ' + Object.values(subreddits).length;
+            subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subreddits).length;
 
-            countAltText.textContent = 'Count - ' + counting;
+            countAltText.innerHTML = '<b>Count</b> - ' + counting;
 
             //Change checkbox selectAll to proper state
             if(counting == posts.length){
