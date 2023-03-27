@@ -20,7 +20,9 @@ namespace WebTesting.Pages.Download
         public List<Post> Posts { get; set; }
         public string PostsJson { get; set; }
         public List<Post> SelectedPosts { get; set; }
+        public string SelectedIdsJson { get; set; }
         public List<string> DownloadedIds { get; set; }
+        public string DownloadedIdsJson { get; set; }
         public SelectShowType ShowType { get; set; }
         public SelectNsfw Nsfw { get; set; }
         public List<string> Domains { get; set; }
@@ -38,6 +40,10 @@ namespace WebTesting.Pages.Download
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            if (SelectedPosts != null) {
+                List<string> selectedIds = SelectedPosts.Select(x => x.Id).ToList();
+                SelectedIdsJson = JsonConvert.SerializeObject(selectedIds);
+            }
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
             
 
@@ -72,7 +78,7 @@ namespace WebTesting.Pages.Download
             if (SelectedDomains == null) SelectedDomains = Domains; 
 
             Posts = filterPosts(Posts);
-            PostsJson = JsonConvert.SerializeObject(Posts);
+            PostsJson = JsonConvert.SerializeObject(AllPosts);
         }
         public void OnGetChangeShowType() {
             int a = 5;
@@ -100,6 +106,7 @@ namespace WebTesting.Pages.Download
                 HttpContext.Session.SetObject("DownloadedIds", downloadedIds);
             }
             DownloadedIds = downloadedIds;
+            DownloadedIdsJson = JsonConvert.SerializeObject(downloadedIds);
         }
         public async Task<IActionResult> OnPostChangeShowTypeAsync(string showType)
         {
@@ -134,11 +141,19 @@ namespace WebTesting.Pages.Download
             */
             return Page();
         }
+        
+
+        //DEPRECATED------------------------------
         public async Task<IActionResult> OnPostSelectAsync()
         {
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             Posts = AllPosts;
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+            if (SelectedPosts != null)
+            {
+                List<string> selectedIds = SelectedPosts.Select(x => x.Id).ToList();
+                SelectedIdsJson = JsonConvert.SerializeObject(selectedIds);
+            }
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             Domains = HttpContext.Session.GetObject<List<string>>("Domains");
             await ManageDownloadedIdsAsync();
@@ -166,7 +181,7 @@ namespace WebTesting.Pages.Download
             if (downloaded == "on") ShowDownloaded = true;
 
             Posts = filterPosts(Posts);
-            PostsJson = JsonConvert.SerializeObject(Posts);
+            PostsJson = JsonConvert.SerializeObject(AllPosts);
 
             HttpContext.Session.SetObject("ShowDownloaded", ShowDownloaded);
             HttpContext.Session.SetObject("Posts", Posts);
@@ -204,7 +219,7 @@ namespace WebTesting.Pages.Download
         public IActionResult OnPost()
         {
             Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
-            PostsJson = JsonConvert.SerializeObject(Posts);
+            PostsJson = JsonConvert.SerializeObject(AllPosts);
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             int a = 5;
             return Page();
@@ -219,7 +234,7 @@ namespace WebTesting.Pages.Download
             AllPosts = posts;
             Posts = posts;
 
-            Domains = new List<string>();
+            Domains = new List<string>(); //TDOD linq groupby a select
             foreach (Post post in AllPosts)
             {
                 if (!Domains.Contains(post.Domain))
@@ -234,8 +249,8 @@ namespace WebTesting.Pages.Download
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
             ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             await ManageDownloadedIdsAsync();
-            Posts = filterPosts(Posts);
-            PostsJson = JsonConvert.SerializeObject(Posts);
+            Posts = AllPosts;
+            PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
         }
     }

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "NquI/wbjtEtoTxZzflZklYddZrZPeZvTC2ITeWuDQtM=",
+  "Hash": "3Gwq/alEA4gcXYQXMppsucI8ue6ZJW2LXg/DUgDs9ic=",
   "Source": "WebTesting",
   "BasePath": "_content/WebTesting",
   "Mode": "Default",
@@ -168,6 +168,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download7121.zip"
+    },
+    {
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download7122.zip",
+      "SourceId": "WebTesting",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
+      "BasePath": "_content/WebTesting",
+      "RelativePath": "DownloadableFiles/Download7122.zip",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download7122.zip"
     },
     {
       "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\favicon.ico",

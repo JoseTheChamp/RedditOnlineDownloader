@@ -336,7 +336,7 @@ namespace WebTesting.Services
                         Download download = _db.Downloads.FirstOrDefault(e => e.Id == dp.DownloadId);
                         if (download != null)
                         {
-                            download.ProgressAbs = dp.PostIndex + 1;
+                            download.ProgressAbs = dp.PostIndex;
                             download.ProgressRel = Math.Round((double)(((double)(dp.PostIndex + 1)) / dp.Posts.Count) * 100, 1);
                             _db.Downloads.Update(download);
                             await _db.SaveChangesAsync();

@@ -16,6 +16,8 @@
 else
 {   
     <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
+    <input type="hidden" id="downloadedIds" asp-for="DownloadedIdsJson"/>
+    <input type="hidden" id="selectedIds" asp-for="SelectedIdsJson"/>
     <div class="container-fluid">
         <div class="row">
             <div class="col-5">
@@ -31,7 +33,7 @@ else
                 <button>New</button>
                 <button>Delete</button>
             </div>
-            <div class="col-3 text-end">
+            <div class="col-3 text-end"> 
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
                 <input id="nextStep" form="selectedPosts" type="submit" class="btn btn-primary" asp-page="/Download/Structure" value="Next step">
             </div>
@@ -41,36 +43,19 @@ else
                     <!--HERE ARE Select settings-->
                     <div class="row pb-2">
                         <label for="showDownloaded">Show downloaded posts:</label>
-                        @if (Model.ShowDownloaded == true)
-                        {
-                            <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
-                        }
-                        else
-                        {
-                            <input form="selectedPosts" name="showDownloaded" type="checkbox">
-                        }
+                        <input form="selectedPosts" name="showDownloaded" type="checkbox">
+                    </div>
+                    <div class="row pb-2">  
+                        <label for="groupBySubreddits">Group by subreddits:</label>
+                        <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
+ 
                     </div>
                     <div class="row pb-2">
                         <label for="nsfw">Nsfw/sfw:</label>
                         <select form="selectedPosts" name="nsfw">
-                        @switch (Model.Nsfw)
-                        {
-                            case SelectNsfw.SFW:
-                                    <option value="both">Both</option>
-                                    <option selected value="sfw">SFW</option>
-                                    <option value="nsfw">NSFW</option>
-                                break;
-                            case SelectNsfw.NSFW:
-                                    <option value="both">Both</option>
-                                    <option value="sfw">SFW</option>
-                                    <option selected value="nsfw">NSFW</option>
-                                break;
-                            default:
-                                    <option selected value="both">Both</option>
-                                    <option value="sfw">SFW</option>
-                                    <option value="nsfw">NSFW</option>
-                                break;
-                        }
+                            <option selected value="both">Both</option>
+                            <option value="sfw">SFW</option>
+                            <option value="nsfw">NSFW</option>
                         </select>
                     </div>
                     <div class="row pb-2 pt-3">
@@ -83,7 +68,7 @@ else
                         <div class="col-2 p-0">
                             <input type="button" name="Button" value="None" onclick="selectAll(false)" />
                         </div>
-                        <select form="selectedPosts" id='multipleSelect' data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
+                        <select form="selectedPosts" id='multipleSelect' onclick="displayColorSelected()" data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
                         @foreach (string domain in Model.Domains)
                         {
                             if (Model.SelectedDomains.Contains(domain)) {
@@ -100,96 +85,10 @@ else
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
-                    <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
-                <!--<form method="post" asp-page-handler="ChangeShowType">
-                    <label for="showType">Display as</label>
-                    <select name="showType">
-                @{
-                    /*
-    switch (Model.ShowType)
-    {
-        case SelectShowType.SUBREDDIT_EXPANDED:
-                            <option value="1">Posts</option>
-                            <option selected value="2">Subreddits expanded</option>
-                            <option value="3">Subredits reduced</option>
-                            break;
-        case SelectShowType.SUBREDDITS_REDUCED:
-                            <option value="1">Posts</option>
-                            <option value="2">Subreddits expanded</option>
-                            <option selected value="3">Subredits reduced</option>
-                            break;
-        default:
-                            <option selected value="1">Posts</option>
-                            <option value="2">Subreddits expanded</option>
-                            <option value="3">Subredits reduced</option>
-                            break;
-    }
-    */
-                    int a = 5;
-                }
-                </select>
-                <button type="submit">submit</button>
-                <input form="selectedPosts" type="submit" class="btn btn-primary" asp-asp-page-handler="ChangeShowType" value="Submit">
+                <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
                 <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
-                </form>-->
                 <form id="selectedPosts" method="post" asp-page-handler="Select">
-                    <ul class="p-2">
-                        @{
-                        /*switch(Model.ShowType){
-                            case SelectShowType.SUBREDDIT_EXPANDED:
-                                <p>Subredits expanded.</p>
-                            break;
-                        case SelectShowType.SUBREDDITS_REDUCED:
-                            <p>Subredits reduced.</p>
-                                break;
-                                default:*/
-                            if (Model.Posts.Count == 0)
-                            {
-                                <div>Oops no posts were found. It would seem that your filters are filtering one post too many.</div>
-                            }
-                            else
-                            {
-                                @foreach (Post post in Model.Posts)
-                                {
-                                    string linkPost = "https://www.reddit.com" + post.PermaLink;
-                                    string linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
-                                    string title = post.Title.Length > 57 ? post.Title.Substring(0, 57) + "..." : post.Title; //parameter max length
-                                                <div>
-                                        @if (Model.SelectedPosts != null)
-                                        {
-                                            bool selected = Model.SelectedPosts.Exists(e => e.Id == post.Id);
-                                            if (selected)
-                                            {
-                                                                    <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox" checked>
-                                            }
-                                            else
-                                            {
-                                                                    <input name="@post.Id" post id="checkbox" class="form-check-input" type="checkbox">    
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                                            <input name="@post.Id" id="checkbox" class="form-check-input" type="checkbox" checked>
-                                        }
-                                        @if (Model.DownloadedIds.Contains(post.Id))
-                                        {
-                                                            <span>X - </span>
-                                        }
-                                                    <a href="@linkSubreddit" target="_blank">@post.Subreddit</a> -
-                                        @if (post.Over18)
-                                        {
-                                                                <span>18+ - </span>
-                                        }
-                                        @post.Domain - @title - 
-                                                        <a href="@linkPost" target="_blank">link</a>
-                                                    </div>
-                                }
-                            }
-                            //break;
-                        //} 
-                        }
-                    </ul>
+                    <ul id="postList" name="postList" class="p-2"></ul>
                 </form>
             </div>
             <div class="col-2" style="border:1px solid red">
@@ -217,7 +116,24 @@ else
         const sessionInput = document.getElementById("hdnSession");
         const multipleSelect = document.getElementById("multipleSelect");
         const nextStepButton = document.getElementById("nextStep");
-        
+        var filteredLength = 0;
+
+        //Select Form
+        const i_groupBySubreddits = document.getElementsByName('groupBySubreddits')[0];
+        const i_showDownloaded = document.getElementsByName('showDownloaded')[0];
+        const i_nsfw = document.getElementsByName('nsfw')[0];
+        const i_multipleSelect= document.getElementsByName('multipleSelect')[0];
+        const postList = document.getElementById("postList");
+        var v_groupBySubreddits = false;
+        var v_showDownloaded = false;
+        var v_nsfw = 'both';
+        var v_multipleSelect = $("#multipleSelect").chosen().val();
+        var v_downloadedIds = document.getElementById("downloadedIds").value;
+        var downloadedIds = JSON.parse(v_downloadedIds);
+        var v_selectedIds = document.getElementById("selectedIds").value;
+        if(v_selectedIds != ''){
+            var selectedIds = JSON.parse(v_selectedIds); 
+        }
 
         //details
         var domainsList = document.getElementById("domains");
@@ -230,15 +146,34 @@ else
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-
-        //Calculate details of selected posts
-        calculateDetails(true);
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener("change", function() {
-                calculateDetails(true);
-            });
+        //alert('Start - post: ' + posts + "//// downloaded ids: " + downloadedIds);
+        
+        //Adding on change functions that will trigger redrawing the list
+        i_groupBySubreddits.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_groupBySubreddits = true;
+            } else {
+                v_groupBySubreddits = false;
+            }
+            redraw();
         });
-
+        i_showDownloaded.addEventListener('change', (event) => {
+            if (event.currentTarget.checked) {
+                v_showDownloaded = true;
+            } else {
+                v_showDownloaded = false;
+            }
+            redraw();
+        });
+        i_nsfw.addEventListener('change', function() {
+            v_nsfw = this.value;
+            redraw();
+        });
+        $('#multipleSelect').change(function(){
+            values = $("#multipleSelect").chosen().val();
+            v_multipleSelect = values;
+            redraw();
+        });
 
         //select deselect all
         selectAllCheckboxes.addEventListener('change', function() {
@@ -246,7 +181,7 @@ else
                 checkbox.checked = selectAllCheckboxes.checked;
             });
             calculateDetails(true);
-          });
+        });
 
         function selectAll(value) { 
             let multipleSelect = document.getElementById("multipleSelect");
@@ -254,6 +189,8 @@ else
                 multipleSelect.options[i].selected = value; 
             } 
             $('#multipleSelect').trigger("chosen:updated");
+            v_multipleSelect = $("#multipleSelect").chosen().val();
+            redraw();
         }
 
         //Calculating details on the richt side of screen
@@ -335,7 +272,7 @@ else
             countAltText.innerHTML = '<b>Count</b> - ' + counting;
 
             //Change checkbox selectAll to proper state
-            if(counting == posts.length){
+            if(counting == filteredLength){
                 selectAllCheckboxes.checked = true;
                 selectAllCheckboxes.indeterminate = false;
             }else if(counting == 0){
@@ -349,5 +286,79 @@ else
         $(".chosen-select").chosen({
             no_results_text: "Oops, nothing found!"
         })
+
+        redraw();
+        function redraw(){
+            postList.innerHTML = '';
+            if(true){
+                //posts draw
+                let filteredPosts = posts;
+                if(!v_showDownloaded == true){
+                    filteredPosts = filteredPosts.filter(post => !downloadedIds.includes(post.Id));
+                }
+                if(v_nsfw == 'nsfw'){
+                    filteredPosts = filteredPosts.filter(post => post.Over18);
+                }else if(v_nsfw == 'sfw'){
+                    filteredPosts = filteredPosts.filter(post => !post.Over18);
+                }
+                filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
+                filteredLength = filteredPosts.length;
+                if(filteredLength == 0){
+                    let postHtml = document.createElement('div');
+                    postHtml.innerHTML = "Oops no posts were found. It would seem that your filters are filtering one post too many.<br>(Check the 'Show downloaded posts' option.)"
+                    postList.appendChild(postHtml);
+                }
+                for(let i = 0; i < filteredPosts.length; i++){
+                    let post = filteredPosts[i];
+                    let postHtml = document.createElement('div');
+                    let html = '';
+                    let linkPost = "https://www.reddit.com" + post.PermaLink;
+                    let linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                    let title = '';
+                    if(post.Title.length > 57){
+                        title = post.Title.slice(0,55);
+                        title = title + "...";
+                    }else{
+                        title = post.Title;
+                    }
+                    html = "<div>";
+                    if(v_selectedIds != ''){
+                        let selected = selectedIds.includes(post.Id);
+                        if(selected){
+                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                        }else{
+                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                        }
+                    }else{
+                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                    }
+                    
+                    let downloaded = downloadedIds.includes(post.Id);
+                    if(downloaded){
+                        html = html + "<span> X - </span>"
+                    }
+                    if(post.Over18){
+                        html = html + "<span> 18+ - </span>"
+                    }
+                    html = html + "<a href='" + linkSubreddit + "' target='_blank'>" + post.Subreddit + "</a> -";
+                    html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
+                    postHtml.innerHTML = html;
+                    postList.appendChild(postHtml);
+                }
+            }else{
+                //SUbreddits draw
+            }
+            linkCheckBoxes();
+            calculateDetails(true);
+            //alert('End of redraw');
+        }
+        function linkCheckBoxes(){
+            checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener("change", function() {
+                    calculateDetails(true);
+                });
+            });
+        }
     </script>
 }
