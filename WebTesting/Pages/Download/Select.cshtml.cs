@@ -17,17 +17,22 @@ namespace WebTesting.Pages.Download
     public class SelectModel : PageModel
     {
         public List<Post> AllPosts { get; set; }
-        public List<Post> Posts { get; set; }
         public string PostsJson { get; set; }
         public List<Post> SelectedPosts { get; set; }
         public string SelectedIdsJson { get; set; }
         public List<string> DownloadedIds { get; set; }
         public string DownloadedIdsJson { get; set; }
-        public SelectShowType ShowType { get; set; }
-        public SelectNsfw Nsfw { get; set; }
+        
         public List<string> Domains { get; set; }
-        public List<string> SelectedDomains { get; set; }
+
+
+        public SelectNsfw Nsfw { get; set; }
         public bool ShowDownloaded { get; set; }
+        public List<string> DomainsForm { get; set; }
+        public bool GroupBySubreddit { get; set; }
+
+
+
         private readonly RedditAPI _reddit;
         private readonly ApplicationDbContext _db;
         public SelectModel(RedditAPI reddit, ApplicationDbContext db)
@@ -37,36 +42,31 @@ namespace WebTesting.Pages.Download
         }
         public async Task OnGetAsync()
         {
-            ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
-            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             if (SelectedPosts != null) {
                 List<string> selectedIds = SelectedPosts.Select(x => x.Id).ToList();
                 SelectedIdsJson = JsonConvert.SerializeObject(selectedIds);
+                HttpContext.Session.Remove("SelectedPosts");
             }
+
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
-            
-
-            string test = HttpContext.Session.GetString("Testing");
-
-            //HttpContext.Session.Remove("SelectedPosts");
+            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
+            DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
+            GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
 
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
-                Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
                 AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             }
             else
             {
                 List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
                 HttpContext.Session.SetObject("AllPosts", posts);
-                HttpContext.Session.SetObject("Posts", posts);
                 AllPosts = posts;
-                Posts = posts;
             }
             await ManageDownloadedIdsAsync();
 
-            Domains = new List<string>();
+            Domains = new List<string>(); //TODO replace with linq
             foreach (Post post in AllPosts)
             {
                 if (!Domains.Contains(post.Domain)) { 
@@ -74,10 +74,8 @@ namespace WebTesting.Pages.Download
                 }
             }
             HttpContext.Session.SetObject("Domains", Domains);
-            SelectedDomains = HttpContext.Session.GetObject<List<string>>("SelectedDomains");
-            if (SelectedDomains == null) SelectedDomains = Domains; 
+            if (DomainsForm == null) DomainsForm = Domains;
 
-            Posts = filterPosts(Posts);
             PostsJson = JsonConvert.SerializeObject(AllPosts);
         }
         public void OnGetChangeShowType() {
@@ -108,120 +106,10 @@ namespace WebTesting.Pages.Download
             DownloadedIds = downloadedIds;
             DownloadedIdsJson = JsonConvert.SerializeObject(downloadedIds);
         }
-        public async Task<IActionResult> OnPostChangeShowTypeAsync(string showType)
-        {
-            /*
-            Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
-            AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
-            ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
-            SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            await ManageDownloadedIdsAsync();
-
-            //TODO load all filters of Select
-
-            switch (showType) //TODO not ideal solution change in html will brake this.
-            {
-                case "1":
-                    ShowType = SelectShowType.POSTS;
-                    break;
-                case "2":
-                    ShowType = SelectShowType.SUBREDDIT_EXPANDED;
-                    break;
-                case "3":
-                    ShowType = SelectShowType.SUBREDDITS_REDUCED;
-                    break;
-                default:
-                    throw new Exception("In select there is showtype that does not exist.");
-            }
-
-            Posts = filterPosts(Posts);
-            PostsJson = JsonConvert.SerializeObject(Posts);
-            HttpContext.Session.SetObject("ShowType", ShowType);
-            */
-            return Page();
-        }
-        
-
-        //DEPRECATED------------------------------
-        public async Task<IActionResult> OnPostSelectAsync()
-        {
-            AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            Posts = AllPosts;
-            SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            if (SelectedPosts != null)
-            {
-                List<string> selectedIds = SelectedPosts.Select(x => x.Id).ToList();
-                SelectedIdsJson = JsonConvert.SerializeObject(selectedIds);
-            }
-            ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
-            Domains = HttpContext.Session.GetObject<List<string>>("Domains");
-            await ManageDownloadedIdsAsync();
-
-            string nsfw = Request.Form["nsfw"];
-            switch (nsfw) //TODO not ideal solution change in html will brake this.
-            {
-                case "sfw":
-                    Nsfw = SelectNsfw.SFW;
-                    break;
-                case "nsfw":
-                    Nsfw = SelectNsfw.NSFW;
-                    break;
-                case "both":
-                    Nsfw = SelectNsfw.BOTH;
-                    break;
-                default:
-                    throw new Exception("In select there is nsfw that does not exist.");
-            }
-
-            SelectedDomains = Request.Form["multipleSelect[]"].ToList();
-
-            string downloaded = Request.Form["showDownloaded"];
-            ShowDownloaded = false;
-            if (downloaded == "on") ShowDownloaded = true;
-
-            Posts = filterPosts(Posts);
-            PostsJson = JsonConvert.SerializeObject(AllPosts);
-
-            HttpContext.Session.SetObject("ShowDownloaded", ShowDownloaded);
-            HttpContext.Session.SetObject("Posts", Posts);
-            HttpContext.Session.SetObject("Nsfw", Nsfw);
-            HttpContext.Session.SetObject("SelectedDomains", SelectedDomains);
-            return Page();
-        }
-        private List<Post> filterPosts(List<Post> posts) {
-            if (!ShowDownloaded) {
-                posts = posts.Where(e => !DownloadedIds.Contains(e.Id)).ToList();
-            }
-            switch (Nsfw) {
-                case SelectNsfw.SFW:
-                    posts = posts.Where(e => !e.Over18).ToList();
-                    break;
-                case SelectNsfw.NSFW:
-                    posts = posts.Where(e => e.Over18).ToList();
-                    break;
-                case SelectNsfw.BOTH:
-                    break;
-                default:
-                    throw new Exception("In select there is nsfw that does not exist.");
-            }
-            List<Post> temp = new List<Post>();
-            foreach (Post post in posts)
-            {
-                if (SelectedDomains.Contains(post.Domain))
-                {
-                    temp.Add(post);
-                }
-            }
-            posts = temp;
-            return posts;
-        }
         public IActionResult OnPost()
         {
-            Posts = HttpContext.Session.GetObject<List<Post>>("Posts");
-            PostsJson = JsonConvert.SerializeObject(AllPosts);
             AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            int a = 5;
+            PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
         }
 
@@ -230,9 +118,12 @@ namespace WebTesting.Pages.Download
             //Fetch new posts from reddit
             List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
             HttpContext.Session.SetObject("AllPosts", posts);
-            HttpContext.Session.SetObject("Posts", posts);
             AllPosts = posts;
-            Posts = posts;
+
+            ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
+            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
+            DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
+            GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
 
             Domains = new List<string>(); //TDOD linq groupby a select
             foreach (Post post in AllPosts)
@@ -242,14 +133,9 @@ namespace WebTesting.Pages.Download
                     Domains.Add(post.Domain);
                 }
             }
-            SelectedDomains = HttpContext.Session.GetObject<List<string>>("SelectedDomains");
-            if (SelectedDomains == null) SelectedDomains = Domains;
+            if (DomainsForm == null) DomainsForm = Domains;
 
-            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
-            ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
-            ShowType = HttpContext.Session.GetObject<SelectShowType>("ShowType");
             await ManageDownloadedIdsAsync();
-            Posts = AllPosts;
             PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
         }

@@ -43,19 +43,47 @@ else
                     <!--HERE ARE Select settings-->
                     <div class="row pb-2">
                         <label for="showDownloaded">Show downloaded posts:</label>
-                        <input form="selectedPosts" name="showDownloaded" type="checkbox">
+                        @if (Model.ShowDownloaded == true)
+                        {
+                            <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
+                        }
+                        else
+                        {
+                            <input form="selectedPosts" name="showDownloaded" type="checkbox">
+                        }
                     </div>
                     <div class="row pb-2">  
                         <label for="groupBySubreddits">Group by subreddits:</label>
-                        <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
- 
+                        @if (Model.GroupBySubreddit == true)
+                        {
+                            <input form="selectedPosts" name="groupBySubreddits" type="checkbox" checked>
+                        }
+                        else
+                        {
+                            <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
+                        }
                     </div>
                     <div class="row pb-2">
                         <label for="nsfw">Nsfw/sfw:</label>
                         <select form="selectedPosts" name="nsfw">
-                            <option selected value="both">Both</option>
-                            <option value="sfw">SFW</option>
-                            <option value="nsfw">NSFW</option>
+                        @switch (Model.Nsfw)
+                        {
+                            case SelectNsfw.SFW:
+                                    <option value="both">Both</option>
+                                    <option selected value="sfw">SFW</option>
+                                    <option value="nsfw">NSFW</option>
+                                break;
+                            case SelectNsfw.NSFW:
+                                    <option value="both">Both</option>
+                                    <option value="sfw">SFW</option>
+                                    <option selected value="nsfw">NSFW</option>
+                                break;
+                            default:
+                                    <option selected value="both">Both</option>
+                                    <option value="sfw">SFW</option>
+                                    <option value="nsfw">NSFW</option>
+                                break;
+                        }
                         </select>
                     </div>
                     <div class="row pb-2 pt-3">
@@ -71,7 +99,7 @@ else
                         <select form="selectedPosts" id='multipleSelect' onclick="displayColorSelected()" data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
                         @foreach (string domain in Model.Domains)
                         {
-                            if (Model.SelectedDomains.Contains(domain)) {
+                            if (Model.DomainsForm.Contains(domain)) {
                                 <option selected>@domain</option>
                             } else { 
                                 <option>@domain</option>
@@ -125,8 +153,14 @@ else
         const i_multipleSelect= document.getElementsByName('multipleSelect')[0];
         const postList = document.getElementById("postList");
         var v_groupBySubreddits = false;
+        if(i_groupBySubreddits.checked == 'true'){
+            v_groupBySubreddits = true;
+        }
         var v_showDownloaded = false;
-        var v_nsfw = 'both';
+        if(i_showDownloaded.checked == 'true'){
+            v_showDownloaded = true;
+        }
+        var v_nsfw = i_nsfw.value;
         var v_multipleSelect = $("#multipleSelect").chosen().val();
         var v_downloadedIds = document.getElementById("downloadedIds").value;
         var downloadedIds = JSON.parse(v_downloadedIds);
@@ -290,64 +324,115 @@ else
         redraw();
         function redraw(){
             postList.innerHTML = '';
-            if(true){
-                //posts draw
-                let filteredPosts = posts;
-                if(!v_showDownloaded == true){
-                    filteredPosts = filteredPosts.filter(post => !downloadedIds.includes(post.Id));
-                }
-                if(v_nsfw == 'nsfw'){
-                    filteredPosts = filteredPosts.filter(post => post.Over18);
-                }else if(v_nsfw == 'sfw'){
-                    filteredPosts = filteredPosts.filter(post => !post.Over18);
-                }
-                filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
-                filteredLength = filteredPosts.length;
-                if(filteredLength == 0){
-                    let postHtml = document.createElement('div');
-                    postHtml.innerHTML = "Oops no posts were found. It would seem that your filters are filtering one post too many.<br>(Check the 'Show downloaded posts' option.)"
-                    postList.appendChild(postHtml);
-                }
-                for(let i = 0; i < filteredPosts.length; i++){
-                    let post = filteredPosts[i];
-                    let postHtml = document.createElement('div');
-                    let html = '';
-                    let linkPost = "https://www.reddit.com" + post.PermaLink;
-                    let linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
-                    let title = '';
-                    if(post.Title.length > 57){
-                        title = post.Title.slice(0,55);
-                        title = title + "...";
-                    }else{
-                        title = post.Title;
+            //posts draw
+            let filteredPosts = posts;
+            if(!v_showDownloaded == true){
+                filteredPosts = filteredPosts.filter(post => !downloadedIds.includes(post.Id));
+            }
+            if(v_nsfw == 'nsfw'){
+                filteredPosts = filteredPosts.filter(post => post.Over18);
+            }else if(v_nsfw == 'sfw'){
+                filteredPosts = filteredPosts.filter(post => !post.Over18);
+            }
+            filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
+            filteredLength = filteredPosts.length;
+            if(filteredLength == 0){
+                let postHtml = document.createElement('div');
+                postHtml.innerHTML = "Oops no posts were found. It would seem that your filters are filtering one post too many.<br>(Check the 'Show downloaded posts' option.)"
+                postList.appendChild(postHtml);
+            }else{
+                if(v_groupBySubreddits){
+                    //Subredits
+                    let filteredSubreddits = [];
+                    for(let i = 0; i < filteredPosts.length; i++){
+                        if(!filteredSubreddits.includes(filteredPosts[i].Subreddit)){
+                            filteredSubreddits.push(filteredPosts[i].Subreddit);
+                        }
                     }
-                    html = "<div>";
-                    if(v_selectedIds != ''){
-                        let selected = selectedIds.includes(post.Id);
-                        if(selected){
-                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                    filteredSubreddits.forEach(subreddit => {
+                        let subredditFilteredPosts = filteredPosts.filter(post => post.Subreddit == subreddit);
+                        let subredditHtml = document.createElement('div');
+                        subredditHtml.innerHTML = "<div><b>" + subreddit + "</b></div>";
+                        postList.appendChild(subredditHtml);
+                        for(let i = 0; i < subredditFilteredPosts.length; i++){ //TODO zmenit na foreach
+                            let post = subredditFilteredPosts[i]; //kvuli tomuhle
+                            let postHtml = document.createElement('div');
+                            let html = '';
+                            let linkPost = "https://www.reddit.com" + post.PermaLink;
+                            let linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                            let title = '';
+                            if(post.Title.length > 57){
+                                title = post.Title.slice(0,55);
+                                title = title + "...";
+                            }else{
+                                title = post.Title;
+                            }
+                                html = "<div>&emsp;";
+                            if(v_selectedIds != ''){
+                                let selected = selectedIds.includes(post.Id);
+                                if(selected){
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                }else{
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                }
+                            }else{
+                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                            }
+                    
+                            let downloaded = downloadedIds.includes(post.Id);
+                            if(downloaded){
+                                html = html + "<span> X - </span>"
+                            }
+                            if(post.Over18){
+                                html = html + "<span> 18+ - </span>"
+                            }
+                            html = html + "<a href='" + linkSubreddit + "' target='_blank'>" + post.Subreddit + "</a> - ";
+                            html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
+                            postHtml.innerHTML = html;
+                            postList.appendChild(postHtml);
+                        }
+                    });
+                }else{
+                    for(let i = 0; i < filteredPosts.length; i++){ //TODO zmenit na foreach
+                        let post = filteredPosts[i]; //kvuli tomuhle
+                        let postHtml = document.createElement('div');
+                        let html = '';
+                        let linkPost = "https://www.reddit.com" + post.PermaLink;
+                        let linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
+                        let title = '';
+                        if(post.Title.length > 57){
+                            title = post.Title.slice(0,55);
+                            title = title + "...";
+                        }else{
+                            title = post.Title;
+                        }
+                            html = "<div>";
+                        if(v_selectedIds != ''){
+                            let selected = selectedIds.includes(post.Id);
+                            if(selected){
+                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                            }else{
+                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                            }
                         }else{
                             html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
                         }
-                    }else{
-                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
-                    }
                     
-                    let downloaded = downloadedIds.includes(post.Id);
-                    if(downloaded){
-                        html = html + "<span> X - </span>"
+                        let downloaded = downloadedIds.includes(post.Id);
+                        if(downloaded){
+                            html = html + "<span> X - </span>"
+                        }
+                        if(post.Over18){
+                            html = html + "<span> 18+ - </span>"
+                        }
+                        html = html + "<a href='" + linkSubreddit + "' target='_blank'>" + post.Subreddit + "</a> -";
+                        html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
+                        postHtml.innerHTML = html;
+                        postList.appendChild(postHtml);
                     }
-                    if(post.Over18){
-                        html = html + "<span> 18+ - </span>"
-                    }
-                    html = html + "<a href='" + linkSubreddit + "' target='_blank'>" + post.Subreddit + "</a> -";
-                    html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
-                    postHtml.innerHTML = html;
-                    postList.appendChild(postHtml);
                 }
-            }else{
-                //SUbreddits draw
             }
+            v_selectedIds = '';
             linkCheckBoxes();
             calculateDetails(true);
             //alert('End of redraw');

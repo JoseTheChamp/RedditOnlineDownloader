@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 using WebTesting.Entities;
 using WebTesting.Entities.Enums;
@@ -140,17 +141,50 @@ namespace WebTesting.Pages.Download
         }
 
 
-            public IActionResult OnPost()
+        public IActionResult OnPost()
         {
             var form = Request.Form;
             Posts = new List<Post>();
-            List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("Posts");
+            List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
+            HttpContext.Session.SetObject("ShowDownloaded", false);
+            HttpContext.Session.SetObject("GroupBySubreddits", false);
             foreach (string name in form.Keys)
             {
                 var res = form[name].ToString;
                 var resInvoked = res.Invoke();
-                if (resInvoked == "on" && name != "showDownloaded" && name != "selectAll") { //TODO bad design - based on names in htlm checkboxes on/off in select
+                if (resInvoked == "on" && name != "showDownloaded" && name != "selectAll" && name != "groupBySubreddits") { //TODO bad design - based on names in htlm checkboxes on/off in select
                     Posts.Add(PostsToChooseFrom.FirstOrDefault(e => e.Id == name));
+                    continue;
+                }
+                switch (name)
+                {
+                    case "showDownloaded":
+                        HttpContext.Session.SetObject("ShowDownloaded", true);
+                        break;
+                    case "nsfw":
+                        switch (resInvoked) //TODO not ideal solution change in html will brake this.
+                        {
+                            case "sfw":
+                                HttpContext.Session.SetObject("Nsfw", SelectNsfw.SFW);
+                                break;
+                            case "nsfw":
+                                HttpContext.Session.SetObject("Nsfw", SelectNsfw.NSFW);
+                                break;
+                            case "both":
+                                HttpContext.Session.SetObject("Nsfw", SelectNsfw.BOTH);
+                                break;
+                            default:
+                                throw new Exception("In select there is nsfw that does not exist.");
+                        }
+                        break;
+                    case "groupBySubreddits":
+                        HttpContext.Session.SetObject("GroupBySubreddits", true);
+                        break;
+                    case "multipleSelect[]":
+                        HttpContext.Session.SetObject("DomainsForm", Request.Form["multipleSelect[]"].ToList());
+                        break;
+                    default:
+                        break;
                 }
             }
             HttpContext.Session.SetObject("SelectedPosts",Posts);
