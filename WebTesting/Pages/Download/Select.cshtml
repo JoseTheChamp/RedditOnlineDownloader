@@ -16,10 +16,6 @@
 }
 else
 {   
-    <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
-    <input type="hidden" id="downloadedIds" asp-for="DownloadedIdsJson"/>
-    <input type="hidden" id="selectedIds" asp-for="SelectedIdsJson"/>
-    <input type="hidden" id="templatesJson" asp-for="TemplatesJson"/>
     <div class="container-fluid">
         <div class="row">
             <div class="col-5">
@@ -28,8 +24,8 @@ else
             <div class="col" style="border:1px solid red">
                 <!--HERE ARE PRESETS-->
                 Templates:
-                <select id="templatesSelect" name="templatesSelect">
-                    <option value="none" selected>None</option>
+                <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
+                    <option value="none">None</option>
                 </select>
                 <button onclick="newTemplate()">New</button>
                 <button onclick="deleteTemplate()">Delete</button>
@@ -130,6 +126,11 @@ else
             </div>
         </div>
     </div>
+    <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
+    <input type="hidden" id="downloadedIds" asp-for="DownloadedIdsJson"/>
+    <input type="hidden" id="selectedIds" asp-for="SelectedIdsJson"/>
+    <input type="hidden" id="templatesJson" asp-for="TemplatesJson"/>
+    <input type="hidden" id="selectedTemplate" asp-for="SelectedTemplate"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
     <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
@@ -144,17 +145,6 @@ else
         const nextStepButton = document.getElementById("nextStep");
         var filteredLength = 0;
 
-        const i_templatesSelect = document.getElementById("templatesSelect");
-        var v_templatesSelect = i_templatesSelect.value;
-
-        var templatesJson = document.getElementById("templatesJson").value;
-        var templates = JSON.parse(templatesJson);
-        for(let i = 0; i < templates.length; i++){
-            let option = document.createElement('option');
-            option.value = JSON.stringify(templates[i]);
-            option.innerHTML = templates[i].Name;
-            i_templatesSelect.appendChild(option);
-        }
 
         //Select Form
         const i_groupBySubreddits = document.getElementsByName('groupBySubreddits')[0];
@@ -191,6 +181,37 @@ else
         var value = sessionInput.value;
         var posts = JSON.parse(value);
         //alert('Start - post: ' + posts + "//// downloaded ids: " + downloadedIds);
+
+        //Templates
+        const i_selectedTemplate = document.getElementById("selectedTemplate"); //TODO remove useless i_ and so on
+        var v_selectedTemplate = i_selectedTemplate.value;
+        const i_templatesSelect = document.getElementById("templatesSelect");
+
+        var templatesJson = document.getElementById("templatesJson").value;
+        var templates = JSON.parse(templatesJson);
+        for(let i = 0; i < templates.length; i++){
+            let option = document.createElement('option');
+            option.value = JSON.stringify(templates[i]);
+            if(templates[i].Id == v_selectedTemplate){
+                option.selected = true;
+            }
+            option.innerHTML = templates[i].Name;
+            i_templatesSelect.appendChild(option);
+        }
+        var v_templatesSelect = i_templatesSelect.value;
+        if(v_templatesSelect != 'none'){
+            let template = JSON.parse(v_templatesSelect);
+            alert("templates show - " + template.ShowDownloaded);
+            v_showDownloaded = template.ShowDownloaded;
+            i_showDownloaded.checked = v_showDownloaded;
+            v_groupBySubreddits = template.GroupBySubreddit;
+            i_groupBySubreddits.checked = v_groupBySubreddits;
+            v_nsfw = template.Nsfw;
+            i_nsfw.value = v_nsfw;
+            v_multipleSelect = JSON.parse(template.DomainsForm);
+            //$("#multipleSelect").chosen().val() = v_multipleSelect;
+            $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
+        }
         
         //Adding on change functions that will trigger redrawing the list
         i_groupBySubreddits.addEventListener('change', (event) => {
@@ -211,11 +232,29 @@ else
         });
         i_nsfw.addEventListener('change', function() {
             v_nsfw = this.value;
+            alert('Change nsfw');
             redraw();
+        });
+        i_templatesSelect.addEventListener('change', function() {
+            v_templatesSelect = this.value;
+            if(v_templatesSelect != 'none'){
+                let template = JSON.parse(v_templatesSelect);
+                v_showDownloaded = template.ShowDownloaded;
+                i_showDownloaded.checked = v_showDownloaded;
+                v_groupBySubreddits = template.GroupBySubreddit;
+                i_groupBySubreddits.checked = v_groupBySubreddits;
+                v_nsfw = template.Nsfw;
+                i_nsfw.value = v_nsfw;
+                //v_multipleSelect = template.DomainsForm;
+                //alert('multi val  ' + v_multipleSelect);
+                //TDOD ------------------------------------------------ LoadDomains
+                redraw();
+            }
         });
         $('#multipleSelect').change(function(){
             values = $("#multipleSelect").chosen().val();
             v_multipleSelect = values;
+            alert(v_multipleSelect);
             redraw();
         });
 
@@ -333,6 +372,7 @@ else
 
         redraw();
         function redraw(){
+
             postList.innerHTML = '';
             //posts draw
             let filteredPosts = posts;

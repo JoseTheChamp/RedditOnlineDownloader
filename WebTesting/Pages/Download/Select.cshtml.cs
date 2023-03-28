@@ -25,6 +25,7 @@ namespace WebTesting.Pages.Download
         public string DownloadedIdsJson { get; set; }
         public List<Template> Templates { get; set; }
         public string TemplatesJson { get; set; }
+        public int SelectedTemplate { get; set; }
 
         public List<string> Domains { get; set; }
 
@@ -61,6 +62,15 @@ namespace WebTesting.Pages.Download
 
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
+            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
+            {
+                string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
+                dynamic templateParsed = JObject.Parse(jsonTemplate);
+                SelectedTemplate = templateParsed.Id;
+            }
+            else {
+                SelectedTemplate = 0;
+            }
 
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
@@ -134,6 +144,16 @@ namespace WebTesting.Pages.Download
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
+            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
+            {
+                string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
+                dynamic templateParsed = JObject.Parse(jsonTemplate);
+                SelectedTemplate = templateParsed.Id;
+            }
+            else
+            {
+                SelectedTemplate = 0;
+            }
 
             Domains = new List<string>(); //TDOD linq groupby a select
             foreach (Post post in AllPosts)

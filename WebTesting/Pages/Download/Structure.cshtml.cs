@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NuGet.Protocol;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using WebTesting.Entities;
@@ -28,6 +30,9 @@ namespace WebTesting.Pages.Download
         public bool FolderPriorityIsSubreddit { get; set; }
         public bool Empty { get; set; }
         public bool Split { get; set; }
+
+        public List<Template> Templates { get; set; }
+        public string TemplatesJson { get; set; }
 
         public StructureModel(ApplicationDbContext db, DownloadManager dm)
         {
@@ -141,10 +146,11 @@ namespace WebTesting.Pages.Download
         }
 
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var form = Request.Form;
             Posts = new List<Post>();
+            string saveToTemplate = "";
             List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             HttpContext.Session.SetObject("ShowDownloaded", false);
             HttpContext.Session.SetObject("GroupBySubreddits", false);
@@ -183,10 +189,33 @@ namespace WebTesting.Pages.Download
                     case "multipleSelect[]":
                         HttpContext.Session.SetObject("DomainsForm", Request.Form["multipleSelect[]"].ToList());
                         break;
+                    case "templatesSelect":
+                        if (resInvoked != "none") {
+                            HttpContext.Session.SetObject("ChosenTemplate", resInvoked);
+                            saveToTemplate = resInvoked;
+                        }
+                        break;
                     default:
                         break;
                 }
             }
+            if (saveToTemplate != "")
+            {
+                dynamic templateParsed = JObject.Parse(saveToTemplate);
+                string id = templateParsed.Id;
+                Template template = _db.Templates.FirstOrDefault(t => t.Id == Int32.Parse(id));
+                template.ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
+                template.GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
+                template.DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm").ToJson();
+                template.Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw").ToString().ToLower();
+                _db.Templates.Update(template);
+                await _db.SaveChangesAsync();
+            }
+            else {
+                HttpContext.Session.Remove("ChosenTemplate");
+            }
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            TemplatesJson = Templates.ToJson();
             HttpContext.Session.SetObject("SelectedPosts",Posts);
             PostsJson = JsonConvert.SerializeObject(Posts);
             return Page();
