@@ -11,6 +11,7 @@ using WebTesting.Entities.Enums;
 using WebTesting.Models;
 using WebTesting.Services;
 using WebTesting.Utils;
+using System.Diagnostics;
 
 namespace WebTesting.Pages.Download
 {
@@ -22,7 +23,9 @@ namespace WebTesting.Pages.Download
         public string SelectedIdsJson { get; set; }
         public List<string> DownloadedIds { get; set; }
         public string DownloadedIdsJson { get; set; }
-        
+        public List<Template> Templates { get; set; }
+        public string TemplatesJson { get; set; }
+
         public List<string> Domains { get; set; }
 
 
@@ -53,6 +56,11 @@ namespace WebTesting.Pages.Download
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
+            string a = HttpContext.Session.GetString("RedditId");
+            List<Template> temps = _db.Templates.ToList();
+
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            TemplatesJson = Templates.ToJson();
 
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
@@ -124,6 +132,8 @@ namespace WebTesting.Pages.Download
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            TemplatesJson = Templates.ToJson();
 
             Domains = new List<string>(); //TDOD linq groupby a select
             foreach (Post post in AllPosts)
@@ -138,6 +148,49 @@ namespace WebTesting.Pages.Download
             await ManageDownloadedIdsAsync();
             PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
+        }
+        public IActionResult OnGetNewTemplate(string name)
+        {
+            int a = 5;
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            if (!Templates.Select(t => t.Name).ToList().Contains(name))
+            {
+                Template tmp = new Template(0, HttpContext.Session.GetString("RedditId"), name);
+                var task = SaveChangesNew(tmp);
+                Template result = task.Result;
+
+                return new JsonResult(result.ToJson());
+            }
+            return StatusCode(422);
+        }
+        public IActionResult OnGetDeleteTemplate(int id)
+        {
+            int a = 5;
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            Template template = null;
+            if (template != null) { //TODO maybe breaks
+                int vfvf = 5;
+            }
+            template = Templates.FirstOrDefault(t => t.Id == id);
+            if (template != null)
+            {
+                var task = SaveChangesDelete(template);
+                bool result = task.Result;
+                return new JsonResult("");
+            }
+            return StatusCode(422);
+        }
+        private async Task<Template> SaveChangesNew(Template tmp)
+        {
+            _db.Templates.Add(tmp);
+            await _db.SaveChangesAsync();
+            return tmp;
+        }
+        private async Task<bool> SaveChangesDelete(Template tmp)
+        {
+            _db.Templates.Remove(tmp);
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

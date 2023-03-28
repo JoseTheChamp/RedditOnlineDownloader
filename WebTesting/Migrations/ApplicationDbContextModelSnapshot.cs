@@ -109,6 +109,72 @@ namespace WebTesting.Migrations
                     b.ToTable("downloadHistories");
                 });
 
+            modelBuilder.Entity("WebTesting.Models.Template", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("DomainFolder")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("DomainName")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("DomainsForm")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Empty")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("GroupBySubreddit")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nsfw")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Numbering")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PriorityFolder")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("PriorityName")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowDownloaded")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Split")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SubredditFolder")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SubredditName")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Title")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Templates");
+                });
+
             modelBuilder.Entity("WebTesting.Models.User", b =>
                 {
                     b.Property<int>("Id")

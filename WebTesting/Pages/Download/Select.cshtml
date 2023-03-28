@@ -1,6 +1,7 @@
 ﻿@page
 @using WebTesting.Entities;
 @using WebTesting.Entities.Enums;
+@using WebTesting.Models;
 @model WebTesting.Pages.Download.SelectModel
 @inject IHttpContextAccessor Accessor
 @{
@@ -18,6 +19,7 @@ else
     <input type="hidden" id="hdnSession" asp-for="PostsJson"/>
     <input type="hidden" id="downloadedIds" asp-for="DownloadedIdsJson"/>
     <input type="hidden" id="selectedIds" asp-for="SelectedIdsJson"/>
+    <input type="hidden" id="templatesJson" asp-for="TemplatesJson"/>
     <div class="container-fluid">
         <div class="row">
             <div class="col-5">
@@ -25,13 +27,12 @@ else
             </div>
             <div class="col" style="border:1px solid red">
                 <!--HERE ARE PRESETS-->
-                Presets:
-                <select asp>
-                    <option>Preset 1</option>
-                    <option>Preset 2</option>
+                Templates:
+                <select id="templatesSelect" name="templatesSelect">
+                    <option value="none" selected>None</option>
                 </select>
-                <button>New</button>
-                <button>Delete</button>
+                <button onclick="newTemplate()">New</button>
+                <button onclick="deleteTemplate()">Delete</button>
             </div>
             <div class="col-3 text-end"> 
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
@@ -40,76 +41,73 @@ else
         </div>
         <div class="row">
             <div class="col-2" style="border:1px solid red">
-                    <!--HERE ARE Select settings-->
-                    <div class="row pb-2">
-                        <label for="showDownloaded">Show downloaded posts:</label>
-                        @if (Model.ShowDownloaded == true)
-                        {
-                            <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
-                        }
-                        else
-                        {
-                            <input form="selectedPosts" name="showDownloaded" type="checkbox">
-                        }
+                <!--HERE ARE Select settings-->
+                <div class="row pb-2">
+                    <label for="showDownloaded">Show downloaded posts:</label>
+                    @if (Model.ShowDownloaded == true)
+                    {
+                        <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input form="selectedPosts" name="showDownloaded" type="checkbox">
+                    }
+                </div>
+                <div class="row pb-2">  
+                    <label for="groupBySubreddits">Group by subreddits:</label>
+                    @if (Model.GroupBySubreddit == true)
+                    {
+                        <input form="selectedPosts" name="groupBySubreddits" type="checkbox" checked>
+                    }
+                    else
+                    {
+                        <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
+                    }
+                </div>
+                <div class="row pb-2">
+                    <label for="nsfw">Nsfw/sfw:</label>
+                    <select form="selectedPosts" name="nsfw">
+                    @switch (Model.Nsfw)
+                    {
+                        case SelectNsfw.SFW:
+                                <option value="both">Both</option>
+                                <option selected value="sfw">SFW</option>
+                                <option value="nsfw">NSFW</option>
+                            break;
+                        case SelectNsfw.NSFW:
+                                <option value="both">Both</option>
+                                <option value="sfw">SFW</option>
+                                <option selected value="nsfw">NSFW</option>
+                            break;
+                        default:
+                                <option selected value="both">Both</option>
+                                <option value="sfw">SFW</option>
+                                <option value="nsfw">NSFW</option>
+                            break;
+                    }
+                    </select>
+                </div>
+                <div class="row pb-2 pt-3">
+                    <div class="col-6 pl-0">
+                        <label for="mediaTypes">Media to show:</label> 
                     </div>
-                    <div class="row pb-2">  
-                        <label for="groupBySubreddits">Group by subreddits:</label>
-                        @if (Model.GroupBySubreddit == true)
-                        {
-                            <input form="selectedPosts" name="groupBySubreddits" type="checkbox" checked>
-                        }
-                        else
-                        {
-                            <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
-                        }
+                    <div class="col-3 pl-0">
+                        <input type="button" name="Button" value="All" onclick="selectAll(true)" />
                     </div>
-                    <div class="row pb-2">
-                        <label for="nsfw">Nsfw/sfw:</label>
-                        <select form="selectedPosts" name="nsfw">
-                        @switch (Model.Nsfw)
-                        {
-                            case SelectNsfw.SFW:
-                                    <option value="both">Both</option>
-                                    <option selected value="sfw">SFW</option>
-                                    <option value="nsfw">NSFW</option>
-                                break;
-                            case SelectNsfw.NSFW:
-                                    <option value="both">Both</option>
-                                    <option value="sfw">SFW</option>
-                                    <option selected value="nsfw">NSFW</option>
-                                break;
-                            default:
-                                    <option selected value="both">Both</option>
-                                    <option value="sfw">SFW</option>
-                                    <option value="nsfw">NSFW</option>
-                                break;
-                        }
-                        </select>
+                    <div class="col-2 p-0">
+                        <input type="button" name="Button" value="None" onclick="selectAll(false)" />
                     </div>
-                    <div class="row pb-2 pt-3">
-                        <div class="col-6 pl-0">
-                            <label for="mediaTypes">Media to show:</label> 
-                        </div>
-                        <div class="col-3 pl-0">
-                            <input type="button" name="Button" value="All" onclick="selectAll(true)" />
-                        </div>
-                        <div class="col-2 p-0">
-                            <input type="button" name="Button" value="None" onclick="selectAll(false)" />
-                        </div>
-                        <select form="selectedPosts" id='multipleSelect' onclick="displayColorSelected()" data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
-                        @foreach (string domain in Model.Domains)
-                        {
-                            if (Model.DomainsForm.Contains(domain)) {
-                                <option selected>@domain</option>
-                            } else { 
-                                <option>@domain</option>
-                            }
+                    <select form="selectedPosts" id='multipleSelect' onclick="displayColorSelected()" data-placeholder='Begin typing a name to filter...' multiple class='chosen-select' name='multipleSelect[]'>
+                    @foreach (string domain in Model.Domains)
+                    {
+                        if (Model.DomainsForm.Contains(domain)) {
+                            <option selected>@domain</option>
+                        } else { 
+                            <option>@domain</option>
                         }
-                        </select>
-                    </div>
-                    <div class="row pt-3">
-                        <input form="selectedPosts" type="submit" class="btn btn-primary" value="Submit">
-                    </div>           
+                    }
+                    </select>
+                </div>   
             </div>
             <div class="col-8" style="border:1px solid red">
                 <!--HERE ARE Posts-->
@@ -145,6 +143,18 @@ else
         const multipleSelect = document.getElementById("multipleSelect");
         const nextStepButton = document.getElementById("nextStep");
         var filteredLength = 0;
+
+        const i_templatesSelect = document.getElementById("templatesSelect");
+        var v_templatesSelect = i_templatesSelect.value;
+
+        var templatesJson = document.getElementById("templatesJson").value;
+        var templates = JSON.parse(templatesJson);
+        for(let i = 0; i < templates.length; i++){
+            let option = document.createElement('option');
+            option.value = JSON.stringify(templates[i]);
+            option.innerHTML = templates[i].Name;
+            i_templatesSelect.appendChild(option);
+        }
 
         //Select Form
         const i_groupBySubreddits = document.getElementsByName('groupBySubreddits')[0];
@@ -444,6 +454,57 @@ else
                     calculateDetails(true);
                 });
             });
+        }
+        function newTemplate(){
+            var person = prompt("Please enter unique name for your Template:", "");
+            if (person != null && person != "") {
+                $.ajax({
+                    url: '/Download/Select?handler=NewTemplate',
+                    type: 'GET',
+                    data: { name: person },
+                    dataType: 'json',
+                    success: function (data) {
+                        let template = JSON.parse(data);
+                        let option = document.createElement('option');
+                        option.value = JSON.stringify(template);
+                        option.innerHTML = template.Name;
+                        i_templatesSelect.appendChild(option);
+                        i_templatesSelect.value = data;
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error - Template could not be created. Ensure that your name is unique.'); // handle any errors here
+                    }
+                });
+            }
+        }
+        function deleteTemplate(){
+            let tempVal1 = i_templatesSelect.value;
+            if(tempVal1 != "none"){
+                let tempVal = i_templatesSelect.value;
+                let template = JSON.parse(tempVal);
+                //let confirm = confirm("Do you truly want to delete Template '" + template.name + "':");
+                if (true) {
+                    $.ajax({
+                        url: '/Download/Select?handler=DeleteTemplate',
+                        type: 'GET',
+                        data: { id: template.Id },
+                        dataType: 'json',
+                        success: function (data) {
+                            var options = i_templatesSelect.getElementsByTagName('OPTION');
+                            for(let i=0; i< options.length; i++) {
+                                if(options[i].innerHTML == template.Name) {
+                                    i_templatesSelect.removeChild(options[i]);
+                                    break;
+                                }
+                            }
+                            i_templates.value = "none";
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Error - Template could not be deleted.'); // handle any errors here
+                        }
+                    });
+                }
+            }
         }
     </script>
 }
