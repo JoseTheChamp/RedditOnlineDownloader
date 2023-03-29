@@ -49,7 +49,7 @@ namespace WebTesting.Pages.Download
             }
         }
 
-        public IActionResult OnPostDownload() {
+        public async Task<IActionResult> OnPostDownload() {
             //TODO Start download procces.
             //TODO if success.
 
@@ -116,6 +116,28 @@ namespace WebTesting.Pages.Download
             FolderPriorityIsSubreddit,
             Empty,
             Split);
+
+            //Templates
+            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
+            {
+                string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
+                dynamic templateParsed = JObject.Parse(jsonTemplate);
+                int id = templateParsed.Id;
+                Template template = _db.Templates.FirstOrDefault(p => p.UserId == HttpContext.Session.GetString("RedditId") && p.Id == id);
+                template.Numbering = Numbering.ToString().ToLower();
+                template.SubredditName = SubredditName;
+                template.DomainName = DomainName;
+                template.PriorityName = NamePriorityIsSubreddit;
+                template.SubredditFolder= SubredditFolder;
+                template.DomainFolder = DomainFolder;
+                template.PriorityFolder = FolderPriorityIsSubreddit;
+                template.Empty = Empty;
+                template.Split = Split;
+                template.Title = Title;
+                _db.Templates.Update(template);
+                await _db.SaveChangesAsync();
+            }
+
 
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");

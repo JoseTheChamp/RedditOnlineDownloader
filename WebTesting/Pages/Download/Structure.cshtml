@@ -198,17 +198,34 @@ else
         }
         var v_templatesSelect = i_templatesSelect.value;
         if(v_templatesSelect != 'none'){ //TODO load template into fields
-            /*let template = JSON.parse(v_templatesSelect);
-            alert("templates show - " + template.ShowDownloaded);
-            v_showDownloaded = template.ShowDownloaded;
-            i_showDownloaded.checked = v_showDownloaded;
-            v_groupBySubreddits = template.GroupBySubreddit;
-            i_groupBySubreddits.checked = v_groupBySubreddits;
-            v_nsfw = template.Nsfw;
-            i_nsfw.value = v_nsfw;
-            v_multipleSelect = JSON.parse(template.DomainsForm);
-            //$("#multipleSelect").chosen().val() = v_multipleSelect;
-            $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');*/
+            let template = JSON.parse(v_templatesSelect);
+            if(template.Numbering == 'ids'){
+                document.getElementById("ids").checked = true;
+            }else if(template.Numbering == 'standard'){
+                document.getElementById("standard").checked = true;
+            }else{
+                document.getElementById("none").checked = true;
+            }
+            v_numbering = template.Numbering;
+            i_numbering.selected = v_numbering;
+            v_priorityName = template.PriorityName;
+            i_priorityName.value = v_priorityName
+            v_priorityFolder = template.PriorityFolder;
+            i_priorityFolder.selected = v_priorityFolder;
+            v_subredditName = template.SubredditName;
+            i_subredditName.checked = v_subredditName;
+            v_domainName = template.DomainName;
+            i_domainName.checked = v_domainName;
+            v_subredditFolder = template.SubredditFolder;
+            i_subredditFolder.checked = v_subredditFolder;
+            v_domainFolder = template.DomainFolder;
+            i_domainFolder.checked = v_domainFolder;
+            v_split = template.Split;
+            i_split.checked = v_split;
+            v_empty = template.Empty;
+            i_empty.checked = v_empty;
+            v_title = template.Title;
+            i_title.value = v_title;
         }
 
 
@@ -286,20 +303,35 @@ else
         i_templatesSelect.addEventListener('change', function() {
             v_templatesSelect = this.value;
             if(v_templatesSelect != 'none'){
-                alert("Template changed");
-                //TDOD load from template
-                /*
                 let template = JSON.parse(v_templatesSelect);
-                v_showDownloaded = template.ShowDownloaded;
-                i_showDownloaded.checked = v_showDownloaded;
-                v_groupBySubreddits = template.GroupBySubreddit;
-                i_groupBySubreddits.checked = v_groupBySubreddits;
-                v_nsfw = template.Nsfw;
-                i_nsfw.value = v_nsfw;
-                //v_multipleSelect = template.DomainsForm;
-                //alert('multi val  ' + v_multipleSelect);
-                //TDOD ------------------------------------------------ LoadDomains
-                redraw();*/
+                if(template.Numbering == 'ids'){
+                    document.getElementById("ids").checked = true;
+                }else if(template.Numbering == 'standard'){
+                    document.getElementById("standard").checked = true;
+                }else{
+                    document.getElementById("none").checked = true;
+                }
+                v_numbering = template.Numbering;
+                i_numbering.selected = v_numbering;
+                v_priorityName = template.PriorityName;
+                i_priorityName.value = v_priorityName
+                v_priorityFolder = template.PriorityFolder;
+                i_priorityFolder.selected = v_priorityFolder;
+                v_subredditName = template.SubredditName;
+                i_subredditName.checked = v_subredditName;
+                v_domainName = template.DomainName;
+                i_domainName.checked = v_domainName;
+                v_subredditFolder = template.SubredditFolder;
+                i_subredditFolder.checked = v_subredditFolder;
+                v_domainFolder = template.DomainFolder;
+                i_domainFolder.checked = v_domainFolder;
+                v_split = template.Split;
+                i_split.checked = v_split;
+                v_empty = template.Empty;
+                i_empty.checked = v_empty;
+                v_title = template.Title;
+                i_title.value = v_title;
+                redraw();
             }
         });
 
