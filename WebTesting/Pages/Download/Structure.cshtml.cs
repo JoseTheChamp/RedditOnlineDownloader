@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Protocol;
+using System;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using WebTesting.Entities;
@@ -33,6 +34,7 @@ namespace WebTesting.Pages.Download
 
         public List<Template> Templates { get; set; }
         public string TemplatesJson { get; set; }
+        public int SelectedTemplate { get; set; }
 
         public StructureModel(ApplicationDbContext db, DownloadManager dm)
         {
@@ -214,11 +216,81 @@ namespace WebTesting.Pages.Download
             else {
                 HttpContext.Session.Remove("ChosenTemplate");
             }
+
+            //Templates
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
+            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
+            {
+                string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
+                dynamic templateParsed = JObject.Parse(jsonTemplate);
+                SelectedTemplate = templateParsed.Id;
+            }
+            else
+            {
+                SelectedTemplate = 0;
+            }
+
             HttpContext.Session.SetObject("SelectedPosts",Posts);
             PostsJson = JsonConvert.SerializeObject(Posts);
             return Page();
+        }
+
+        public IActionResult OnGetNewTemplate(string name, string numbering, bool subName, bool domName, bool prioName, int title, bool subFol, bool domFol, bool prioFol, bool empty, bool split)  //TODO duplicte code in select.cshtml.cs
+        {
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+
+            if (!Templates.Select(t => t.Name).ToList().Contains(name))
+            {
+                Template tmp = new Template(0, 
+                    HttpContext.Session.GetString("RedditId"), 
+                    name,
+                    HttpContext.Session.GetObject<bool>("ShowDownloaded"),
+                    HttpContext.Session.GetObject<bool>("GroupBySubreddit"),
+                    HttpContext.Session.GetObject<SelectNsfw>("Nsfw").ToString().ToLower(),
+                    HttpContext.Session.GetString("DomainsForm"),
+                    numbering,
+                    subName,
+                    domName,
+                    prioName,
+                    title,
+                    subFol,
+                    domFol,
+                    prioFol,
+                    empty,
+                    split
+                );
+                var task = SaveChangesNew(tmp);
+                Template result = task.Result;
+                HttpContext.Session.SetObject("ChosenTemplate", result.ToJson());
+                return new JsonResult(result.ToJson());
+            }
+            return StatusCode(422);
+        }
+        public IActionResult OnGetDeleteTemplate(int id)
+        {
+            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+            Template template = Templates.FirstOrDefault(t => t.Id == id);
+            if (template != null)
+            {
+                var task = SaveChangesDelete(template);
+                bool result = task.Result;
+                HttpContext.Session.Remove("ChosenTemplate");
+                return new JsonResult("");
+            }
+            return StatusCode(422);
+        }
+        private async Task<Template> SaveChangesNew(Template tmp)
+        {
+            _db.Templates.Add(tmp);
+            await _db.SaveChangesAsync();
+            return tmp;
+        }
+        private async Task<bool> SaveChangesDelete(Template tmp)
+        {
+            _db.Templates.Remove(tmp);
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

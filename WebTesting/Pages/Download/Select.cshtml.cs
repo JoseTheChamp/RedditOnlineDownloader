@@ -57,8 +57,6 @@ namespace WebTesting.Pages.Download
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
-            string a = HttpContext.Session.GetString("RedditId");
-            List<Template> temps = _db.Templates.ToList();
 
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
@@ -169,33 +167,29 @@ namespace WebTesting.Pages.Download
             PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
         }
-        public IActionResult OnGetNewTemplate(string name)
+        public IActionResult OnGetNewTemplate(string name, bool show, bool group, string domains, string nsfw)
         {
-            int a = 5;
+
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             if (!Templates.Select(t => t.Name).ToList().Contains(name))
             {
-                Template tmp = new Template(0, HttpContext.Session.GetString("RedditId"), name);
+                Template tmp = new Template(0, HttpContext.Session.GetString("RedditId"), name, show, group, nsfw, domains, "ids", false, false, true, 60, true, false, true, true, true);
                 var task = SaveChangesNew(tmp);
                 Template result = task.Result;
-
+                HttpContext.Session.SetObject("ChosenTemplate", result.ToJson());
                 return new JsonResult(result.ToJson());
             }
             return StatusCode(422);
         }
         public IActionResult OnGetDeleteTemplate(int id)
         {
-            int a = 5;
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
-            Template template = null;
-            if (template != null) { //TODO maybe breaks
-                int vfvf = 5;
-            }
-            template = Templates.FirstOrDefault(t => t.Id == id);
+            Template template = Templates.FirstOrDefault(t => t.Id == id);
             if (template != null)
             {
                 var task = SaveChangesDelete(template);
                 bool result = task.Result;
+                HttpContext.Session.Remove("ChosenTemplate");
                 return new JsonResult("");
             }
             return StatusCode(422);

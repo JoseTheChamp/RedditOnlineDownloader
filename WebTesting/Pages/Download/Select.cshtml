@@ -201,7 +201,6 @@ else
         var v_templatesSelect = i_templatesSelect.value;
         if(v_templatesSelect != 'none'){
             let template = JSON.parse(v_templatesSelect);
-            alert("templates show - " + template.ShowDownloaded);
             v_showDownloaded = template.ShowDownloaded;
             i_showDownloaded.checked = v_showDownloaded;
             v_groupBySubreddits = template.GroupBySubreddit;
@@ -209,7 +208,7 @@ else
             v_nsfw = template.Nsfw;
             i_nsfw.value = v_nsfw;
             v_multipleSelect = JSON.parse(template.DomainsForm);
-            //$("#multipleSelect").chosen().val() = v_multipleSelect;
+            $("#multipleSelect").chosen().val(v_multipleSelect);
             $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
         }
         
@@ -232,7 +231,6 @@ else
         });
         i_nsfw.addEventListener('change', function() {
             v_nsfw = this.value;
-            alert('Change nsfw');
             redraw();
         });
         i_templatesSelect.addEventListener('change', function() {
@@ -245,16 +243,17 @@ else
                 i_groupBySubreddits.checked = v_groupBySubreddits;
                 v_nsfw = template.Nsfw;
                 i_nsfw.value = v_nsfw;
-                //v_multipleSelect = template.DomainsForm;
-                //alert('multi val  ' + v_multipleSelect);
-                //TDOD ------------------------------------------------ LoadDomains
+                v_multipleSelect = JSON.parse(template.DomainsForm);
+                $("#multipleSelect").chosen().val(v_multipleSelect);
+                $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
                 redraw();
+            }else{
+                
             }
         });
         $('#multipleSelect').change(function(){
             values = $("#multipleSelect").chosen().val();
             v_multipleSelect = values;
-            alert(v_multipleSelect);
             redraw();
         });
 
@@ -501,7 +500,7 @@ else
                 $.ajax({
                     url: '/Download/Select?handler=NewTemplate',
                     type: 'GET',
-                    data: { name: person },
+                    data: { name: person, show: v_showDownloaded, group: v_groupBySubreddits, domains: JSON.stringify(v_multipleSelect), nsfw: v_nsfw },
                     dataType: 'json',
                     success: function (data) {
                         let template = JSON.parse(data);

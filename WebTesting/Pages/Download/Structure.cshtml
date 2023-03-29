@@ -20,6 +20,15 @@ else
             <div class="col">
                 <h2>Set up folder structure.</h2>
             </div>
+            <div class="col" style="border:1px solid red">
+                <!--HERE ARE TEMPLATES-->
+                Templates:
+                <select form="structure" id="templatesSelect" name="templatesSelect">
+                    <option value="none">None</option>
+                </select>
+                <button onclick="newTemplate()">New</button>
+                <button onclick="deleteTemplate()">Delete</button>
+            </div>
             <div class="col-3 text-end">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
                 <input class="btn btn-primary" form="structure" type="submit"></input>
@@ -113,6 +122,9 @@ else
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <input type="hidden" id="templatesJson" asp-for="TemplatesJson"/>
+    <input type="hidden" id="selectedTemplate" asp-for="SelectedTemplate"/>
     <script>
         /*
         alert('start');
@@ -166,6 +178,40 @@ else
         var v_domainFolder = false;
         var v_empty = true;
         var v_split = true;
+
+
+        //Templates
+        const i_selectedTemplate = document.getElementById("selectedTemplate"); //TODO remove useless i_ and so on
+        var v_selectedTemplate = i_selectedTemplate.value;
+        const i_templatesSelect = document.getElementById("templatesSelect");
+
+        var templatesJson = document.getElementById("templatesJson").value;
+        var templates = JSON.parse(templatesJson);
+        for(let i = 0; i < templates.length; i++){
+            let option = document.createElement('option');
+            option.value = JSON.stringify(templates[i]);
+            if(templates[i].Id == v_selectedTemplate){
+                option.selected = true;
+            }
+            option.innerHTML = templates[i].Name;
+            i_templatesSelect.appendChild(option);
+        }
+        var v_templatesSelect = i_templatesSelect.value;
+        if(v_templatesSelect != 'none'){ //TODO load template into fields
+            /*let template = JSON.parse(v_templatesSelect);
+            alert("templates show - " + template.ShowDownloaded);
+            v_showDownloaded = template.ShowDownloaded;
+            i_showDownloaded.checked = v_showDownloaded;
+            v_groupBySubreddits = template.GroupBySubreddit;
+            i_groupBySubreddits.checked = v_groupBySubreddits;
+            v_nsfw = template.Nsfw;
+            i_nsfw.value = v_nsfw;
+            v_multipleSelect = JSON.parse(template.DomainsForm);
+            //$("#multipleSelect").chosen().val() = v_multipleSelect;
+            $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');*/
+        }
+
+
         //adding on change functions that will trigger reddrawing of the list
         i_domainName.addEventListener('change', (event) => {
             if (event.currentTarget.checked) {
@@ -236,6 +282,25 @@ else
                 v_priorityName = this.value;
                 redraw();
             });
+        });
+        i_templatesSelect.addEventListener('change', function() {
+            v_templatesSelect = this.value;
+            if(v_templatesSelect != 'none'){
+                alert("Template changed");
+                //TDOD load from template
+                /*
+                let template = JSON.parse(v_templatesSelect);
+                v_showDownloaded = template.ShowDownloaded;
+                i_showDownloaded.checked = v_showDownloaded;
+                v_groupBySubreddits = template.GroupBySubreddit;
+                i_groupBySubreddits.checked = v_groupBySubreddits;
+                v_nsfw = template.Nsfw;
+                i_nsfw.value = v_nsfw;
+                //v_multipleSelect = template.DomainsForm;
+                //alert('multi val  ' + v_multipleSelect);
+                //TDOD ------------------------------------------------ LoadDomains
+                redraw();*/
+            }
         });
 
         //Calculating details on the richt side of screen
@@ -531,6 +596,60 @@ else
             }
             namesTaken.push(name);
             return name;
+        }
+        function newTemplate(){
+            var person = prompt("Please enter unique name for your Template:", ""); //TODO rename person
+            if (person != null && person != "") {
+                alert("newTemplate entered");
+                $.ajax({
+                    url: '/Download/Structure?handler=NewTemplate',
+                    type: 'GET',
+                    data: { name: person, numbering: v_numbering, subName: v_subredditName, domName: v_domainName, prioName: v_priorityName, title: v_title, subFol: v_subredditFolder, domFol: v_domainFolder, prioFol: v_priorityFolder, empty: v_empty, split: v_split },
+                    dataType: 'json',
+                    success: function (data) {
+                        alert("success");
+                        let template = JSON.parse(data);
+                        let option = document.createElement('option');
+                        option.value = JSON.stringify(template);
+                        option.innerHTML = template.Name;
+                        i_templatesSelect.appendChild(option);
+                        i_templatesSelect.value = data;
+                        alert("success end");
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Error - Template could not be created. Ensure that your name is unique.'); // handle any errors here
+                    }
+                });
+            }
+        }
+        function deleteTemplate(){
+            let tempVal1 = i_templatesSelect.value;
+            if(tempVal1 != "none"){
+                let tempVal = i_templatesSelect.value;
+                let template = JSON.parse(tempVal);
+                //let confirm = confirm("Do you truly want to delete Template '" + template.name + "':");
+                if (true) {
+                    $.ajax({
+                        url: '/Download/Structure?handler=DeleteTemplate',
+                        type: 'GET',
+                        data: { id: template.Id },
+                        dataType: 'json',
+                        success: function (data) {
+                            var options = i_templatesSelect.getElementsByTagName('OPTION');
+                            for(let i=0; i< options.length; i++) {
+                                if(options[i].innerHTML == template.Name) {
+                                    i_templatesSelect.removeChild(options[i]);
+                                    break;
+                                }
+                            }
+                            i_templates.value = "none";
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Error - Template could not be deleted.'); // handle any errors here
+                        }
+                    });
+                }
+            }
         }
     </script>
 }

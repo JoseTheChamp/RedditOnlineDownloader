@@ -54,6 +54,7 @@ namespace WebTesting.Models
             PriorityFolder = true;
             Numbering = "ids";
             DomainsForm = "all";
+            Title = 60;
         }
 
         public Template(int id, 
