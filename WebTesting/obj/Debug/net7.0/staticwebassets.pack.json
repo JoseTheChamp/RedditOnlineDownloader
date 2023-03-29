@@ -133,6 +133,14 @@
       "PackagePath": "staticwebassets\\Downloads\\Download8129\\animegifs\\v.redd.it_Watame Did Nothing Wrong.mp4"
     },
     {
+      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Images\\arrow-hidden.png",
+      "PackagePath": "staticwebassets\\Images\\arrow-hidden.png"
+    },
+    {
+      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Images\\arrow-showing.png",
+      "PackagePath": "staticwebassets\\Images\\arrow-showing.png"
+    },
+    {
       "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\css\\bootswatch_cyborg.css",
       "PackagePath": "staticwebassets\\css\\bootswatch_cyborg.css"
     },

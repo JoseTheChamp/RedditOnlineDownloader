@@ -403,7 +403,8 @@ else
                         let subredditFilteredPosts = filteredPosts.filter(post => post.Subreddit == subreddit);
                         let subredditHtml = document.createElement('div');
                         subredditHtml.id = 'M' + subredditIndex;
-                        subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b>" + subreddit + "</b>";
+                                    //subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b>" + subreddit + "</b><img id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")' src='~/Images/arrow-showing.png' alt='Arrow'/>";
+                            subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b id='no'>" + subreddit + "</b><button type='button' id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")'>&#8595;</button>";
                         //postList.appendChild(subredditHtml);
                         for(let i = 0; i < subredditFilteredPosts.length; i++){ //TODO zmenit na foreach
                             let post = subredditFilteredPosts[i]; //kvuli tomuhle
@@ -551,18 +552,38 @@ else
             }
         }
         function addListener(id){
-            //alert("adding listeners");
             let main = document.getElementById('C' + id);
             let children = document.getElementById('M' + id).querySelectorAll('#checkbox');
-            //alert('main - ' + main + '    children ' + children);
             main.addEventListener('change', function() {
-                alert('Main ' + id + '    ' + children.length);
                 for(let i = 0; i < children.length; i++){
-                    alert('foreach ' + children[i].checked);
                     children[i].checked = main.checked;
                 }
                 calculateDetails(true);
             });
+        }
+        function showOrHide(id) 
+        {
+            let ids = ['M' + id,'I' + id, 'C' + id, "no"];
+            let children = document.getElementById('M' + id).children;
+            let image = document.getElementById('I' + id);
+            if (image.innerText == '↓') 
+            {
+                image.innerHTML = '&#8593;';
+                for(let i = 0; i < children.length; i++){
+                    if(!ids.includes(children[i].id)){
+                        children[i].style.display = 'none';
+                    }
+                }
+            }
+            else 
+            {
+                image.innerHTML = '&#8595;';
+                for(let i = 0; i < children.length; i++){
+                    if(!ids.includes(children[i].id)){
+                        children[i].style.display = 'block';
+                    }
+                }
+            }
         }
     </script>
 }

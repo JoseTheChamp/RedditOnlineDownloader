@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "mOVQ25TPvC9dql1edWKIKaXyUcQfqmR1VwJTKBUYC1U=",
+  "Hash": "CtN27d1t7qCajPkAVhy+R0u22l9gzvfHYn7YzCfcvzI=",
   "Source": "WebTesting",
   "BasePath": "_content/WebTesting",
   "Mode": "Default",
@@ -661,6 +661,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Images\\arrow-hidden.png",
+      "SourceId": "WebTesting",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
+      "BasePath": "_content/WebTesting",
+      "RelativePath": "Images/arrow-hidden.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\arrow-hidden.png"
+    },
+    {
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\Images\\arrow-showing.png",
+      "SourceId": "WebTesting",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
+      "BasePath": "_content/WebTesting",
+      "RelativePath": "Images/arrow-showing.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\arrow-showing.png"
     },
     {
       "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\js\\site.js",
