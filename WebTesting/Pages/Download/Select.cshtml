@@ -262,6 +262,11 @@ else
             checkboxes.forEach(function(checkbox) {
                 checkbox.checked = selectAllCheckboxes.checked;
             });
+            checkboxes.forEach(function(checkbox) {
+                let evt = document.createEvent("HTMLEvents");
+                evt.initEvent("change", false, true);
+                checkbox.dispatchEvent(evt);
+            });
             calculateDetails(true);
         });
 
@@ -371,7 +376,13 @@ else
 
         redraw();
         function redraw(){
-
+            //Go through all checkBoxes and save their names - ids
+            let jsSelectedIds = [];
+            checkboxes.forEach(function(checkbox) {
+                if(checkbox.checked == true){
+                    jsSelectedIds.push(checkbox.getAttribute("name"));
+                }
+            });
             postList.innerHTML = '';
             //posts draw
             let filteredPosts = posts;
@@ -419,18 +430,30 @@ else
                             }else{
                                 title = post.Title;
                             }
-                                html = "<div>&emsp;";
+                            html = "<div>&emsp;";
+                            //alert('Vypisovani');
                             if(v_selectedIds != ''){
                                 let selected = selectedIds.includes(post.Id);
                                 if(selected){
                                     html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
                                 }else{
-                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                    if(jsSelectedIds.includes(post.Id)){
+                                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                    }else{
+                                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                    }
                                 }
                             }else{
-                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                if(jsSelectedIds != ''){
+                                    if(jsSelectedIds.includes(post.Id)){
+                                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                    }else{
+                                        html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                    }
+                                }else{
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                }
                             }
-                    
                             let downloaded = downloadedIds.includes(post.Id);
                             if(downloaded){
                                 html = html + "<span> X - </span>"
@@ -461,18 +484,29 @@ else
                         }else{
                             title = post.Title;
                         }
-                            html = "<div>";
+                        html = "<div>";
                         if(v_selectedIds != ''){
                             let selected = selectedIds.includes(post.Id);
                             if(selected){
                                 html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
                             }else{
-                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                if(jsSelectedIds.includes(post.Id)){
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                }else{
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                }
                             }
                         }else{
-                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                            if(jsSelectedIds != ''){
+                                if(jsSelectedIds.includes(post.Id)){
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                                }else{
+                                    html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                }
+                            }else{
+                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
+                            }
                         }
-                    
                         let downloaded = downloadedIds.includes(post.Id);
                         if(downloaded){
                             html = html + "<span> X - </span>"
@@ -560,6 +594,29 @@ else
                 }
                 calculateDetails(true);
             });
+            children.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    let subCount = 0;
+                    children.forEach(function(check) {
+                        if(check.checked){
+                            subCount++;
+                        }
+                    });
+                    if(subCount == children.length){
+                        main.checked = true;
+                        main.indeterminate = false;
+                    }else if(subCount == 0){
+                        main.checked = false;
+                        main.indeterminate = false;
+                    }else{
+                        main.checked = false;
+                        main.indeterminate = true;
+                    }
+                });
+            });
+            let evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change", false, true);
+            children[0].dispatchEvent(evt);
         }
         function showOrHide(id) 
         {
