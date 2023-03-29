@@ -392,6 +392,7 @@ else
             }else{
                 if(v_groupBySubreddits){
                     //Subredits
+                    let subredditIndex = 0;
                     let filteredSubreddits = [];
                     for(let i = 0; i < filteredPosts.length; i++){
                         if(!filteredSubreddits.includes(filteredPosts[i].Subreddit)){
@@ -401,8 +402,9 @@ else
                     filteredSubreddits.forEach(subreddit => {
                         let subredditFilteredPosts = filteredPosts.filter(post => post.Subreddit == subreddit);
                         let subredditHtml = document.createElement('div');
-                        subredditHtml.innerHTML = "<div><b>" + subreddit + "</b></div>";
-                        postList.appendChild(subredditHtml);
+                        subredditHtml.id = 'M' + subredditIndex;
+                        subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b>" + subreddit + "</b>";
+                        //postList.appendChild(subredditHtml);
                         for(let i = 0; i < subredditFilteredPosts.length; i++){ //TODO zmenit na foreach
                             let post = subredditFilteredPosts[i]; //kvuli tomuhle
                             let postHtml = document.createElement('div');
@@ -425,7 +427,7 @@ else
                                     html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
                                 }
                             }else{
-                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                                html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
                             }
                     
                             let downloaded = downloadedIds.includes(post.Id);
@@ -436,10 +438,13 @@ else
                                 html = html + "<span> 18+ - </span>"
                             }
                             html = html + "<a href='" + linkSubreddit + "' target='_blank'>" + post.Subreddit + "</a> - ";
-                            html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
+                            html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a>";
                             postHtml.innerHTML = html;
-                            postList.appendChild(postHtml);
+                            subredditHtml.appendChild(postHtml);
                         }
+                        postList.appendChild(subredditHtml);
+                        addListener(subredditIndex);
+                        subredditIndex++;
                     });
                 }else{
                     for(let i = 0; i < filteredPosts.length; i++){ //TODO zmenit na foreach
@@ -464,7 +469,7 @@ else
                                 html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
                             }
                         }else{
-                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox'> ";
+                            html = html + "<input name='" + post.Id + "' post id='checkbox' class='form-check-input' type='checkbox' checked> ";
                         }
                     
                         let downloaded = downloadedIds.includes(post.Id);
@@ -544,6 +549,20 @@ else
                     });
                 }
             }
+        }
+        function addListener(id){
+            //alert("adding listeners");
+            let main = document.getElementById('C' + id);
+            let children = document.getElementById('M' + id).querySelectorAll('#checkbox');
+            //alert('main - ' + main + '    children ' + children);
+            main.addEventListener('change', function() {
+                alert('Main ' + id + '    ' + children.length);
+                for(let i = 0; i < children.length; i++){
+                    alert('foreach ' + children[i].checked);
+                    children[i].checked = main.checked;
+                }
+                calculateDetails(true);
+            });
         }
     </script>
 }
