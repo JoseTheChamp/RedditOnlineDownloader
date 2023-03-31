@@ -208,7 +208,7 @@ else
             v_nsfw = template.Nsfw;
             i_nsfw.value = v_nsfw;
             v_multipleSelect = JSON.parse(template.DomainsForm);
-            $("#multipleSelect").chosen().val(v_multipleSelect);
+            //$("#multipleSelect").chosen().val(v_multipleSelect);
             $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
         }
         
@@ -244,7 +244,7 @@ else
                 v_nsfw = template.Nsfw;
                 i_nsfw.value = v_nsfw;
                 v_multipleSelect = JSON.parse(template.DomainsForm);
-                $("#multipleSelect").chosen().val(v_multipleSelect);
+                //$("#multipleSelect").chosen().val(v_multipleSelect);
                 $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
                 redraw();
             }else{
@@ -254,6 +254,7 @@ else
         $('#multipleSelect').change(function(){
             values = $("#multipleSelect").chosen().val();
             v_multipleSelect = values;
+            alert(v_multipleSelect);
             redraw();
         });
 
@@ -275,8 +276,9 @@ else
             for (let i = 0; i < multipleSelect.options.length; i++) { 
                 multipleSelect.options[i].selected = value; 
             } 
-            $('#multipleSelect').trigger("chosen:updated");
             v_multipleSelect = $("#multipleSelect").chosen().val();
+            //$("#multipleSelect").chosen().val(v_multipleSelect);
+            $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
             redraw();
         }
 
@@ -394,7 +396,11 @@ else
             }else if(v_nsfw == 'sfw'){
                 filteredPosts = filteredPosts.filter(post => !post.Over18);
             }
-            filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
+            if(v_multipleSelect == null){
+                filteredPosts = [];
+            }else{
+                filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
+            }
             filteredLength = filteredPosts.length;
             if(filteredLength == 0){
                 let postHtml = document.createElement('div');

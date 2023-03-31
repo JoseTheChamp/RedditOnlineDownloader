@@ -632,21 +632,18 @@ else
         function newTemplate(){
             var person = prompt("Please enter unique name for your Template:", ""); //TODO rename person
             if (person != null && person != "") {
-                alert("newTemplate entered");
                 $.ajax({
                     url: '/Download/Structure?handler=NewTemplate',
                     type: 'GET',
                     data: { name: person, numbering: v_numbering, subName: v_subredditName, domName: v_domainName, prioName: v_priorityName, title: v_title, subFol: v_subredditFolder, domFol: v_domainFolder, prioFol: v_priorityFolder, empty: v_empty, split: v_split },
                     dataType: 'json',
                     success: function (data) {
-                        alert("success");
                         let template = JSON.parse(data);
                         let option = document.createElement('option');
                         option.value = JSON.stringify(template);
                         option.innerHTML = template.Name;
                         i_templatesSelect.appendChild(option);
                         i_templatesSelect.value = data;
-                        alert("success end");
                     },
                     error: function (xhr, status, error) {
                         alert('Error - Template could not be created. Ensure that your name is unique.'); // handle any errors here

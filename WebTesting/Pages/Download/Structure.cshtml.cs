@@ -52,7 +52,23 @@ namespace WebTesting.Pages.Download
         public async Task<IActionResult> OnPostDownload() {
             //TODO Start download procces.
             //TODO if success.
+            /*
+              
+             var form = Request.Form;
+            Posts = new List<Post>();
+            string saveToTemplate = "";
+            List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
+            HttpContext.Session.SetObject("ShowDownloaded", false);
+            HttpContext.Session.SetObject("GroupBySubreddits", false);
+            foreach (string name in form.Keys)
+            {
+                var res = form[name].ToString;
+                var resInvoked = res.Invoke();
 
+
+
+            */
+            string saveToTemplate = null;
             foreach (string key in Request.Form.Keys)
             {
                 string value = Request.Form[key];
@@ -101,6 +117,13 @@ namespace WebTesting.Pages.Download
                     case "split":
                         if (value == "on") Split = true;
                         break;
+                    case "templatesSelect":
+                        if (value != "none")
+                        {
+                            HttpContext.Session.SetObject("ChosenTemplate", value);
+                            saveToTemplate = value;
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -118,7 +141,7 @@ namespace WebTesting.Pages.Download
             Split);
 
             //Templates
-            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
+            if (saveToTemplate != null)
             {
                 string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
                 dynamic templateParsed = JObject.Parse(jsonTemplate);
@@ -268,7 +291,7 @@ namespace WebTesting.Pages.Download
                     HttpContext.Session.GetString("RedditId"), 
                     name,
                     HttpContext.Session.GetObject<bool>("ShowDownloaded"),
-                    HttpContext.Session.GetObject<bool>("GroupBySubreddit"),
+                    HttpContext.Session.GetObject<bool>("GroupBySubreddits"),
                     HttpContext.Session.GetObject<SelectNsfw>("Nsfw").ToString().ToLower(),
                     HttpContext.Session.GetString("DomainsForm"),
                     numbering,
