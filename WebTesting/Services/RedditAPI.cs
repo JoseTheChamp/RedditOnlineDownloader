@@ -243,7 +243,7 @@ namespace WebTesting.Services
                 }
                 catch (Exception ex)
                 {
-                    throw ex; //TODO in build remove this so it ignores bad posts
+                    //throw ex; //TODO in build remove this so it ignores bad posts
                     //TODO report failed posts somehow - edit post to contain error field
                 }
             }

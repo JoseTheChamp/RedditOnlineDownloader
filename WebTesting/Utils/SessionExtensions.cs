@@ -7,8 +7,6 @@ namespace WebTesting.Utils
 	{
 		public static void SetObject(this ISession session, string key, object value)
 		{
-			//var seril = JsonConvert.SerializeObject(value);
-			//var des = JsonConvert.DeserializeObject<List<Post>>(seril);
 			session.SetString(key, JsonConvert.SerializeObject(value));
 		}
 

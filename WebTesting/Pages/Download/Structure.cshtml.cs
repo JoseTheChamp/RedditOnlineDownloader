@@ -155,9 +155,9 @@ namespace WebTesting.Pages.Download
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             PostsJson = JsonConvert.SerializeObject(Posts);
-            _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), downloadParameters);
+            string downloadName = await _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), downloadParameters);
             HttpContext.Session.Remove("DownloadedIds");
-            TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
+            TempData["success"] = "\"" + downloadName + "\" succesfully started. You can see the progress at \"Progress\" page.";
             return RedirectToPage("../Index");
             
         }

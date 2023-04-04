@@ -67,7 +67,7 @@ else
                     </div>
                     <label class="pt-2" for="title">Title:</label>
                     <div class="row">
-                        <input type="number" id="title" name="title" value="60">
+                        <input type="number" id="title" name="title" min="0" max="120" value="60">
                     </div>
                     <hr class="solid">
                     <h4>Folders:</h4>
@@ -342,6 +342,14 @@ else
                 subredditsObj[post.Subreddit] = 0;
             }
             subredditsObj[post.Subreddit]++;
+        });
+
+        //Ptevent from key "Enter" submiting form
+        $(document).keypress(
+            function(event){
+            if (event.which == '13') {
+                event.preventDefault();
+            }
         });
 
         //Creating html content for the details

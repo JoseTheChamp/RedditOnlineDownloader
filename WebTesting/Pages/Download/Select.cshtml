@@ -23,12 +23,13 @@ else
             </div>
             <div class="col" style="border:1px solid red">
             <!--HERE ARE Templates-->
-                Templates:
-                <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
-                    <option value="none">None</option>
-                </select>
-                <button onclick="newTemplate()">New</button>
-                <button onclick="deleteTemplate()">Delete</button>
+            Templates:
+            <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
+                <option value="none">None</option>
+            </select>
+            <button onclick="newTemplate()">New</button>
+            <button onclick="deleteTemplate()">Delete</button>
+            <i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i>
             </div>
             <div class="col-3 text-end"> 
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
@@ -108,7 +109,7 @@ else
             <div class="col-8" style="border:1px solid red">
             <!--HERE ARE Posts-->
                 <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
-                <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
+                <i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i>
                 <form id="selectedPosts" method="post" asp-page-handler="Select">
                     <ul id="postList" name="postList" class="p-2"></ul>
                 </form>

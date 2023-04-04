@@ -66,7 +66,7 @@ namespace WebTesting.Services
         /// <param name="AllIds">List of id|s to determine which DownloadHistorie to remove.</param>
         /// <param name="downloadParams">Parameters that decide how the downloaded files will look.</param>
         /// <returns></returns>
-        public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
+        public async Task<string> NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
             //Starting the method to remove too old posts
             if (RemoveTimer == null) { //TODO bad solution
                 RemoveTimer = new System.Timers.Timer(60000); //TODO Parametr - set to something like 1800000 add 0
@@ -118,6 +118,8 @@ namespace WebTesting.Services
 
             //Starting the actual download itself.
             dp.Thread.Start();
+
+            return "Download" + dp.DownloadId;
         }
 
         /// <summary>
@@ -378,7 +380,7 @@ namespace WebTesting.Services
                         if (download != null)
                         {
                             download.ProgressAbs = dp.PostIndex;
-                            download.ProgressRel = Math.Round((double)(((double)(dp.PostIndex + 1)) / dp.Posts.Count) * 100, 1);
+                            download.ProgressRel = Math.Round((double)(((double)(dp.PostIndex)) / dp.Posts.Count) * 100, 1);
                             _db.Downloads.Update(download);
                             await _db.SaveChangesAsync();
                         }
@@ -449,17 +451,25 @@ namespace WebTesting.Services
             if (audioExists)
             {
                 Stream streamVideoCombined = await client.GetStreamAsync(@"https://sd.redditsave.com/download.php?permalink=https://reddit.com/&video_url=" + url + "&audio_url=" + audioUrl);
-                using (var fileStream = File.Create(path + Path.GetExtension(url)))
+                try //Ignoring errors concerning StopAndDeleteFunction
                 {
-                    streamVideoCombined.CopyTo(fileStream);
+                    using (var fileStream = File.Create(path + Path.GetExtension(url)))
+                    {
+                        streamVideoCombined.CopyTo(fileStream);
+                    }
                 }
+                catch (Exception){}
             }
             else {
                 Stream streamVideo = await client.GetStreamAsync(url);
-                using (var fileStream = File.Create(path + Path.GetExtension(url)))
+                try //Ignoring errors concerning StopAndDeleteFunction
                 {
-                    streamVideo.CopyTo(fileStream);
+                    using (var fileStream = File.Create(path + Path.GetExtension(url)))
+                    {
+                        streamVideo.CopyTo(fileStream);
+                    }
                 }
+                catch (Exception) { }
             }
         }
         private async Task SaveImage(Post post, string path, int id) {
@@ -579,7 +589,11 @@ namespace WebTesting.Services
                 sb.Append(dp.PostIndex);
             }
             if (sb.ToString().EndsWith("_")) {
-                sb.Remove(sb.Length-2,1);
+                sb.Remove(sb.Length-1, 1);
+            }
+            if (sb.ToString().EndsWith("."))
+            {
+                sb.Remove(sb.Length-1, 1);
             }
             if (dp.ExistingNames.Contains(sb.ToString()))
             {
