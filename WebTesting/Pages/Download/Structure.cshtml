@@ -21,7 +21,7 @@ else
                 <h2>Set up folder structure.</h2>
             </div>
             <div class="col" style="border:1px solid red">
-                <!--HERE ARE TEMPLATES-->
+            <!--HERE ARE TEMPLATES-->
                 Templates:
                 <select form="structure" id="templatesSelect" name="templatesSelect">
                     <option value="none">None</option>
@@ -36,7 +36,7 @@ else
         </div>
         <div class="row" style="border:1px solid red">
             <div class="col-2" style="border:1px solid red">
-                 <!--Here are setting for foldering-->
+            <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
                     <h4>Name:</h4>
                     <label>Numbering:</label><br>
@@ -96,6 +96,7 @@ else
                 </form>
             </div>
             <div class="col-8">
+            <!--Here are Posts-->
                 <ul id="postList" class="p-2">
                 @foreach (Post post in Model.Posts)
                 {
@@ -111,6 +112,7 @@ else
                 </ul>
             </div>
             <div class="col-2" style="border:1px solid red">
+            <!--Here are Details-->
                     <b>Details:</b>
                     <div id="count"></div>
                     <b>Domains:</b>
@@ -126,19 +128,7 @@ else
     <input type="hidden" id="templatesJson" asp-for="TemplatesJson"/>
     <input type="hidden" id="selectedTemplate" asp-for="SelectedTemplate"/>
     <script>
-        /*
-        alert('start');
-        var pokus = new Array();
-        pokus = ["Banana", "Orange", "Apple", "Mango"];
-        pokus.push("jop");
-        if(pokus.includes('8')){
-            alert('ano');
-        }else{
-            alert("ne");
-        }
-        alert('Konec');
-        */
-
+        //Declaring variables
         var domainsList = document.getElementById("domains");
         var subredditsList = document.getElementById("subredditsList");
         var subredditsCount = document.getElementById("subreddits");
@@ -156,7 +146,6 @@ else
         var posts = JSON.parse(value);
         countText.innerHTML = '<b>Count: </b>' + posts.length;
 
-        //Generating list of posts
         //Getting all inputs
         const i_numbering = document.getElementsByName('numbering');
         const i_priorityName = document.getElementsByName('priorityName');
@@ -168,6 +157,8 @@ else
         const i_domainFolder = document.getElementsByName('domainFolder')[0];
         const i_empty = document.getElementById('empty');
         const i_split = document.getElementById('split');
+        
+        //Setting all inicial values;
         var v_numbering = "ids";//TODO values set directly
         var v_priorityName = "subredditPriorityName";
         var v_priorityFolder = "subredditPriorityFolder"; 
@@ -227,7 +218,6 @@ else
             v_title = template.Title;
             i_title.value = v_title;
         }
-
 
         //adding on change functions that will trigger reddrawing of the list
         i_domainName.addEventListener('change', (event) => {
@@ -335,7 +325,7 @@ else
             }
         });
 
-        //Calculating details on the richt side of screen
+        //Calculating details on the right side of screen
         var subredditsObj = {};
         var domainsObj = {};
         var nsfw = {};
@@ -388,9 +378,9 @@ else
 
         redraw();
         
+        //function that redraws the posts
         function redraw(){
             masterIndex = 0;
-
             postList.innerHTML = "";
             offset = 0;
             if(v_split == true){
@@ -413,6 +403,7 @@ else
             }
         }
 
+        //Draws one set o posts
         function drawPart(typeSfw){
             if(v_subredditFolder == true || v_domainFolder == true){
                 if(v_subredditFolder == true){
@@ -512,34 +503,31 @@ else
 
         }
 
+        //draws specific posts
         function drawPosts(typeSfw,subreddit,domain){
             namesTaken = ['','']
             let remove = true;
             let postWritten = 1;
             for (let i = 0; i < posts.length; i++) {
                 if(typeSfw == 'sfw' && posts[i].Over18 == true){
-                    //alert("is not sfw");
                     continue;
                 }
                 if(typeSfw == 'nsfw' && posts[i].Over18 == false){
-                    //alert("is not nsfw");
                     continue;
                 }
                 if(subreddit != 'any' && subreddit != posts[i].Subreddit){
-                    //alert("is not subreddit is not " + subreddit);
                     continue;
                 }
                 if(domain != 'any' && domain != posts[i].Domain){
-                    //alert("is not domain is not *" + domain + '* becouse it is *' + posts[i].Domain + '*');
                     continue;
                 }
                 postList.appendChild(makedivPost(posts[i],postWritten++));
                 remove = false;
-                //alert('prvek nalezen');
             }
             return remove;
         }
 
+        //Make html for sfw/nsfw
         function makediv1(text){
             let element = document.createElement('div');
             text = '<b>&#x2023;&ensp;' + text + '</b>';
@@ -549,6 +537,7 @@ else
             element.innerHTML = text;
             return element;
         }
+        //Make html for Subreddit/Domain
         function makediv2(text){
             let element = document.createElement('div');
             text = '<b>&#x2022;&ensp;' + text + '</b>';
@@ -558,6 +547,7 @@ else
             element.innerHTML = text;
             return element;
         }
+        //Make html for the one left out
         function makediv3(text){
             let element = document.createElement('div');
                 text = '<b>&#x2043;&ensp;' + text + '</b>';
@@ -567,7 +557,7 @@ else
             element.innerHTML = text;
             return element;
         }
-
+        //Make html for a post
         function makedivPost(post,index){
             let element = document.createElement('div');
             let text = createName(post,index);
@@ -577,7 +567,7 @@ else
             element.innerHTML = text;
             return element;
         }
-
+        //Create a name for a post
         function createName(post,index){
             let name = '';
             if(v_numbering == 'ids'){
@@ -618,7 +608,7 @@ else
                 name = name.slice(0,name.length-2);
             }
 
-            //checking if filename already exists
+            //checking if filename already exists, if it does then renaming it.
             if(namesTaken.includes(name)){
                 name = name + '_' + index++;
             }
@@ -626,9 +616,11 @@ else
                 name = name.slice(0,name.length-2);
                 name = name + '_' + index++;
             }
+
             namesTaken.push(name);
             return name;
         }
+
         function newTemplate(){
             var person = prompt("Please enter unique name for your Template:", ""); //TODO rename person
             if (person != null && person != "") {
@@ -651,6 +643,7 @@ else
                 });
             }
         }
+
         function deleteTemplate(){
             let tempVal1 = i_templatesSelect.value;
             if(tempVal1 != "none"){

@@ -22,7 +22,7 @@ else
                 <h2>Select posts to download.</h2>
             </div>
             <div class="col" style="border:1px solid red">
-                <!--HERE ARE PRESETS-->
+            <!--HERE ARE Templates-->
                 Templates:
                 <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
                     <option value="none">None</option>
@@ -37,7 +37,7 @@ else
         </div>
         <div class="row">
             <div class="col-2" style="border:1px solid red">
-                <!--HERE ARE Select settings-->
+            <!--HERE ARE Select settings-->
                 <div class="row pb-2">
                     <label for="showDownloaded">Show downloaded posts:</label>
                     @if (Model.ShowDownloaded == true)
@@ -106,7 +106,7 @@ else
                 </div>   
             </div>
             <div class="col-8" style="border:1px solid red">
-                <!--HERE ARE Posts-->
+            <!--HERE ARE Posts-->
                 <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
                 <i data-tippy-content="Changes the way the main list will be displayed. 1) Posts ordered by date. 2) Posts grouped by subreddit ordered alphabetically.(Posts still ordered by date) 3) Just Subreddits ordered alphabetically.">&#x1F6C8</i>
                 <form id="selectedPosts" method="post" asp-page-handler="Select">
@@ -114,7 +114,7 @@ else
                 </form>
             </div>
             <div class="col-2" style="border:1px solid red">
-                <!--HERE ARE Details--> 
+            <!--HERE ARE Details-->
                 <b>Details:</b>
                 <div id="count"></div>
                 <b>Domains:</b>
@@ -135,6 +135,7 @@ else
     <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
     <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
     <script>
+        //Defining constants
         var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
         const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
         const submitButton = document.getElementById("the-submit");
@@ -152,14 +153,8 @@ else
         const i_nsfw = document.getElementsByName('nsfw')[0];
         const i_multipleSelect= document.getElementsByName('multipleSelect')[0];
         const postList = document.getElementById("postList");
-        var v_groupBySubreddits = false;
-        if(i_groupBySubreddits.checked == 'true'){
-            v_groupBySubreddits = true;
-        }
-        var v_showDownloaded = false;
-        if(i_showDownloaded.checked == 'true'){
-            v_showDownloaded = true;
-        }
+        var v_groupBySubreddits = i_groupBySubreddits.checked;
+        var v_showDownloaded = i_showDownloaded.checked;
         var v_nsfw = i_nsfw.value;
         var v_multipleSelect = $("#multipleSelect").chosen().val();
         var v_downloadedIds = document.getElementById("downloadedIds").value;
@@ -177,10 +172,9 @@ else
         var countAltText = document.getElementById("count");
         var count = 0;
         
-        //Fetch List<Post> from server
+        //Parsing List<Post> from hidden field
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-        //alert('Start - post: ' + posts + "//// downloaded ids: " + downloadedIds);
 
         //Templates
         const i_selectedTemplate = document.getElementById("selectedTemplate"); //TODO remove useless i_ and so on
@@ -254,11 +248,11 @@ else
         $('#multipleSelect').change(function(){
             values = $("#multipleSelect").chosen().val();
             v_multipleSelect = values;
-            alert(v_multipleSelect);
+            //alert(v_multipleSelect);
             redraw();
         });
 
-        //select deselect all
+        //Code for select/deselect all
         selectAllCheckboxes.addEventListener('change', function() {
             checkboxes.forEach(function(checkbox) {
                 checkbox.checked = selectAllCheckboxes.checked;
@@ -270,7 +264,6 @@ else
             });
             calculateDetails(true);
         });
-
         function selectAll(value) { 
             let multipleSelect = document.getElementById("multipleSelect");
             for (let i = 0; i < multipleSelect.options.length; i++) { 
@@ -282,7 +275,7 @@ else
             redraw();
         }
 
-        //Calculating details on the richt side of screen
+        //Calculating details on the right side of screen
         function calculateDetails(doCount){
             let counting = 0;
             let subreddits = {};
@@ -357,7 +350,6 @@ else
                 subredditsList.appendChild(li);
             }
             subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subreddits).length;
-
             countAltText.innerHTML = '<b>Count</b> - ' + counting;
 
             //Change checkbox selectAll to proper state
@@ -372,11 +364,15 @@ else
                 selectAllCheckboxes.indeterminate = true;
             }
         }
+
+        //Required setting for chosen-multipleSelect
         $(".chosen-select").chosen({
             no_results_text: "Oops, nothing found!"
         })
 
         redraw();
+
+        //Function that redraws list of posts.
         function redraw(){
             //Go through all checkBoxes and save their names - ids
             let jsSelectedIds = [];
@@ -385,8 +381,10 @@ else
                     jsSelectedIds.push(checkbox.getAttribute("name"));
                 }
             });
+
             postList.innerHTML = '';
-            //posts draw
+
+            //Filtering posts
             let filteredPosts = posts;
             if(!v_showDownloaded == true){
                 filteredPosts = filteredPosts.filter(post => !downloadedIds.includes(post.Id));
@@ -402,6 +400,8 @@ else
                 filteredPosts = filteredPosts.filter(post => v_multipleSelect.includes(post.Domain));
             }
             filteredLength = filteredPosts.length;
+
+            //Createing html for the list of posts
             if(filteredLength == 0){
                 let postHtml = document.createElement('div');
                 postHtml.innerHTML = "Oops no posts were found. It would seem that your filters are filtering one post too many.<br>(Check the 'Show downloaded posts' option.)"
@@ -420,9 +420,7 @@ else
                         let subredditFilteredPosts = filteredPosts.filter(post => post.Subreddit == subreddit);
                         let subredditHtml = document.createElement('div');
                         subredditHtml.id = 'M' + subredditIndex;
-                                    //subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b>" + subreddit + "</b><img id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")' src='~/Images/arrow-showing.png' alt='Arrow'/>";
-                            subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b id='no'>" + subreddit + "</b><button type='button' id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")'>&#8595;</button>";
-                        //postList.appendChild(subredditHtml);
+                        subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b id='no'>" + subreddit + "</b><button type='button' id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")'>&#8595;</button>";
                         for(let i = 0; i < subredditFilteredPosts.length; i++){ //TODO zmenit na foreach
                             let post = subredditFilteredPosts[i]; //kvuli tomuhle
                             let postHtml = document.createElement('div');
@@ -477,6 +475,7 @@ else
                         subredditIndex++;
                     });
                 }else{
+                    //List of posts - no subreddits
                     for(let i = 0; i < filteredPosts.length; i++){ //TODO zmenit na foreach
                         let post = filteredPosts[i]; //kvuli tomuhle
                         let postHtml = document.createElement('div');
@@ -532,6 +531,8 @@ else
             calculateDetails(true);
             //alert('End of redraw');
         }
+
+        //Link newly generated checkboxes with calculate details function + refresh variable checkboxes
         function linkCheckBoxes(){
             checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
             checkboxes.forEach(function(checkbox) {
@@ -540,6 +541,7 @@ else
                 });
             });
         }
+
         function newTemplate(){
             var person = prompt("Please enter unique name for your Template:", "");
             if (person != null && person != "") {
@@ -562,11 +564,13 @@ else
                 });
             }
         }
+
         function deleteTemplate(){
             let tempVal1 = i_templatesSelect.value;
             if(tempVal1 != "none"){
                 let tempVal = i_templatesSelect.value;
                 let template = JSON.parse(tempVal);
+                //TODO add confirm window
                 //let confirm = confirm("Do you truly want to delete Template '" + template.name + "':");
                 if (true) {
                     $.ajax({
@@ -591,6 +595,8 @@ else
                 }
             }
         }
+
+        //Add listeners to subbredits so that they respond to checking of the user
         function addListener(id){
             let main = document.getElementById('C' + id);
             let children = document.getElementById('M' + id).querySelectorAll('#checkbox');
@@ -624,6 +630,8 @@ else
             evt.initEvent("change", false, true);
             children[0].dispatchEvent(evt);
         }
+
+        //add functionality to hide/show button at subreddits
         function showOrHide(id) 
         {
             let ids = ['M' + id,'I' + id, 'C' + id, "no"];

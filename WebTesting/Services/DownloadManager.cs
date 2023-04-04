@@ -54,6 +54,7 @@ namespace WebTesting.Services
             foreach (Download download in downloads)
             {
                 if (download.DownloadFinished != null) {
+                    Debug.WriteLine(download.Id + "  delka: " + DateTime.Now.Subtract((DateTime)download.DownloadFinished).TotalHours);
                     if (DateTime.Now.Subtract((DateTime)download.DownloadFinished).TotalHours > 72) //TODO Parametr
                     {
                         RemoveDownloadProcess(download.Id);
