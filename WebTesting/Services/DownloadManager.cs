@@ -1,17 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
+﻿using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol;
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Runtime.Intrinsics.Arm;
-using System.Security.Policy;
 using System.Text;
-using System.Threading;
 using System.Timers;
 using WebTesting.Entities;
 using WebTesting.Models;
@@ -26,8 +17,6 @@ namespace WebTesting.Services
         private readonly ApplicationDbContext _db;
         private static readonly string DownloadPath = Environment.CurrentDirectory + "\\wwwroot\\Downloads";
         private static readonly string DownloadablePath = Environment.CurrentDirectory + "\\wwwroot\\DownloadableFiles";
-        //private static readonly object __lockObj = new Object();
-        //private static bool __lockTaken = false;
         private System.Timers.Timer RemoveTimer;
         public class DownloadProcess{
             public int DownloadId { get; set; }
@@ -48,6 +37,12 @@ namespace WebTesting.Services
         {
             _db = db;
         }
+
+        /// <summary>
+        /// Method responsible for removing downloads that are too old.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             List<Download> downloads = _db.Downloads.ToList();
@@ -62,12 +57,24 @@ namespace WebTesting.Services
                 }
             }
         }
+
+        /// <summary>
+        /// Starting of the download process.
+        /// </summary>
+        /// <param name="user">User which requested the download.</param>
+        /// <param name="posts">Posts to download.</param>
+        /// <param name="AllIds">List of id|s to determine which DownloadHistorie to remove.</param>
+        /// <param name="downloadParams">Parameters that decide how the downloaded files will look.</param>
+        /// <returns></returns>
         public async Task NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
-            if (RemoveTimer == null) {
+            //Starting the method to remove too old posts
+            if (RemoveTimer == null) { //TODO bad solution
                 RemoveTimer = new System.Timers.Timer(60000); //TODO Parametr - set to something like 1800000 add 0
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 RemoveTimer.Start();
             }
+
+            //Creating download row in databse
             Models.Download download = new Models.Download(
                 0,
                 posts.Count,
@@ -76,7 +83,8 @@ namespace WebTesting.Services
                 );
             _db.Downloads.AddAsync(download);
             await _db.SaveChangesAsync();
-
+            
+            //Initialization of required things for staritng the work and creating DownloadProcess
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             int interval = posts.Count / ((posts.Count / 15) + 10);
             if (interval == 0) interval = 1;
@@ -97,7 +105,7 @@ namespace WebTesting.Services
             dp.Thread = thread;
 
             //Save Download History
-            List<string> ids = new List<string>();
+            List<string> ids = new List<string>(); //TODO replace with LINQ
             foreach (Post post in dp.Posts)
             {
                 ids.Add(post.Id);
@@ -107,17 +115,22 @@ namespace WebTesting.Services
             _db.downloadHistories.Add(dh);
             await _db.SaveChangesAsync();
             dp.DownloadHistory = dh;
+
+            //Starting the actual download itself.
             dp.Thread.Start();
         }
 
+        /// <summary>
+        /// Method responsible for the actual downloading of the files.
+        /// </summary>
+        /// <param name="dp">Download procces that is currently active.</param>
         private async void DoWork(DownloadProcess dp)
         {
-            int a = 5;
             string defaultPath = DownloadPath + "\\Download" + dp.DownloadId;
-            string currentPath;
             Directory.CreateDirectory(defaultPath);
 
-            List<string> domains = new List<string>(); //replace with LINQ
+            //Getting list of all domains and all subreddits
+            List<string> domains = new List<string>(); //TODO replace with LINQ
             foreach (Post post in dp.Posts)
             {
                 if (!domains.Contains(post.Domain))
@@ -126,7 +139,7 @@ namespace WebTesting.Services
                 }
             }
             domains.Sort();
-            List<string> subreddits = new List<string>(); //replace with LINQ
+            List<string> subreddits = new List<string>(); //TODO replace with LINQ
             foreach (Post post in dp.Posts)
             {
                 if (!subreddits.Contains(post.Subreddit))
@@ -136,11 +149,12 @@ namespace WebTesting.Services
             }
             subreddits.Sort();
 
+            //Create two folders if nsfw/sfw split
             if (dp.DownloadParameters.Split == true) {
                 List<Post> sfwPosts = dp.Posts.Where(p => p.Over18 == false).ToList();
                 if (dp.DownloadParameters.Empty && !sfwPosts.IsNullOrEmpty()) {
                     //make directory and download part
-                    currentPath = defaultPath + "\\sfw";
+                    string currentPath = defaultPath + "\\sfw";
                     Directory.CreateDirectory(currentPath);
                     if (! await SavePart(dp, sfwPosts, currentPath,domains,subreddits)) return; 
                 }
@@ -148,7 +162,7 @@ namespace WebTesting.Services
                 if (dp.DownloadParameters.Empty && !nsfwPosts.IsNullOrEmpty())
                 {
                     //make directory and download part
-                    currentPath = defaultPath + "\\nsfw";
+                    string currentPath = defaultPath + "\\nsfw";
                     Directory.CreateDirectory(currentPath);
                     if (!await SavePart(dp, nsfwPosts, currentPath, domains, subreddits)) return;
                 }
@@ -158,8 +172,10 @@ namespace WebTesting.Services
                 if (!await SavePart(dp, dp.Posts, defaultPath, domains, subreddits)) return;
             }
 
-            //After downloaded posts asctionss
+            //Following code executes either after fully odwnloading all posts or requesting stop
+            //Figure out which scenario is happening
             if (!dp.TokenSource.IsCancellationRequested) {
+                //Make and save zip file
                 ZipFile.CreateFromDirectory(DownloadPath + "\\Download" + dp.DownloadId, DownloadablePath + "\\Download" + dp.DownloadId + ".zip");
                 try
                 {
@@ -212,6 +228,15 @@ namespace WebTesting.Services
                 await _db.SaveChangesAsync();
             }
         }
+        /// <summary>
+        /// saves part of the posts.
+        /// </summary>
+        /// <param name="dp">Download procces that is currently downloading.</param>
+        /// <param name="posts">Filtered posts to be downloaded.</param>
+        /// <param name="path">Path at which the post should be saved at.</param>
+        /// <param name="domains">List of all domains.</param>
+        /// <param name="subreddits">List of all subreddits</param>
+        /// <returns>False means that cancellation was requested</returns>
 
         private async Task<bool> SavePart(DownloadProcess dp, List<Post> posts, string path, List<string> domains, List<string> subreddits) {
             if (dp.DownloadParameters.DomainFolder || dp.DownloadParameters.SubredditFolder)
@@ -298,25 +323,40 @@ namespace WebTesting.Services
             return true;
         }
 
+        /// <summary>
+        /// Method to download all posts passed into it.
+        /// </summary>
+        /// <param name="dp">Download procces that is currently downloading.</param>
+        /// <param name="posts">Filtered posts to be downloaded.</param>
+        /// <param name="path">Path at which the post should be saved at.</param>
+        /// <returns>False means that cancellation was requested</returns>
         private async Task<bool> DownloadPosts(DownloadProcess dp, List<Post> posts, string path) {
             int indexInFolder = 1;
             dp.ExistingNames.Clear();
             string currentPath = "";
             foreach (Post post in posts)
             {
+                //Check if cancellation was requested
                 if (dp.TokenSource.IsCancellationRequested)
                 {
                     Debug.WriteLine("CLOSE---------------------------------");
                     return false;
                 }
+
+                //Try generating name for file
                 try {
                     currentPath = path + "\\" + generateName(post, dp, indexInFolder);
                 } catch(Exception ex) {
                     currentPath = path + "\\ERROR";
                 }
+
+                //Download the post
                 await SavePost(post, currentPath, dp.DownloadId);
+
                 indexInFolder++;
                 dp.PostIndex++;
+
+                //Check if the interval is right for update of the download proccess.
                 if (dp.PostIndex % dp.Interval == 0 || dp.PostIndex == dp.Posts.Count - 1)
                 {
                     if (dp.PostIndex == dp.Posts.Count - 1)
@@ -347,7 +387,13 @@ namespace WebTesting.Services
             }
             return true;
         }
-
+        /// <summary>
+        /// Decides which helper method to call based on the domain of the post provided. *All hepler function have the same set of arguments.
+        /// </summary>
+        /// <param name="post">Post to download.</param>
+        /// <param name="path">Path at which the post should be saved at.</param>
+        /// <param name="id">Id of the download.</param>
+        /// <returns></returns>
         private async Task SavePost(Post post, string path, int id) {
             switch (post.Domain)
             {
@@ -384,7 +430,6 @@ namespace WebTesting.Services
                     break;
             }
         }
-
         private async Task SaveVideo(Post post,string path, int id) {
             string url = post.Urls[0];
             if (url.Contains('?')) {
@@ -417,7 +462,6 @@ namespace WebTesting.Services
                 }
             }
         }
-
         private async Task SaveImage(Post post, string path, int id) {
             Stream stream = await client.GetStreamAsync(post.Urls[0]);
             using (var fileStream = File.Create(path + Path.GetExtension(post.Urls[0])))
@@ -456,7 +500,6 @@ namespace WebTesting.Services
                 sw.WriteLine("Text: \n" + post.SelfText);
             }
         }
-
         private void SaveComment(Post post, string path, int id)
         {
             using (StreamWriter sw = File.CreateText(path + ".txt"))
@@ -466,7 +509,6 @@ namespace WebTesting.Services
                 sw.WriteLine("PermaLink to a comment: www.reddit.com" + post.PermaLink);
             }
         }
-
         private void SaveLinkPost(Post post, string path, int id)
         {
             using (StreamWriter sw = File.CreateText(path + ".txt"))
@@ -481,11 +523,17 @@ namespace WebTesting.Services
                 sw.WriteLine("Link: \n" + post.Urls[0]);
             }
         }
-
         private async Task DebugPost(Post post, string path, int id) {
             using (StreamWriter sw = File.CreateText(path + ".txt"));
         }
 
+        /// <summary>
+        /// Method for generating the name based on parameters in DownlodProccess.DownlaodParameters.
+        /// </summary>
+        /// <param name="post">Post for which to generate a Name.</param>
+        /// <param name="dp">DownloadProcess in which tis happens.</param>
+        /// <param name="indexInFolder">Index to number the files if required.</param>
+        /// <returns></returns>
         private string generateName(Post post,DownloadProcess dp, int indexInFolder)
         {
             StringBuilder sb = new StringBuilder();
@@ -547,6 +595,12 @@ namespace WebTesting.Services
             return StripName(sb.ToString());
         }
 
+        /// <summary>
+        /// Removes any windows forbidden symbols in fileName path 
+        /// </summary>
+        /// <param name="name">Name to be stripped.</param>
+        /// <returns>Stripped string</returns>
+        //TODO more platforms check
         private String StripName(String name)
         {
             if (name.Length > 128) {
@@ -554,28 +608,32 @@ namespace WebTesting.Services
             }
             return string.Join("_", name.Split(Path.GetInvalidFileNameChars()));
         }
+        /// <summary>
+        /// Remove downlod proccess and its files.
+        /// </summary>
+        /// <param name="id">Id of deleted download.</param>
+        /// <returns>Returns true if the removal had suceeded.</returns>
         public async Task<bool> RemoveDownloadProcess(int id) {
             //TODO check if loggedin user is owner of deleted download process
-            //try{
-                //System.Threading.Monitor.Enter(__lockObj,ref __lockTaken);
-                _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
-                await _db.SaveChangesAsync();
-                processes.Remove(processes.FirstOrDefault(e => e.DownloadId == id));
-                try
-                {
-                    File.Delete(DownloadablePath + "\\Download" + id + ".zip");
-                }
-                catch (Exception ex)
-                {
-                    return false;
-                }
-                return true;
-            /*}
-            finally { 
-                if(__lockTaken) System.Threading.Monitor.Exit(__lockObj);
-            }*/
+            _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
+            await _db.SaveChangesAsync();
+            processes.Remove(processes.FirstOrDefault(e => e.DownloadId == id));
+            try
+            {
+                File.Delete(DownloadablePath + "\\Download" + id + ".zip");
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
 
+        /// <summary>
+        /// Stops running download and deletes its files.
+        /// </summary>
+        /// <param name="id">Id of deleted download.</param>
+        /// <returns></returns>
         public async Task StopAndRemoveDownloadProcess(int id) {
 
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == id);
@@ -591,6 +649,10 @@ namespace WebTesting.Services
             });
             thread.Start();
         }
+        /// <summary>
+        /// This method tries to remove downlaod directory with all its files. After each of 10 tries it waits for 2 seconds to try again.
+        /// </summary>
+        /// <param name="id">Id of deleted download.</param>
         private void DeleteDownloadFiles(int id)
         {
             int tries = 0;

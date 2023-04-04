@@ -1,17 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using NuGet.Packaging.Signing;
 using NuGet.Protocol;
-using System.Runtime.Intrinsics.Arm;
 using WebTesting.Entities;
 using WebTesting.Entities.Enums;
 using WebTesting.Models;
 using WebTesting.Services;
 using WebTesting.Utils;
-using System.Diagnostics;
 
 namespace WebTesting.Pages.Download
 {
@@ -44,8 +40,13 @@ namespace WebTesting.Pages.Download
             _reddit = reddit;
             _db = db;
         }
+        /// <summary>
+        /// Method that launhes on the first visit of the Select. Fetches all the data for JS.
+        /// </summary>
+        /// <returns></returns>
         public async Task OnGetAsync()
         {
+            //Getting sellected posts from session. If fetched remove. - better responsiveness
             SelectedPosts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             if (SelectedPosts != null) {
                 List<string> selectedIds = SelectedPosts.Select(x => x.Id).ToList();
@@ -53,11 +54,13 @@ namespace WebTesting.Pages.Download
                 HttpContext.Session.Remove("SelectedPosts");
             }
 
+            //Fetching previously used settings
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
 
+            //Fetching templates
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
             if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
@@ -70,18 +73,23 @@ namespace WebTesting.Pages.Download
                 SelectedTemplate = 0;
             }
 
+            //Getting All the posts from session, if not set then fetch from Reddit
             if (HttpContext.Session.GetString("AllPosts") != null)
             {
                 AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             }
             else
-            {
+            {   
+                //Fetching all the posts from reddit - long operation
                 List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
                 HttpContext.Session.SetObject("AllPosts", posts);
                 AllPosts = posts;
             }
+
+            //Assigning the list of ids, corresponding to which posts were already downloaded.
             await ManageDownloadedIdsAsync();
 
+            //Creating list of all domains in downloaded posts
             Domains = new List<string>(); //TODO replace with linq
             foreach (Post post in AllPosts)
             {
@@ -94,10 +102,11 @@ namespace WebTesting.Pages.Download
 
             PostsJson = JsonConvert.SerializeObject(AllPosts);
         }
-        public void OnGetChangeShowType() {
-            int a = 5;
-        }
-        //Loades all already downloaded posts and removes any downloadHistory that no longer needs to be in database
+
+        /// <summary>
+        /// Load's all already downloaded posts and removes any downloadHistory that no longer needs to be in database
+        /// </summary>
+        /// <returns></returns>
         private async Task ManageDownloadedIdsAsync() {
             List<string>? downloadedIds = HttpContext.Session.GetObject<List<string>>("DownloadedIds");
             if (downloadedIds == null)
@@ -122,13 +131,11 @@ namespace WebTesting.Pages.Download
             DownloadedIds = downloadedIds;
             DownloadedIdsJson = JsonConvert.SerializeObject(downloadedIds);
         }
-        public IActionResult OnPost()
-        {
-            AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            PostsJson = JsonConvert.SerializeObject(AllPosts);
-            return Page();
-        }
 
+        /// <summary>
+        /// Refreshes posts. Calls redditAPI aervice to fetch all posts.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetRefresh()
         {
             //Fetch new posts from reddit
@@ -136,11 +143,14 @@ namespace WebTesting.Pages.Download
             HttpContext.Session.SetObject("AllPosts", posts);
             AllPosts = posts;
 
+            //Fetching previously used settings
             ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
             Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
             DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
             GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
+
+            //Fetching templates
             TemplatesJson = Templates.ToJson();
             if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
             {
@@ -153,6 +163,10 @@ namespace WebTesting.Pages.Download
                 SelectedTemplate = 0;
             }
 
+            //Assigning the list of ids, corresponding to which posts were already downloaded.
+            await ManageDownloadedIdsAsync();
+
+            //Creating list of all domains in downloaded posts
             Domains = new List<string>(); //TDOD linq groupby a select
             foreach (Post post in AllPosts)
             {
@@ -162,14 +176,11 @@ namespace WebTesting.Pages.Download
                 }
             }
             if (DomainsForm == null) DomainsForm = Domains;
-
-            await ManageDownloadedIdsAsync();
             PostsJson = JsonConvert.SerializeObject(AllPosts);
             return Page();
         }
         public IActionResult OnGetNewTemplate(string name, bool show, bool group, string domains, string nsfw)
         {
-
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             if (!Templates.Select(t => t.Name).ToList().Contains(name))
             {
@@ -194,6 +205,8 @@ namespace WebTesting.Pages.Download
             }
             return StatusCode(422);
         }
+        
+        //Helper methods
         private async Task<Template> SaveChangesNew(Template tmp)
         {
             _db.Templates.Add(tmp);

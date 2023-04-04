@@ -18,18 +18,31 @@ namespace WebTesting.Pages.Download
             _db = db;
             _dm = dm;
         }
+
+        /// <summary>
+        /// Fetches all downloads of the user and orders it by date.
+        /// </summary>
         public void OnGet()
         {
             MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId")).ToList();
             MyDownloads = MyDownloads.OrderByDescending(e => e.DownloadStart).ToList();
         }
+        /// <summary>
+        /// Downloads the finished zip file.
+        /// </summary>
+        /// <param name="id">id of donwload, that is to be downloaded.</param>
+        /// <returns>Finished zip file.</returns>
         public IActionResult OnGetDownload(int id) {
             string path = Environment.CurrentDirectory;
             OnGet();
-            //TODO will have to make sure that file path will work once it will be hosted on server.
             return File(@"/DownloadableFiles/Download" + id + ".zip", "application/zip", "Download" + id + ".zip");
         }
 
+        /// <summary>
+        /// Removes finished download.
+        /// </summary>
+        /// <param name="id">Id of download, that is to be removed.</param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetDeleteAsync(int id) {
             if (await _dm.RemoveDownloadProcess(id))
             {
@@ -41,6 +54,11 @@ namespace WebTesting.Pages.Download
             OnGet();
             return Page();
         }
+        /// <summary>
+        /// Removes running download process.
+        /// </summary>
+        /// <param name="id">Id of download, that is to be removed.</param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetStopAndDeleteAsync(int id)
         {
             await _dm.StopAndRemoveDownloadProcess(id);          
@@ -49,9 +67,9 @@ namespace WebTesting.Pages.Download
             OnGet();
             return Page();
         }
+        //TODO implement
         public IActionResult OnGetSave(int id)
         {
-            int a = 5;
             OnGet();
             return Page();
         }

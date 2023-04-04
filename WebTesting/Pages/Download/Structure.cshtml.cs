@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NuGet.Protocol;
-using System;
-using System.Diagnostics;
-using System.Text.Json.Nodes;
 using WebTesting.Entities;
 using WebTesting.Entities.Enums;
 using WebTesting.Models;
@@ -42,6 +39,7 @@ namespace WebTesting.Pages.Download
             _dm = dm;
         }
 
+        //should not be used
         public void OnGet()
         {
             if (HttpContext.Session.GetString("SelectedPosts") != null) {
@@ -49,26 +47,16 @@ namespace WebTesting.Pages.Download
             }
         }
 
+        /// <summary>
+        /// This method will launch when user clicks at download.
+        /// </summary>
+        /// <returns>Rediresct to index page.</returns>
         public async Task<IActionResult> OnPostDownload() {
             //TODO Start download procces.
             //TODO if success.
-            /*
-              
-             var form = Request.Form;
-            Posts = new List<Post>();
-            string saveToTemplate = "";
-            List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            HttpContext.Session.SetObject("ShowDownloaded", false);
-            HttpContext.Session.SetObject("GroupBySubreddits", false);
-            foreach (string name in form.Keys)
-            {
-                var res = form[name].ToString;
-                var resInvoked = res.Invoke();
-
-
-
-            */
             string saveToTemplate = null;
+
+            //going throug each form elemnt and doing corresponding action
             foreach (string key in Request.Form.Keys)
             {
                 string value = Request.Form[key];
@@ -128,6 +116,8 @@ namespace WebTesting.Pages.Download
                         break;
                 }
             }
+
+            //Create download parameters for passing into download function
             DownloadParameters downloadParameters = new DownloadParameters(
             Numbering,
             SubredditName,
@@ -140,7 +130,7 @@ namespace WebTesting.Pages.Download
             Empty,
             Split);
 
-            //Templates
+            //Save changes to templates if required
             if (saveToTemplate != null)
             {
                 string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
@@ -161,7 +151,7 @@ namespace WebTesting.Pages.Download
                 await _db.SaveChangesAsync();
             }
 
-
+            //Creating download process, restaritng downoaded ids, by removing it, signaling success
             User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
             Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
             PostsJson = JsonConvert.SerializeObject(Posts);
@@ -171,28 +161,11 @@ namespace WebTesting.Pages.Download
             return RedirectToPage("../Index");
             
         }
-        public IActionResult OnGetDownload()
-        {
-            //TODO Start download procces.
-            //TODO if success.
-            User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
-            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            PostsJson = JsonConvert.SerializeObject(Posts);
-            _dm.NewDownloadProcessAsync(user, Posts, HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), null);
-            HttpContext.Session.Remove("DownloadedIds");
-            TempData["success"] = "Download succesfully started. You can see the progress at \"Progress\" page.";
-            return RedirectToPage("../Index");
 
-        }
-        public async Task<IActionResult> OnPostStructureAsync()
-        {
-
-            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            PostsJson = JsonConvert.SerializeObject(Posts);
-            return Page();
-        }
-
-
+        /// <summary>
+        /// Launches when user clicked next stage at select screen.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostAsync()
         {
             var form = Request.Form;
@@ -201,6 +174,7 @@ namespace WebTesting.Pages.Download
             List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             HttpContext.Session.SetObject("ShowDownloaded", false);
             HttpContext.Session.SetObject("GroupBySubreddits", false);
+            //Going through all form elements and doing corresponding actions
             foreach (string name in form.Keys)
             {
                 var res = form[name].ToString;
@@ -227,7 +201,7 @@ namespace WebTesting.Pages.Download
                                 HttpContext.Session.SetObject("Nsfw", SelectNsfw.BOTH);
                                 break;
                             default:
-                                throw new Exception("In select there is nsfw that does not exist.");
+                                break;
                         }
                         break;
                     case "groupBySubreddits":
@@ -246,6 +220,8 @@ namespace WebTesting.Pages.Download
                         break;
                 }
             }
+
+            //If needed save to template in database
             if (saveToTemplate != "")
             {
                 dynamic templateParsed = JObject.Parse(saveToTemplate);
@@ -262,7 +238,7 @@ namespace WebTesting.Pages.Download
                 HttpContext.Session.Remove("ChosenTemplate");
             }
 
-            //Templates
+            //Fetch templates
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();
             if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
@@ -281,6 +257,7 @@ namespace WebTesting.Pages.Download
             return Page();
         }
 
+        //Function creating new template in db
         public IActionResult OnGetNewTemplate(string name, string numbering, bool subName, bool domName, bool prioName, int title, bool subFol, bool domFol, bool prioFol, bool empty, bool split)  //TODO duplicte code in select.cshtml.cs
         {
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
@@ -312,6 +289,8 @@ namespace WebTesting.Pages.Download
             }
             return StatusCode(422);
         }
+
+        //Function removing template from db
         public IActionResult OnGetDeleteTemplate(int id)
         {
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
@@ -325,6 +304,8 @@ namespace WebTesting.Pages.Download
             }
             return StatusCode(422);
         }
+
+        //Helper functions
         private async Task<Template> SaveChangesNew(Template tmp)
         {
             _db.Templates.Add(tmp);

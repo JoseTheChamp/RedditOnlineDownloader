@@ -20,6 +20,11 @@ namespace WebTesting.Services
 			client.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.2");
 		}
 		private HttpClient client;
+        /// <summary>
+        /// Gets profile info from /api/v1/me endpoint
+        /// </summary>
+        /// <param name="token">AccessToken of the user.</param>
+        /// <returns></returns>
 		public async Task<String> GetProfile(String token) {
 			HttpRequestMessage request = new HttpRequestMessage();
 			request.RequestUri = new Uri("https://oauth.reddit.com/api/v1/me");
@@ -28,6 +33,12 @@ namespace WebTesting.Services
 			var response = await client.SendAsync(request);
 			return await response.Content.ReadAsStringAsync();
 		}
+        /// <summary>
+        /// Get the last saved post from /user/[userName]/saved endpoint
+        /// </summary>
+        /// <param name="token">AccessToken of the user.</param>
+        /// <param name="userName">Username of the user.</param>
+        /// <returns>String that was returned by the endpoint.</returns>
 		public async Task<String> GetLastSavedPost(String token,String userName) {
             //var response = await _reddit.Client.GetAsync("user/InnerPeace42/saved?limit=1");
             HttpRequestMessage request = new HttpRequestMessage();
@@ -37,20 +48,18 @@ namespace WebTesting.Services
             var response = await client.SendAsync(request);
             return await response.Content.ReadAsStringAsync();
         }
-
-        //public async Task<Stream> GetImage
-
+        /// <summary>
+        /// Method sends x(max 10) requests to /user/[userName]/saved endpoint with different parameters until it gets all the posts saved on that account
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userName"></param>
+        /// <returns>List of formated posts.</returns>
         public async Task<List<Post>> GetAllSavedPosts(String token, String userName)
         {
-            //Setting up request messsage
-            
-
-            //Make one Json object with all posts inside.
             StringBuilder sb = new StringBuilder();
             sb.Append("{ \"data\": [");
             int returnedNumber = 100;
             int length = 0;
-            bool first = true;
             int count = 0;
             string after = "";
             String list;
@@ -58,6 +67,8 @@ namespace WebTesting.Services
             HttpResponseMessage response;
             HttpRequestMessage request;
             dynamic jsonData;
+
+            //Send requests until returned number of posts were not 100(max it can return) or until all posts (1000) were returned. And make all these posts be in 1 JSON array
             while (returnedNumber == 100 && count < 10)
             {
                 if (after != "")
@@ -79,9 +90,8 @@ namespace WebTesting.Services
                 jsonData = JObject.Parse(contents);
                 list = "" + jsonData.data.children;
                 list = list.Substring(1, list.Length - 2);
-                if (first)
+                if (after != "")
                 {
-                    first = false;
                     sb.Append(list);
                 }
                 else
@@ -103,10 +113,12 @@ namespace WebTesting.Services
             {
                 try
                 {
+                    //Ignore deleted posts
                     if (jsonDataParse.data[i].data.removed_by_category != null)
                     {
                         continue; //TODO Maybe some reporting how many were removed
                     }
+                    //Parse comments
                     if (jsonDataParse.data[i].kind == "t1")
                     {
                         posts.Add(new Post(
@@ -125,22 +137,19 @@ namespace WebTesting.Services
                         ));
                         continue; //TODO allow for saving comments
                     }
-                    List<string> urls = new List<string>();
 
-
-                    //debug
-                    
+                    /*//debug
                     Debug.WriteLine(i);
                     dynamic post = jsonDataParse.data[i];
                     if (jsonDataParse.data[i].data.domain.ToString() == "gfycat.com")
                     {
                         int a = 5;
-                    }
-                    //dynamic post = jsonDataParse.data[i];
-                    
+                    }*/
 
-
+                    //Parsing of actual posts
+                    List<string> urls = new List<string>();
                     string domain = jsonDataParse.data[i].data.domain.ToString();
+                    //switch to do specificly needed operations per domain.
                     switch (domain)
                     {
                         case "reddit.com":
@@ -199,12 +208,10 @@ namespace WebTesting.Services
                             urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
                             break;
                     }
-                    string title = jsonDataParse.data[i].data.title.ToString();
                     if (domain.StartsWith("self."))
                     {
                         domain = "text";
                     }
-                    //TODO potencial problems, not all posts have post_hint
                     string hint = "";
                     try
                     {
@@ -218,11 +225,12 @@ namespace WebTesting.Services
                             domain = "link";
                         }
                     }
+                    //Creating new post and adding it to the final list
                     posts.Add(new Post(
                         jsonDataParse.data[i].data.id.ToString(),
                         jsonDataParse.data[i].data.title.ToString(),
                         jsonDataParse.data[i].data.selftext.ToString(),
-                        jsonDataParse.data[i].data.subreddit_name_prefixed.ToString(),//subreddit
+                        jsonDataParse.data[i].data.subreddit_name_prefixed.ToString(),
                         jsonDataParse.data[i].data.author.ToString(),
                         domain,
                         jsonDataParse.data[i].data.over_18 == "True" ? true : false,
