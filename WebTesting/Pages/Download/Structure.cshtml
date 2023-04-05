@@ -28,6 +28,7 @@ else
                 </select>
                 <button onclick="newTemplate()">New</button>
                 <button onclick="deleteTemplate()">Delete</button>
+                <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
             </div>
             <div class="col-3 text-end">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
@@ -39,14 +40,14 @@ else
             <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
                     <h4>Name:</h4>
-                    <label>Numbering:</label><br>
+                    <label>Numbering:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label><br>
                     <input type="radio" id="ids" name="numbering" value="ids" checked>
                     <label for="ids">Ids</label><br>
                     <input type="radio" id="standard" name="numbering" value="standard">
                     <label for="standard">Standard</label><br>
                     <input type="radio" id="none" name="numbering" value="none">
                     <label for="none">None</label>
-                    <h5>Name contents:</h5>
+                    <h5>Name contents:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></h5>
                     <div class="row">
                         <div class="col-5">
                             <br>
@@ -71,7 +72,7 @@ else
                     </div>
                     <hr class="solid">
                     <h4>Folders:</h4>
-                    <label>Group by:</label>
+                    <label>Group by:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
                     <div class="row">
                         <div class="col-5">
                             <br>
@@ -89,10 +90,13 @@ else
                             <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
                         </div>
                     </div>
-                    <label class="pt-2" for="empty">Remove empty folders:</label>
-                    <input type="checkbox" id="empty" name="empty" checked><br>
-                    <label class="pt-2" for="split">Split by nsfw/sfw:</label>
-                    <input type="checkbox" id="split" name="split" checked> 
+                    <div class="row">
+                        <label class="pt-2" for="empty">Remove empty folders:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
+                        <input type="checkbox" id="empty" name="empty" checked>
+                        <label class="pt-2" for="split">Split by nsfw/sfw:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
+                        <input type="checkbox" id="split" name="split" checked> 
+                    </div>
+                    
                 </form>
             </div>
             <div class="col-8">

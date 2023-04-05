@@ -29,7 +29,7 @@ else
             </select>
             <button onclick="newTemplate()">New</button>
             <button onclick="deleteTemplate()">Delete</button>
-            <i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i>
+            <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
             </div>
             <div class="col-3 text-end"> 
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
@@ -40,7 +40,7 @@ else
             <div class="col-2" style="border:1px solid red">
             <!--HERE ARE Select settings-->
                 <div class="row pb-2">
-                    <label for="showDownloaded">Show downloaded posts:</label>
+                    <label for="showDownloaded">Show downloaded posts:<i data-tippy-content="If checked then the already downloaded posts will be visible (Dowloaded posts are marked with X).">&#x1F6C8</i></label>
                     @if (Model.ShowDownloaded == true)
                     {
                         <input form="selectedPosts" name="showDownloaded" type="checkbox" checked>
@@ -51,7 +51,7 @@ else
                     }
                 </div>
                 <div class="row pb-2">  
-                    <label for="groupBySubreddits">Group by subreddits:</label>
+                    <label for="groupBySubreddits">Group by subreddits:<i data-tippy-content="If checked then posts will be grouped by their subreddit. Possible to select subreddits to download.">&#x1F6C8</i></label>
                     @if (Model.GroupBySubreddit == true)
                     {
                         <input form="selectedPosts" name="groupBySubreddits" type="checkbox" checked>
@@ -61,32 +61,36 @@ else
                         <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
                     }
                 </div>
-                <div class="row pb-2">
-                    <label for="nsfw">Nsfw/sfw:</label>
-                    <select form="selectedPosts" name="nsfw">
-                    @switch (Model.Nsfw)
-                    {
-                        case SelectNsfw.SFW:
-                                <option value="both">Both</option>
-                                <option selected value="sfw">SFW</option>
-                                <option value="nsfw">NSFW</option>
-                            break;
-                        case SelectNsfw.NSFW:
-                                <option value="both">Both</option>
-                                <option value="sfw">SFW</option>
-                                <option selected value="nsfw">NSFW</option>
-                            break;
-                        default:
-                                <option selected value="both">Both</option>
-                                <option value="sfw">SFW</option>
-                                <option value="nsfw">NSFW</option>
-                            break;
-                    }
-                    </select>
+                    <div class="row pb-2">
+                        <div class="col-11">
+                            <label for="nsfw">Nsfw/sfw:<i data-tippy-content="Both - All posts wil be visible. NSFW - only posts marked as 18+ will be visible. SFW - only posts that are not marked 18+ will be visible.">&#x1F6C8</i></label>
+                        </div>
+                        <div class="col-11">
+                            <select form="selectedPosts" name="nsfw">
+                            @switch (Model.Nsfw)
+                            {
+                                case SelectNsfw.SFW:
+                                            <option value="both">Both</option>
+                                            <option selected value="sfw">SFW</option>
+                                            <option value="nsfw">NSFW</option>
+                                    break;
+                                case SelectNsfw.NSFW:
+                                            <option value="both">Both</option>
+                                            <option value="sfw">SFW</option>
+                                            <option selected value="nsfw">NSFW</option>
+                                    break;
+                                default:
+                                            <option selected value="both">Both</option>
+                                            <option value="sfw">SFW</option>
+                                            <option value="nsfw">NSFW</option>
+                                    break;
+                            }
+                            </select>
+                        </div>
                 </div>
                 <div class="row pb-2 pt-3">
-                    <div class="col-6 pl-0">
-                        <label for="mediaTypes">Media to show:</label> 
+                    <div class="col-5 pl-0">
+                        <label for="mediaTypes">Media to show:<i data-tippy-content="Select the domains which you want to see. IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></label> 
                     </div>
                     <div class="col-3 pl-0">
                         <input type="button" name="Button" value="All" onclick="selectAll(true)" />
