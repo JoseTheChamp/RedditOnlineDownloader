@@ -90,13 +90,7 @@ namespace WebTesting.Pages.Download
             await ManageDownloadedIdsAsync();
 
             //Creating list of all domains in downloaded posts
-            Domains = new List<string>(); //TODO replace with linq
-            foreach (Post post in AllPosts)
-            {
-                if (!Domains.Contains(post.Domain)) { 
-                    Domains.Add(post.Domain);
-                }
-            }
+            Domains = AllPosts.Select(e => e.Domain).Distinct().ToList();
             HttpContext.Session.SetObject("Domains", Domains);
             if (DomainsForm == null) DomainsForm = Domains;
 

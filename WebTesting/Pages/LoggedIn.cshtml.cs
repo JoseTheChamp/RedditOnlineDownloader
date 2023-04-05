@@ -25,7 +25,6 @@ namespace WebTesting.Pages
 		}
 		public async Task<IActionResult> OnGetAsync()
 		{
-			//TODO zrusit vypisy tudiz html atd, pri nepodareni napsat error hlasku ne code a token
 			if (Code == null)
 			{
 				string url = HttpContext.Request.GetEncodedUrl();
@@ -33,7 +32,6 @@ namespace WebTesting.Pages
 				if (code != null)
 				{
 					Code = code;
-					//TODO Figure out if successfull if not then something
 
 					HttpClient client = new HttpClient();
 					var auth = Encoding.ASCII.GetBytes("9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg");
@@ -92,6 +90,7 @@ namespace WebTesting.Pages
 					Code = "Failed to login through reddit.";
 				}
 			}
+			Code = "Something went wrong. Try again later.";
 			return Page();
 		}
 	}

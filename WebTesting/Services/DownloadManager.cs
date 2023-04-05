@@ -107,12 +107,7 @@ namespace WebTesting.Services
             dp.Thread = thread;
 
             //Save Download History
-            List<string> ids = new List<string>(); //TODO replace with LINQ
-            foreach (Post post in dp.Posts)
-            {
-                ids.Add(post.Id);
-            }
-            var a = ids.ToJson();
+            List<string> ids = dp.Posts.Select(e => e.Id).ToList();
             DownloadHistory dh = new DownloadHistory(0, dp.UserId, ids.ToJson(), DateTime.Now);
             _db.downloadHistories.Add(dh);
             await _db.SaveChangesAsync();
@@ -134,24 +129,11 @@ namespace WebTesting.Services
             Directory.CreateDirectory(defaultPath);
 
             //Getting list of all domains and all subreddits
-            List<string> domains = new List<string>(); //TODO replace with LINQ
-            foreach (Post post in dp.Posts)
-            {
-                if (!domains.Contains(post.Domain))
-                {
-                    domains.Add(post.Domain);
-                }
-            }
+            List<string> domains = dp.Posts.Select(e => e.Domain).Distinct().ToList();
             domains.Sort();
-            List<string> subreddits = new List<string>(); //TODO replace with LINQ
-            foreach (Post post in dp.Posts)
-            {
-                if (!subreddits.Contains(post.Subreddit))
-                {
-                    subreddits.Add(post.Subreddit);
-                }
-            }
+            List<string> subreddits = dp.Posts.Select(e => e.Subreddit).Distinct().ToList();
             subreddits.Sort();
+
 
             //Create two folders if nsfw/sfw split
             if (dp.DownloadParameters.Split == true) {

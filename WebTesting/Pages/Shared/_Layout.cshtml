@@ -47,7 +47,7 @@
                     </ul>
                      <ul class="navbar-nav ms-auto">
                         @if (Accessor.HttpContext.Session.GetString("UserName") != null)
-                        { //TODO js zprava odhlasen
+                        {
                                 <p class="me-3">@Accessor.HttpContext.Session.GetString("UserName")</p>
                             <form method="post" asp-page="Logout">
                                 <input type="submit" class="btn btn-primary" asp-page="/Index" value="Logout" />

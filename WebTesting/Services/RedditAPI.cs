@@ -90,7 +90,7 @@ namespace WebTesting.Services
                 jsonData = JObject.Parse(contents);
                 list = "" + jsonData.data.children;
                 list = list.Substring(1, list.Length - 2);
-                if (after != "")
+                if (after == "")
                 {
                     sb.Append(list);
                 }
@@ -116,7 +116,7 @@ namespace WebTesting.Services
                     //Ignore deleted posts
                     if (jsonDataParse.data[i].data.removed_by_category != null)
                     {
-                        continue; //TODO Maybe some reporting how many were removed
+                        continue;
                     }
                     //Parse comments
                     if (jsonDataParse.data[i].kind == "t1")
@@ -135,7 +135,7 @@ namespace WebTesting.Services
                         0,
                         new List<string>() { "https://www.reddit.com/" + jsonDataParse.data[i].data.permalink.ToString() }
                         ));
-                        continue; //TODO allow for saving comments
+                        continue;
                     }
 
                     /*//debug
@@ -160,7 +160,7 @@ namespace WebTesting.Services
                             foreach (dynamic media in jsonDataParse.data[i].data.media_metadata)
                             {
                                 JObject jo = (JObject)((JProperty)media).Value;
-                                string m = (string)jo["m"]; //TODO catch errors??
+                                string m = (string)jo["m"];
                                 extensions.Add(m.Substring(m.IndexOf('/') + 1));
                                 ids.Add((string)jo["id"]);
                                 j++;
@@ -243,8 +243,7 @@ namespace WebTesting.Services
                 }
                 catch (Exception ex)
                 {
-                    //throw ex; //TODO in build remove this so it ignores bad posts
-                    //TODO report failed posts somehow - edit post to contain error field
+                    //throw ex;
                 }
             }
             return posts;

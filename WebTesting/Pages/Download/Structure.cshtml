@@ -163,20 +163,20 @@ else
         const i_split = document.getElementById('split');
         
         //Setting all inicial values;
-        var v_numbering = "ids";//TODO values set directly
-        var v_priorityName = "subredditPriorityName";
-        var v_priorityFolder = "subredditPriorityFolder"; 
-        var v_title = 60;
-        var v_subredditName = false;
-        var v_domainName = false;
-        var v_subredditFolder = true;
-        var v_domainFolder = false;
-        var v_empty = true;
-        var v_split = true;
+        var v_numbering = i_numbering.value;
+        var v_priorityName = i_priorityName.value;
+        var v_priorityFolder = i_priorityFolder.value;
+        var v_title = i_title.value;
+        var v_subredditName = i_subredditName.checked;
+        var v_domainName = i_domainName.checked;
+        var v_subredditFolder = i_subredditFolder.checked;
+        var v_domainFolder = i_domainFolder.checked;
+        var v_empty = i_empty.checked;
+        var v_split = i_split.checked;
 
 
         //Templates
-        const i_selectedTemplate = document.getElementById("selectedTemplate"); //TODO remove useless i_ and so on
+        const i_selectedTemplate = document.getElementById("selectedTemplate");
         var v_selectedTemplate = i_selectedTemplate.value;
         const i_templatesSelect = document.getElementById("templatesSelect");
 
@@ -192,7 +192,7 @@ else
             i_templatesSelect.appendChild(option);
         }
         var v_templatesSelect = i_templatesSelect.value;
-        if(v_templatesSelect != 'none'){ //TODO load template into fields
+        if(v_templatesSelect != 'none'){
             let template = JSON.parse(v_templatesSelect);
             if(template.Numbering == 'ids'){
                 document.getElementById("ids").checked = true;
@@ -634,12 +634,12 @@ else
         }
 
         function newTemplate(){
-            var person = prompt("Please enter unique name for your Template:", ""); //TODO rename person
-            if (person != null && person != "") {
+            var tempName = prompt("Please enter unique name for your Template:", "");
+            if (tempName != null && tempName != "") {
                 $.ajax({
                     url: '/Download/Structure?handler=NewTemplate',
                     type: 'GET',
-                    data: { name: person, numbering: v_numbering, subName: v_subredditName, domName: v_domainName, prioName: v_priorityName, title: v_title, subFol: v_subredditFolder, domFol: v_domainFolder, prioFol: v_priorityFolder, empty: v_empty, split: v_split },
+                    data: { name: tempName, numbering: v_numbering, subName: v_subredditName, domName: v_domainName, prioName: v_priorityName, title: v_title, subFol: v_subredditFolder, domFol: v_domainFolder, prioFol: v_priorityFolder, empty: v_empty, split: v_split },
                     dataType: 'json',
                     success: function (data) {
                         let template = JSON.parse(data);
@@ -661,8 +661,7 @@ else
             if(tempVal1 != "none"){
                 let tempVal = i_templatesSelect.value;
                 let template = JSON.parse(tempVal);
-                //let confirm = confirm("Do you truly want to delete Template '" + template.name + "':");
-                if (true) {
+                if (confirm("Do you truly want to delete Template '" + template.Name + "':") == true) {
                     $.ajax({
                         url: '/Download/Structure?handler=DeleteTemplate',
                         type: 'GET',
@@ -679,7 +678,7 @@ else
                             i_templates.value = "none";
                         },
                         error: function (xhr, status, error) {
-                            alert('Error - Template could not be deleted.'); // handle any errors here
+                            alert('Error - Template could not be deleted.');
                         }
                     });
                 }

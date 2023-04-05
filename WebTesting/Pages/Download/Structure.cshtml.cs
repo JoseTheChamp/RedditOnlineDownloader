@@ -52,10 +52,7 @@ namespace WebTesting.Pages.Download
         /// </summary>
         /// <returns>Rediresct to index page.</returns>
         public async Task<IActionResult> OnPostDownload() {
-            //TODO Start download procces.
-            //TODO if success.
             string saveToTemplate = null;
-
             //going throug each form elemnt and doing corresponding action
             foreach (string key in Request.Form.Keys)
             {
@@ -88,7 +85,7 @@ namespace WebTesting.Pages.Download
                         if (value == "subredditPriorityName") NamePriorityIsSubreddit = true;
                         break;
                     case "title":
-                        Title = Int32.Parse(value); //TODO somecheck? maybe do on html/js side
+                        Title = Int32.Parse(value);
                         break;
                     case "subredditFolder":
                         if (value == "on") SubredditFolder = true;
@@ -194,7 +191,7 @@ namespace WebTesting.Pages.Download
             {
                 var res = form[name].ToString;
                 var resInvoked = res.Invoke();
-                if (resInvoked == "on" && name != "showDownloaded" && name != "selectAll" && name != "groupBySubreddits") { //TODO bad design - based on names in htlm checkboxes on/off in select
+                if (resInvoked == "on" && name != "showDownloaded" && name != "groupBySubreddits") {
                     Posts.Add(PostsToChooseFrom.FirstOrDefault(e => e.Id == name));
                     continue;
                 }
@@ -204,7 +201,7 @@ namespace WebTesting.Pages.Download
                         HttpContext.Session.SetObject("ShowDownloaded", true);
                         break;
                     case "nsfw":
-                        switch (resInvoked) //TODO not ideal solution change in html will brake this.
+                        switch (resInvoked)
                         {
                             case "sfw":
                                 HttpContext.Session.SetObject("Nsfw", SelectNsfw.SFW);
@@ -273,7 +270,7 @@ namespace WebTesting.Pages.Download
         }
 
         //Function creating new template in db
-        public IActionResult OnGetNewTemplate(string name, string numbering, bool subName, bool domName, bool prioName, int title, bool subFol, bool domFol, bool prioFol, bool empty, bool split)  //TODO duplicte code in select.cshtml.cs
+        public IActionResult OnGetNewTemplate(string name, string numbering, bool subName, bool domName, bool prioName, int title, bool subFol, bool domFol, bool prioFol, bool empty, bool split)
         {
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
 

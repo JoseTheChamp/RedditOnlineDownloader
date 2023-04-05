@@ -143,13 +143,18 @@ else
         //Defining constants
         var checkboxes = document.querySelectorAll('input[type="checkbox"][id="checkbox"]');
         const selectAllCheckboxes = document.getElementById("select-all-checkboxes");
-        const submitButton = document.getElementById("the-submit");
-        const test = document.getElementById("test");
-        const print = document.getElementById("print");
         const sessionInput = document.getElementById("hdnSession");
         const multipleSelect = document.getElementById("multipleSelect");
         const nextStepButton = document.getElementById("nextStep");
         var filteredLength = 0;
+
+        //Getting downloaded and selected ids from hidden fields
+        var v_downloadedIds = document.getElementById("downloadedIds").value;
+        var downloadedIds = JSON.parse(v_downloadedIds);
+        var v_selectedIds = document.getElementById("selectedIds").value;
+        if(v_selectedIds != ''){
+            var selectedIds = JSON.parse(v_selectedIds); 
+        }
 
 
         //Select Form
@@ -162,19 +167,13 @@ else
         var v_showDownloaded = i_showDownloaded.checked;
         var v_nsfw = i_nsfw.value;
         var v_multipleSelect = $("#multipleSelect").chosen().val();
-        var v_downloadedIds = document.getElementById("downloadedIds").value;
-        var downloadedIds = JSON.parse(v_downloadedIds);
-        var v_selectedIds = document.getElementById("selectedIds").value;
-        if(v_selectedIds != ''){
-            var selectedIds = JSON.parse(v_selectedIds); 
-        }
 
         //details
         var domainsList = document.getElementById("domains");
         var subredditsList = document.getElementById("subredditsList");
         var subredditsCount = document.getElementById("subreddits");
         var nsfwList = document.getElementById("nsfwDetail");
-        var countAltText = document.getElementById("count");
+        var countText = document.getElementById("count");
         var count = 0;
         
         //Parsing List<Post> from hidden field
@@ -182,7 +181,7 @@ else
         var posts = JSON.parse(value);
 
         //Templates
-        const i_selectedTemplate = document.getElementById("selectedTemplate"); //TODO remove useless i_ and so on
+        const i_selectedTemplate = document.getElementById("selectedTemplate");
         var v_selectedTemplate = i_selectedTemplate.value;
         const i_templatesSelect = document.getElementById("templatesSelect");
 
@@ -207,7 +206,6 @@ else
             v_nsfw = template.Nsfw;
             i_nsfw.value = v_nsfw;
             v_multipleSelect = JSON.parse(template.DomainsForm);
-            //$("#multipleSelect").chosen().val(v_multipleSelect);
             $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
         }
         
@@ -243,7 +241,6 @@ else
                 v_nsfw = template.Nsfw;
                 i_nsfw.value = v_nsfw;
                 v_multipleSelect = JSON.parse(template.DomainsForm);
-                //$("#multipleSelect").chosen().val(v_multipleSelect);
                 $('#multipleSelect').val(v_multipleSelect).trigger('chosen:updated');
                 redraw();
             }else{
@@ -253,7 +250,6 @@ else
         $('#multipleSelect').change(function(){
             values = $("#multipleSelect").chosen().val();
             v_multipleSelect = values;
-            //alert(v_multipleSelect);
             redraw();
         });
 
@@ -355,7 +351,7 @@ else
                 subredditsList.appendChild(li);
             }
             subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subreddits).length;
-            countAltText.innerHTML = '<b>Count</b> - ' + counting;
+            countText.innerHTML = '<b>Count</b> - ' + counting;
 
             //Change checkbox selectAll to proper state
             if(counting == filteredLength){
@@ -426,10 +422,9 @@ else
                         let subredditHtml = document.createElement('div');
                         subredditHtml.id = 'M' + subredditIndex;
                         subredditHtml.innerHTML = "<input id='C" + subredditIndex + "' class='form-check-input' type='checkbox' checked><b id='no'>" + subreddit + "</b><button type='button' id='I" + subredditIndex + "' onclick='showOrHide(" + subredditIndex + ")'>&#8595;</button>";
-                        for(let i = 0; i < subredditFilteredPosts.length; i++){ //TODO zmenit na foreach
-                            let post = subredditFilteredPosts[i]; //kvuli tomuhle
+                        subredditFilteredPosts.forEach((post) => {
                             let postHtml = document.createElement('div');
-                            let html = '';
+                                let html = '&emsp;';
                             let linkPost = "https://www.reddit.com" + post.PermaLink;
                             let linkSubreddit = "https://www.reddit.com/" + post.Subreddit;
                             let title = '';
@@ -439,8 +434,6 @@ else
                             }else{
                                 title = post.Title;
                             }
-                            html = "<div>&emsp;";
-                            //alert('Vypisovani');
                             if(v_selectedIds != ''){
                                 let selected = selectedIds.includes(post.Id);
                                 if(selected){
@@ -474,15 +467,14 @@ else
                             html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a>";
                             postHtml.innerHTML = html;
                             subredditHtml.appendChild(postHtml);
-                        }
+                        });
                         postList.appendChild(subredditHtml);
                         addListener(subredditIndex);
                         subredditIndex++;
                     });
                 }else{
                     //List of posts - no subreddits
-                    for(let i = 0; i < filteredPosts.length; i++){ //TODO zmenit na foreach
-                        let post = filteredPosts[i]; //kvuli tomuhle
+                        filteredPosts.forEach((post) => {
                         let postHtml = document.createElement('div');
                         let html = '';
                         let linkPost = "https://www.reddit.com" + post.PermaLink;
@@ -528,13 +520,12 @@ else
                         html = html + post.Domain + " - " + title + " - <a href='" + linkPost + "' target='_blank'>link</a></div>";
                         postHtml.innerHTML = html;
                         postList.appendChild(postHtml);
-                    }
+                    });
                 }
             }
             v_selectedIds = '';
             linkCheckBoxes();
             calculateDetails(true);
-            //alert('End of redraw');
         }
 
         //Link newly generated checkboxes with calculate details function + refresh variable checkboxes
@@ -575,9 +566,7 @@ else
             if(tempVal1 != "none"){
                 let tempVal = i_templatesSelect.value;
                 let template = JSON.parse(tempVal);
-                //TODO add confirm window
-                //let confirm = confirm("Do you truly want to delete Template '" + template.name + "':");
-                if (true) {
+                if (confirm("Do you truly want to delete Template '" + template.Name + "':") == true) {
                     $.ajax({
                         url: '/Download/Select?handler=DeleteTemplate',
                         type: 'GET',
@@ -594,7 +583,7 @@ else
                             i_templates.value = "none";
                         },
                         error: function (xhr, status, error) {
-                            alert('Error - Template could not be deleted.'); // handle any errors here
+                            alert('Error - Template could not be deleted.');
                         }
                     });
                 }

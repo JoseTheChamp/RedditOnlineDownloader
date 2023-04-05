@@ -44,6 +44,7 @@ namespace WebTesting.Pages.Download
         /// <param name="id">Id of download, that is to be removed.</param>
         /// <returns></returns>
         public async Task<IActionResult> OnGetDeleteAsync(int id) {
+            //TODO check if no hacker id is users
             if (await _dm.RemoveDownloadProcess(id))
             {
                 TempData["success"] = "Download succesfully deleted.";
@@ -64,12 +65,6 @@ namespace WebTesting.Pages.Download
             await _dm.StopAndRemoveDownloadProcess(id);          
             TempData["success"] = "Download succesfully deleted.";
             HttpContext.Session.Remove("DownloadedIds");
-            OnGet();
-            return Page();
-        }
-        //TODO implement
-        public IActionResult OnGetSave(int id)
-        {
             OnGet();
             return Page();
         }

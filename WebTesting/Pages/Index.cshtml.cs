@@ -20,7 +20,6 @@ namespace WebTesting.Pages
         }
 
         public void OnPost() { 
-            //TODO Mozna nejake if nebo na asction atd
             HttpContext.Session.Clear();
         }
     }
