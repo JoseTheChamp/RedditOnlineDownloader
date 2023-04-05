@@ -117,6 +117,8 @@ namespace WebTesting.Pages.Download
                 }
             }
 
+            string redditId = HttpContext.Session.GetString("RedditId");
+
             //Create download parameters for passing into download function
             DownloadParameters downloadParameters = new DownloadParameters(
             Numbering,
@@ -136,7 +138,7 @@ namespace WebTesting.Pages.Download
                 string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
                 dynamic templateParsed = JObject.Parse(jsonTemplate);
                 int id = templateParsed.Id;
-                Template template = _db.Templates.FirstOrDefault(p => p.UserId == HttpContext.Session.GetString("RedditId") && p.Id == id);
+                Template template = _db.Templates.FirstOrDefault(p => p.UserId == redditId && p.Id == id);
                 template.Numbering = Numbering.ToString().ToLower();
                 template.SubredditName = SubredditName;
                 template.DomainName = DomainName;
@@ -151,15 +153,28 @@ namespace WebTesting.Pages.Download
                 await _db.SaveChangesAsync();
             }
 
-            //Creating download process, restaritng downoaded ids, by removing it, signaling success
-            User user = _db.Users.FirstOrDefault(e => e.RedditId == HttpContext.Session.GetString("RedditId"));
-            Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
-            PostsJson = JsonConvert.SerializeObject(Posts);
-            string downloadName = await _dm.NewDownloadProcessAsync(user,Posts,HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), downloadParameters);
-            HttpContext.Session.Remove("DownloadedIds");
-            TempData["success"] = "\"" + downloadName + "\" succesfully started. You can see the progress at \"Progress\" page.";
-            return RedirectToPage("../Index");
-            
+            int userDbId = _db.Users.FirstOrDefault(e => e.RedditId == redditId).Id;
+            int numberOfUnfinishedDownloads = _db.Downloads.Where(e => e.User.Id == userDbId && e.IsDownloadable == false).ToList().Count;
+            if (numberOfUnfinishedDownloads < 3)
+            {
+                //Creating download process, restaritng downoaded ids, by removing it, signaling success
+                User user = _db.Users.FirstOrDefault(e => e.RedditId == redditId);
+                Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+                PostsJson = JsonConvert.SerializeObject(Posts);
+                string downloadName = await _dm.NewDownloadProcessAsync(user, Posts, HttpContext.Session.GetObject<List<Post>>("AllPosts").Select(p => p.Id).ToList(), downloadParameters);
+                HttpContext.Session.Remove("DownloadedIds");
+                TempData["success"] = "\"" + downloadName + "\" succesfully started. You can see the progress at \"Progress\" page.";
+                return RedirectToPage("../Index");
+            }
+            else {
+                //Too many downloads, returning to index page
+                User user = _db.Users.FirstOrDefault(e => e.RedditId == redditId);
+                Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
+                PostsJson = JsonConvert.SerializeObject(Posts);
+                HttpContext.Session.Remove("DownloadedIds");
+                TempData["error"] = "There are already 3 running downloads. You can see the progress at \"Progress\" page.";
+                return RedirectToPage("../Index");
+            }
         }
 
         /// <summary>
