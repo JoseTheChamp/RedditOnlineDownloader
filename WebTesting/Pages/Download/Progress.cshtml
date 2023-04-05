@@ -32,7 +32,6 @@ else
                             {
                                 <div>
                                     Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Done
-                                    <button class="btn btn-primary">+</button>
                                     <a asp-page-handler="Download" asp-route-id="@download.Id" class="btn btn-primary">Download</a>
                                     <a asp-page-handler="Delete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
                                 </div>

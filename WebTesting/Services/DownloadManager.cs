@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol;
 using System.Diagnostics;
 using System.IO.Compression;
@@ -18,6 +19,7 @@ namespace WebTesting.Services
         private static readonly string DownloadPath = Environment.CurrentDirectory + "\\wwwroot\\Downloads";
         private static readonly string DownloadablePath = Environment.CurrentDirectory + "\\wwwroot\\DownloadableFiles";
         private System.Timers.Timer RemoveTimer;
+        private readonly object dbLock = new object();
         public class DownloadProcess{
             public int DownloadId { get; set; }
             public List<Post> Posts { get; set; }
@@ -81,7 +83,7 @@ namespace WebTesting.Services
                 DateTime.Now,
                 user
                 );
-            _db.Downloads.AddAsync(download);
+            _db.Downloads.Add(download);
             await _db.SaveChangesAsync();
             
             //Initialization of required things for staritng the work and creating DownloadProcess
@@ -189,7 +191,7 @@ namespace WebTesting.Services
                 }
 
                 //Allow files to be downloaded
-                Download downloadDownloadable = _db.Downloads.FirstOrDefault(e => e.Id == dp.DownloadId);
+                Download downloadDownloadable = await _db.Downloads.FirstOrDefaultAsync(e => e.Id == dp.DownloadId);
                 downloadDownloadable.IsDownloadable = true;
                 _db.Downloads.Update(downloadDownloadable);
 
@@ -363,7 +365,7 @@ namespace WebTesting.Services
                 {
                     if (dp.PostIndex == dp.Posts.Count - 1)
                     {
-                        Download download = _db.Downloads.FirstOrDefault(e => e.Id == dp.DownloadId);
+                        Download download = await _db.Downloads.FirstOrDefaultAsync(e => e.Id == dp.DownloadId);
                         if (download != null)
                         {
                             download.ProgressAbs = download.ProgressAbsMax;
@@ -376,7 +378,7 @@ namespace WebTesting.Services
                     }
                     else
                     {
-                        Download download = _db.Downloads.FirstOrDefault(e => e.Id == dp.DownloadId);
+                        Download download = await _db.Downloads.FirstOrDefaultAsync(e => e.Id == dp.DownloadId);
                         if (download != null)
                         {
                             download.ProgressAbs = dp.PostIndex;
@@ -654,7 +656,7 @@ namespace WebTesting.Services
             dp.TokenSource.Cancel();
             dp.TokenSource.Dispose();
             Thread.Sleep(100);
-            _db.Downloads.Remove(_db.Downloads.FirstOrDefault(e => e.Id == id));
+            _db.Downloads.Remove(await _db.Downloads.FirstOrDefaultAsync(e => e.Id == id));
             _db.downloadHistories.Remove(dp.DownloadHistory);
             await _db.SaveChangesAsync();
             processes.Remove(dp);

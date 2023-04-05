@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "I3V2Huq17yDXCKDBPBejLOk1WndeeDmeoHzJk1/ruEM=",
+  "Hash": "57pA1LTUO6y43CN6ogsuyskHFI2E5j4ObVR/8JxxJmk=",
   "Source": "WebTesting",
   "BasePath": "_content/WebTesting",
   "Mode": "Default",
@@ -102,12 +102,12 @@
       "OriginalItemSpec": "wwwroot\\css\\stylesChosen.css"
     },
     {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9129.zip",
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9158.zip",
       "SourceId": "WebTesting",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
       "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download9129.zip",
+      "RelativePath": "DownloadableFiles/Download9158.zip",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -116,15 +116,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9129.zip"
+      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9158.zip"
     },
     {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9132.zip",
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9159.zip",
       "SourceId": "WebTesting",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
       "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download9132.zip",
+      "RelativePath": "DownloadableFiles/Download9159.zip",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -133,15 +133,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9132.zip"
+      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9159.zip"
     },
     {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9133.zip",
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9160.zip",
       "SourceId": "WebTesting",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
       "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download9133.zip",
+      "RelativePath": "DownloadableFiles/Download9160.zip",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -150,41 +150,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9133.zip"
-    },
-    {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9135.zip",
-      "SourceId": "WebTesting",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
-      "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download9135.zip",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9135.zip"
-    },
-    {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download9148.zip",
-      "SourceId": "WebTesting",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
-      "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download9148.zip",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9148.zip"
+      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download9160.zip"
     },
     {
       "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\favicon.ico",
