@@ -41,7 +41,7 @@ else
             <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
                     <h4>Names:</h4>   
-                    <label>Numbering:<i data-tippy-content="Choose how will your posts be numbered. Ids - by their reddit Id, Standard - they will be numbered in their scope, None - no numbering(Names will have suffix [x] if more files have the same name).">&#x1F6C8</i></label><br>
+                    <label>Numbering:<i data-tippy-content="Choose how will your posts be numbered. Ids - by their reddit Id, Standard - they will be numbered in their scope, None - no numbering(Names will have suffix '_x' if more files have the same name).">&#x1F6C8</i></label><br>
                     @switch (Model.Numbering)
                     {
                         case Numbering.None:
@@ -126,20 +126,53 @@ else
                         </div>
                         <div class="col-3">
                             y/n<br>
-                            <input name="subredditFolder" type="checkbox" checked><br>
-                            <input name="domainFolder" type="checkbox">
+                            @if(Model.SubredditFolder){
+                                <input name="subredditFolder" type="checkbox" checked><br>
+                            }
+                            else
+                            {
+                                <input name="subredditFolder" type="checkbox"><br>
+                            }
+                            @if(Model.DomainFolder){
+                                <input name="domainFolder" type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input name="domainFolder" type="checkbox">
+                            }
                         </div>
                         <div class="col-4">
                             Priority<br>
-                            <input type="radio" id="subredditPriorityFolder" name="priorityFolder" value="subredditPriorityFolder" checked><br>
-                            <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
+                            @if (Model.FolderPriorityIsSubreddit)
+                            {
+                                <input type="radio" id="subredditPriorityFolder" name="priorityFolder" value="subredditPriorityFolder" checked><br>
+                                <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
+                            }
+                            else
+                            {
+                                <input type="radio" id="subredditPriorityFolder" name="priorityFolder" value="subredditPriorityFolder" checked><br>
+                                <input type="radio" id="domainPriorityFolder" name="priorityFolder" value="domainPriorityFolder">
+                            }
+                            
                         </div>
                     </div>
                     <div class="row">
                         <label class="pt-2" for="empty">Remove empty folders:<i data-tippy-content="If checked then all folders then would be empty are removed.">&#x1F6C8</i></label>
-                        <input type="checkbox" id="empty" name="empty" checked>
+                        @if(Model.Empty){
+                            <input type="checkbox" id="empty" name="empty" checked>
+                        }
+                        else
+                        {
+                            <input type="checkbox" id="empty" name="empty">
+                        }
                         <label class="pt-2" for="split">Split by nsfw/sfw:<i data-tippy-content="If checked then nsfw and sfw posts will have their own folders.">&#x1F6C8</i></label>
-                        <input type="checkbox" id="split" name="split" checked> 
+                        @if(Model.Split){
+                            <input type="checkbox" id="split" name="split" checked> 
+                        }
+                        else
+                        {
+                            <input type="checkbox" id="split" name="split"> 
+                        }
                     </div>
                     
                 </form>
@@ -667,12 +700,13 @@ else
             }
 
             //checking if filename already exists, if it does then renaming it.
+            let indexSuffix = 1;
             if(namesTaken.includes(name)){
-                name = name + '_' + index++;
+                name = name + '_' + indexSuffix++;
             }
             while(namesTaken.includes(name)){
                 name = name.slice(0,name.length-2);
-                name = name + '_' + index++;
+                name = name + '_' + indexSuffix++;
             }
 
             namesTaken.push(name);

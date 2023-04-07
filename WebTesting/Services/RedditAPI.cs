@@ -205,7 +205,10 @@ namespace WebTesting.Services
                             urls = new List<string> { jsonDataParse.data[i].data.preview.reddit_video_preview.fallback_url.ToString() };
                             break;
                         default:
-                            urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
+                            try {
+                                urls = new List<string> { jsonDataParse.data[i].data.url.ToString() };
+                            }
+                            catch { }                      
                             break;
                     }
                     if (domain.StartsWith("self."))
@@ -225,6 +228,11 @@ namespace WebTesting.Services
                             domain = "link";
                         }
                     }
+                    List<string> supportedDomains = new List<string>() {"i.redd.it","v.redd.it", "reddit.com", "i.imgur.com", "gfycat.com", "link", "text"};
+                    if (!supportedDomains.Contains(domain))
+                    {
+                        domain = "not_supported";
+                    }
                     //Creating new post and adding it to the final list
                     posts.Add(new Post(
                         jsonDataParse.data[i].data.id.ToString(),
@@ -243,7 +251,7 @@ namespace WebTesting.Services
                 }
                 catch (Exception ex)
                 {
-                    //throw ex;
+                    //throw new Exception(posts[i].ToString());
                 }
             }
             return posts;

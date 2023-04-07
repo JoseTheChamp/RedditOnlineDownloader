@@ -199,6 +199,10 @@ namespace WebTesting.Pages.Download
             HttpContext.Session.SetObject("ShowDownloaded", false);
             HttpContext.Session.SetObject("GroupBySubreddits", false);
             Title = -1;
+            Empty = true;
+            Split = true;
+            SubredditFolder = true;
+            NamePriorityIsSubreddit= true;
             //Going through all form elements and doing corresponding actions
             foreach (string name in form.Keys)
             {
@@ -274,7 +278,7 @@ namespace WebTesting.Pages.Download
             }
             else
             {
-                //If no template was used then save settings to session
+                //If no template was used then save settings to session, if set
                 if (HttpContext.Session.Get("Numbering") != null) {
                     Numbering = HttpContext.Session.GetObject<Numbering>("Numbering");
                     SubredditName = HttpContext.Session.GetObject<bool>("SubredditName");

@@ -415,6 +415,9 @@ namespace WebTesting.Services
                 case "text":
                     SaveTextPost(post, path, id);
                     break;
+                case "not_supported":
+                    SaveNotSupported(post, path, id);
+                    break;
                 //default makes ERROR txt file
                 default:
                     SaveErrorPost(post, path, id);
@@ -497,6 +500,19 @@ namespace WebTesting.Services
                 sw.WriteLine("Subreddit: " + post.Subreddit);
                 sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
                 sw.WriteLine("Text: \n" + post.SelfText);
+            }
+        }
+        private void SaveNotSupported(Post post, string path, int id)
+        {
+            using (StreamWriter sw = File.CreateText(path + ".txt"))
+            {
+                sw.WriteLine(post.Urls[0]);
+                sw.WriteLine("!!This domain is not supported. Following file is the default for all unsupported domains. Above this line is url to media that was included with the post!!");
+                sw.WriteLine("Title: " + post.Title);
+                sw.WriteLine("Subreddit: " + post.Subreddit);
+                sw.WriteLine("PermaLink: www.reddit.com" + post.PermaLink);
+                sw.WriteLine("Url to media: " + post.Urls[0]);
+                sw.WriteLine("Text(IfAny): \n" + post.SelfText);
             }
         }
         private void SaveComment(Post post, string path, int id)
@@ -584,14 +600,16 @@ namespace WebTesting.Services
             {
                 sb.Remove(sb.Length-1, 1);
             }
+            Post postDebug = post;
+            string result = sb.ToString();
             if (dp.ExistingNames.Contains(sb.ToString()))
             {
                 int i = 1;
-                sb.Append('_' + i++);
+                sb.Append("_" + i++);
                 while (dp.ExistingNames.Contains(sb.ToString()))
                 {
                     sb.Remove(sb.Length - 2, 1);
-                    sb.Append('_' + i++);
+                    sb.Append("_" + i++);
                 }
             }
             dp.ExistingNames.Add(sb.ToString());
@@ -641,7 +659,6 @@ namespace WebTesting.Services
         /// <param name="id">Id of deleted download.</param>
         /// <returns></returns>
         public async Task StopAndRemoveDownloadProcess(int id) {
-
             DownloadProcess dp = processes.FirstOrDefault(e => e.DownloadId == id);
             dp.TokenSource.Cancel();
             dp.TokenSource.Dispose();
@@ -673,7 +690,7 @@ namespace WebTesting.Services
             {
                 tries++;
                 if (tries > 10) {
-                    throw ex;
+                    throw ex; //TODO return in build
                 }
                 Thread.Sleep(2000);
                 goto start;
