@@ -1,5 +1,6 @@
 ﻿@page
 @using WebTesting.Entities;
+@using WebTesting.Entities.Enums;
 @model WebTesting.Pages.Download.StructureModel
 @inject IHttpContextAccessor Accessor
 @{
@@ -39,15 +40,34 @@ else
             <div class="col-2" style="border:1px solid red">
             <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
-                    <h4>Name:</h4>
-                    <label>Numbering:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label><br>
-                    <input type="radio" id="ids" name="numbering" value="ids" checked>
-                    <label for="ids">Ids</label><br>
-                    <input type="radio" id="standard" name="numbering" value="standard">
-                    <label for="standard">Standard</label><br>
-                    <input type="radio" id="none" name="numbering" value="none">
-                    <label for="none">None</label>
-                    <h5>Name contents:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></h5>
+                    <h4>Names:</h4>   
+                    <label>Numbering:<i data-tippy-content="Choose how will your posts be numbered. Ids - by their reddit Id, Standard - they will be numbered in their scope, None - no numbering(Names will have suffix [x] if more files have the same name).">&#x1F6C8</i></label><br>
+                    @switch (Model.Numbering)
+                    {
+                        case Numbering.None:
+                            <input type="radio" id="ids" name="numbering" value="ids">
+                            <label for="ids">Ids</label><br>
+                            <input type="radio" id="standard" name="numbering" value="standard">
+                            <label for="standard">Standard</label><br>
+                            <input type="radio" id="none" name="numbering" value="none" checked>
+                        break;
+                        case Numbering.Standard:
+                            <input type="radio" id="ids" name="numbering" value="ids">
+                            <label for="ids">Ids</label><br>
+                            <input type="radio" id="standard" name="numbering" value="standard" checked>
+                            <label for="standard">Standard</label><br>
+                            <input type="radio" id="none" name="numbering" value="none">
+                        break;
+                        default:
+                            <input type="radio" id="ids" name="numbering" value="ids" checked>
+                            <label for="ids">Ids</label><br>
+                            <input type="radio" id="standard" name="numbering" value="standard">
+                            <label for="standard">Standard</label><br>
+                            <input type="radio" id="none" name="numbering" value="none">
+                        break;
+                    }
+                    <label for="none">None</label> 
+                    <h5>Name contents:<i data-tippy-content="In y/n choose which words you want the name to contain. With priotiy you choose which word will come first.">&#x1F6C8</i></h5>
                     <div class="row">
                         <div class="col-5">
                             <br>
@@ -56,23 +76,48 @@ else
                         </div>
                         <div class="col-3">
                             y/n<br>
-                            <input name="subredditName" type="checkbox"><br>
-                            <input name="domainName" type="checkbox">
-                        
+                            @if (Model.SubredditName)
+                            {
+                                <input name="subredditName" type="checkbox" checked><br>
+                            }
+                            else
+                            {
+                                <input name="subredditName" type="checkbox"><br>
+                            }
+                            @if (Model.DomainName)
+                            {
+                                <input name="domainName" type="checkbox" checked>
+                            }
+                            else
+                            {
+                                <input name="domainName" type="checkbox">
+                            }
                         </div>
                         <div class="col-4">
                             Priority<br>
-                            <input type="radio" id="subredditPriorityName" name="priorityName" value="subredditPriorityName" checked><br>
-                            <input type="radio" id="domainPriorityName" name="priorityName" value="domainPriorityName">
+                            @if (Model.NamePriorityIsSubreddit)
+                            {
+                                <input type="radio" id="subredditPriorityName" name="priorityName" value="subredditPriorityName" checked><br>
+                                <input type="radio" id="domainPriorityName" name="priorityName" value="domainPriorityName">
+                            }
+                            else
+                            {
+                                <input type="radio" id="subredditPriorityName" name="priorityName" value="subredditPriorityName"><br>
+                                <input type="radio" id="domainPriorityName" name="priorityName" value="domainPriorityName" checked>
+                            }
                         </div>
                     </div>
-                    <label class="pt-2" for="title">Title:</label>
+                        <label class="pt-2" for="title">Title:<i data-tippy-content="Enter a number of characters, from post title, that will be in the name.">&#x1F6C8</i></label>
                     <div class="row">
-                        <input type="number" id="title" name="title" min="0" max="120" value="60">
+                        @if(Model.Title != -1){
+                            <input type="number" id="title" name="title" min="0" max="120" value="@Model.Title">
+                        }else{
+                            <input type="number" id="title" name="title" min="0" max="120" value="60">
+                        }
                     </div>
                     <hr class="solid">
                     <h4>Folders:</h4>
-                    <label>Group by:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
+                    <label>Group by:<i data-tippy-content="In y/n choose how should your posts be foldered. With priotiy you choose which category will be primary.">&#x1F6C8</i></label>
                     <div class="row">
                         <div class="col-5">
                             <br>
@@ -91,9 +136,9 @@ else
                         </div>
                     </div>
                     <div class="row">
-                        <label class="pt-2" for="empty">Remove empty folders:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
+                        <label class="pt-2" for="empty">Remove empty folders:<i data-tippy-content="If checked then all folders then would be empty are removed.">&#x1F6C8</i></label>
                         <input type="checkbox" id="empty" name="empty" checked>
-                        <label class="pt-2" for="split">Split by nsfw/sfw:<i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i></label>
+                        <label class="pt-2" for="split">Split by nsfw/sfw:<i data-tippy-content="If checked then nsfw and sfw posts will have their own folders.">&#x1F6C8</i></label>
                         <input type="checkbox" id="split" name="split" checked> 
                     </div>
                     
@@ -119,9 +164,9 @@ else
             <!--Here are Details-->
                     <b>Details:</b>
                     <div id="count"></div>
-                    <b>Domains:</b>
+                    <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                     <div id="domains"></div>
-                    <b>Nsfw/sfw:</b>
+                    <span><b>Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
                     <div id="nsfwDetail"></div>
                     <div id="subreddits"></div>
                     <div id="subredditsList"></div>
@@ -148,7 +193,7 @@ else
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-        countText.innerHTML = '<b>Count: </b>' + posts.length;
+        countText.innerHTML = '<b>Count - </b>' + posts.length;
 
         //Getting all inputs
         const i_numbering = document.getElementsByName('numbering');
@@ -163,9 +208,9 @@ else
         const i_split = document.getElementById('split');
         
         //Setting all inicial values;
-        var v_numbering = i_numbering.value;
-        var v_priorityName = i_priorityName.value;
-        var v_priorityFolder = i_priorityFolder.value;
+        var v_numbering = document.querySelector('input[name="numbering"]:checked').value;
+        var v_priorityName = document.querySelector('input[name="priorityName"]:checked').value;
+        var v_priorityFolder = document.querySelector('input[name="priorityFolder"]:checked').value;
         var v_title = i_title.value;
         var v_subredditName = i_subredditName.checked;
         var v_domainName = i_domainName.checked;
@@ -359,10 +404,11 @@ else
         //Creating html content for the details
         domainsList.innerHTML = "";
         var domains = Object.entries(domainsObj);
-        for(let i = 0; i < Object.values(domainsObj).length; i++){
-            if(Object.values(domainsObj)[i] != 'null'){
+        domains.sort((a,b) => b[1] - a[1]);
+        for(let i = 0; i < domains.length; i++){
+            if(domains[i] != 'null'){
                 let li = document.createElement('div');
-                        li.innerHTML = '&emsp;' +  Object.keys(domainsObj)[i] + ' - ' + Object.values(domainsObj)[i] + '<br>';
+                li.innerHTML = '&emsp;' +  domains[i][0] + ' - ' + domains[i][1] + '<br>';
                 domainsList.appendChild(li);
             }
         }

@@ -5,17 +5,13 @@ namespace WebTesting.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
         public string UserName { get; set; }
-
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-        }
+        public string AllPosts { get; set; }
 
         public IActionResult OnGet()
         {
             UserName = HttpContext.Session.GetString("UserName");
+            AllPosts = HttpContext.Session.GetString("AllPosts");
             return Page();
         }
 

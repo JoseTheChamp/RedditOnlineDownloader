@@ -63,7 +63,7 @@ else
                 </div>
                     <div class="row pb-2">
                         <div class="col-11">
-                            <label for="nsfw">Nsfw/sfw:<i data-tippy-content="Both - All posts wil be visible. NSFW - only posts marked as 18+ will be visible. SFW - only posts that are not marked 18+ will be visible.">&#x1F6C8</i></label>
+                            <label for="nsfw">Nsfw/sfw:</label>
                         </div>
                         <div class="col-11">
                             <select form="selectedPosts" name="nsfw">
@@ -122,9 +122,9 @@ else
             <!--HERE ARE Details-->
                 <b>Details:</b>
                 <div id="count"></div>
-                <b>Domains:</b>
+                <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                 <div id="domains"></div>
-                <b>Nsfw/sfw:</b>
+                <span><b>Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
                 <div id="nsfwDetail"></div>
                 <div id="subreddits"></div>
                 <div id="subredditsList"></div>
@@ -313,22 +313,12 @@ else
             
             //generating html for details
             domainsList.innerHTML = "";
-            let subKeysDomains = Object.keys(domains);
-            let subValuesDomains = Object.values(domains);
-            let dataDomains = [];
-            for (let i = 0; i < subKeysDomains.length; i++) {
-                dataDomains.push({
-                    key: subKeysDomains[i],
-                    value: subValuesDomains[i]
-                });
-            }
-            dataDomains.sort((a,b) => b.value - a.value);
-            for(let i = 0; i < dataDomains.length; i++){
-                if(Object.values(domains)[i] != 'null'){
-                    let li = document.createElement('div');
-                    li.innerHTML = '&emsp;' + dataDomains[i].key + ' - ' + dataDomains[i].value + '<br>';
-                    domainsList.appendChild(li);
-                }    
+            let dataDom = Object.entries(domains);
+            dataDom.sort((a,b) => b[1] - a[1]);
+            for(let i = 0; i < dataDom.length; i++){
+                let li = document.createElement('div');
+                li.innerHTML = '&emsp;' + dataDom[i][0] + ' - ' + dataDom[i][1] + '<br>';
+                domainsList.appendChild(li);
             }
             nsfwList.innerHTML = "";
             for(let i = 0; i < Object.values(nsfw).length; i++){

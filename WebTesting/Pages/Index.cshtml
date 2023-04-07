@@ -19,6 +19,10 @@ else
     <div class="text-center">
         <h3>Hello <i>@Model.UserName</i></h3>
         <h1 class="display-4">Welcome to XYZ</h1>
+        @if (Model.AllPosts == null)
+        {
+            <p><b style="color:red;font-size:200%;">!!</b>Clicking the "Download" will take a minute to finish proccesing<b style="color:red;font-size:200%;">!!</b></p>
+        }
         <p>Applicaion for easy large scale downloading of saved posts from <a href="https://www.reddit.com/">reddit</a>. All from the comfort of your browser.</p>
         <h3><b>Download posts</b> -> <a asp-page="/Download/Select">Download</a>.</h3>
         <h3><b>Show previously downloaded posts</b> -> <a asp-page="/Download/Progress">Progress</a>.</h3>

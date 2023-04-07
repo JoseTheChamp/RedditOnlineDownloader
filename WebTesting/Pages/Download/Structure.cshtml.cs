@@ -53,6 +53,8 @@ namespace WebTesting.Pages.Download
         /// <returns>Rediresct to index page.</returns>
         public async Task<IActionResult> OnPostDownload() {
             string saveToTemplate = null;
+            NamePriorityIsSubreddit = true;
+            FolderPriorityIsSubreddit = true;
             //going throug each form elemnt and doing corresponding action
             foreach (string key in Request.Form.Keys)
             {
@@ -74,33 +76,41 @@ namespace WebTesting.Pages.Download
                             default:
                                 break;
                         }
+                        HttpContext.Session.SetObject("Numbering", Numbering);
                         break;
                     case "subredditName":
                         if (value == "on") SubredditName = true;
+                        HttpContext.Session.SetObject("SubredditName", SubredditName);
                         break;
                     case "domainName":
                         if (value == "on") DomainName = true;
+                        HttpContext.Session.SetObject("DomainName", DomainName);
                         break;
                     case "priorityName":
-                        if (value == "subredditPriorityName") NamePriorityIsSubreddit = true;
+                        if (value == "domainPriorityName") NamePriorityIsSubreddit = false;
                         break;
                     case "title":
                         Title = Int32.Parse(value);
+                        HttpContext.Session.SetInt32("Title", Title);
                         break;
                     case "subredditFolder":
                         if (value == "on") SubredditFolder = true;
+                        HttpContext.Session.SetObject("SubredditFolder", SubredditFolder);
                         break;
                     case "domainFolder":
                         if (value == "on") DomainFolder = true;
+                        HttpContext.Session.SetObject("DomainFolder", DomainFolder);
                         break;
                     case "priorityFolder":
-                        if (value == "subredditPriorityFolder") FolderPriorityIsSubreddit = true;
+                        if (value == "domainPriorityFolder") FolderPriorityIsSubreddit = false;
                         break;
                     case "empty":
                         if (value == "on") Empty = true;
+                        HttpContext.Session.SetObject("Empty", Empty);
                         break;
                     case "split":
                         if (value == "on") Split = true;
+                        HttpContext.Session.SetObject("Split", Split);
                         break;
                     case "templatesSelect":
                         if (value != "none")
@@ -113,6 +123,8 @@ namespace WebTesting.Pages.Download
                         break;
                 }
             }
+            HttpContext.Session.SetObject("NamePriorityIsSubreddit", NamePriorityIsSubreddit);
+            HttpContext.Session.SetObject("FolderPriorityIsSubreddit", FolderPriorityIsSubreddit);
 
             string redditId = HttpContext.Session.GetString("RedditId");
 
@@ -186,6 +198,7 @@ namespace WebTesting.Pages.Download
             List<Post> PostsToChooseFrom = HttpContext.Session.GetObject<List<Post>>("AllPosts");
             HttpContext.Session.SetObject("ShowDownloaded", false);
             HttpContext.Session.SetObject("GroupBySubreddits", false);
+            Title = -1;
             //Going through all form elements and doing corresponding actions
             foreach (string name in form.Keys)
             {
@@ -261,6 +274,19 @@ namespace WebTesting.Pages.Download
             }
             else
             {
+                //If no template was used then save settings to session
+                if (HttpContext.Session.Get("Numbering") != null) {
+                    Numbering = HttpContext.Session.GetObject<Numbering>("Numbering");
+                    SubredditName = HttpContext.Session.GetObject<bool>("SubredditName");
+                    DomainName = HttpContext.Session.GetObject<bool>("DomainName");
+                    NamePriorityIsSubreddit = HttpContext.Session.GetObject<bool>("NamePriorityIsSubreddit");
+                    SubredditFolder = HttpContext.Session.GetObject<bool>("SubredditFolder");
+                    DomainFolder = HttpContext.Session.GetObject<bool>("DomainFolder");
+                    Title = (int)HttpContext.Session.GetInt32("Title");
+                    FolderPriorityIsSubreddit = HttpContext.Session.GetObject<bool>("FolderPriorityIsSubreddit");
+                    Empty = HttpContext.Session.GetObject<bool>("Empty");
+                    Split = HttpContext.Session.GetObject<bool>("Split");
+                }
                 SelectedTemplate = 0;
             }
 
