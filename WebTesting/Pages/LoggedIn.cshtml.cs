@@ -76,7 +76,6 @@ namespace WebTesting.Pages
 							resultIdAndName.id,
 							resultIdAndName.username,
 							Token,
-							"",
 							DateTime.Now,
 							DateTime.Now
 							));
