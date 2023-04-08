@@ -26,6 +26,7 @@ namespace WebTesting.Pages.Download
         {
             MyDownloads = _db.Downloads.Where(e => e.User.RedditId == HttpContext.Session.GetString("RedditId")).ToList();
             MyDownloads = MyDownloads.OrderByDescending(e => e.DownloadStart).ToList();
+            //if (MyDownloads.Count == 0) MyDownloads = null;
         }
         /// <summary>
         /// Downloads the finished zip file.
