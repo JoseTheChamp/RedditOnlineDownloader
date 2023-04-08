@@ -19,9 +19,9 @@ else
     <div class="container-fluid">
         <div class="row">
             <div class="col">
-                <h2>Set up folder structure.</h2>
+                <h2>Naming/Foldering</h2>
             </div>
-            <div class="col" style="border:1px solid red">
+            <div class="col my-auto">
             <!--HERE ARE TEMPLATES-->
                 Templates:
                 <select form="structure" id="templatesSelect" name="templatesSelect">
@@ -31,15 +31,16 @@ else
                 <button onclick="deleteTemplate()">Delete</button>
                 <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
             </div>
-            <div class="col-3 text-end">
+            <div class="col-3 text-end my-auto">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
                 <input class="btn btn-primary" form="structure" type="submit"></input>
             </div>
         </div>
-        <div class="row" style="border:1px solid red">
-            <div class="col-2" style="border:1px solid red">
+        <div class="row">
+            <div class="col-2">
             <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
+                        <hr class="solid">
                     <h4>Names:</h4>   
                     <label>Numbering:<i data-tippy-content="Choose how will your posts be numbered. Ids - by their reddit Id, Standard - they will be numbered in their scope, None - no numbering(Names will have suffix '_x' if more files have the same name).">&#x1F6C8</i></label><br>
                     @switch (Model.Numbering)
@@ -177,7 +178,7 @@ else
                     
                 </form>
             </div>
-            <div class="col-8">
+            <div class="col-8" style="border:3px solid #009670">
             <!--Here are Posts-->
                 <ul id="postList" class="p-2">
                 @foreach (Post post in Model.Posts)
@@ -193,9 +194,10 @@ else
                 }
                 </ul>
             </div>
-            <div class="col-2" style="border:1px solid red">
+            <div class="col-2">
             <!--Here are Details-->
-                    <b>Details:</b>
+                    <hr class="solid">
+                    <h4>Details:</h4>
                     <div id="count"></div>
                     <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                     <div id="domains"></div>

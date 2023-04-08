@@ -18,28 +18,31 @@ else
 {   
     <div class="container-fluid">
         <div class="row">
-            <div class="col-5">
-                <h2>Select posts to download.</h2>
+            <div class="col-5 my-auto">
+                <h2>Select posts to download</h2>
             </div>
-            <div class="col" style="border:1px solid red">
+            <div class="col my-auto">
             <!--HERE ARE Templates-->
-            Templates:
-            <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
-                <option value="none">None</option>
-            </select>
-            <button onclick="newTemplate()">New</button>
-            <button onclick="deleteTemplate()">Delete</button>
-            <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
+                Templates:
+                <select form="selectedPosts" id="templatesSelect" name="templatesSelect">
+                    <option value="none">None</option>
+                </select>
+                <button onclick="newTemplate()">New</button>
+                <button onclick="deleteTemplate()">Delete</button>
+                <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
             </div>
-            <div class="col-3 text-end"> 
+            <div class="col-3 text-end my-auto"> 
                 <a asp-page-handler="Refresh" class="btn btn-primary">Refresh posts</a>
                 <input id="nextStep" form="selectedPosts" type="submit" class="btn btn-primary" asp-page="/Download/Structure" value="Next step">
             </div>
         </div>
         <div class="row">
-            <div class="col-2" style="border:1px solid red">
+            <div class="col-2">
+            <hr class="solid">
             <!--HERE ARE Select settings-->
                 <div class="row pb-2">
+                    
+                    <h4>Filters:</h4>
                     <label for="showDownloaded">Show downloaded posts:<i data-tippy-content="If checked then the already downloaded posts will be visible (Dowloaded posts are marked with X).">&#x1F6C8</i></label>
                     @if (Model.ShowDownloaded == true)
                     {
@@ -63,7 +66,6 @@ else
                 </div>
                     <div class="row pb-2">
                         <div class="col-11">
-                            
                             <label for="nsfw">Nsfw/sfw:<i data-tippy-content="Both - All posts will be visible. NSFW - Only posts that are marked 18+ will be visible. SFW - Only posts that are not marked 18+ will be visible.">&#x1F6C8</i></label>
                         </div>
                         <div class="col-11">
@@ -111,7 +113,7 @@ else
                     </select>
                 </div>   
             </div>
-            <div class="col-8" style="border:1px solid red">
+            <div class="col-8" style="border:3px solid #009670">
             <!--HERE ARE Posts-->
                 <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
                 <i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i>
@@ -119,9 +121,10 @@ else
                     <ul id="postList" name="postList" class="p-2"></ul>
                 </form>
             </div>
-            <div class="col-2" style="border:1px solid red">
+            <div class="col-2">
             <!--HERE ARE Details-->
-                <b>Details:</b>
+                <hr class="solid">
+                <h4>Details:</h4>
                 <div id="count"></div>
                 <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                 <div id="domains"></div>

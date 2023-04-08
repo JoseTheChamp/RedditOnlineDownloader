@@ -21,7 +21,7 @@ else
             </div>
         </div>
         <div class="row">
-            <div class="col" style="border:1px solid red">
+            <div class="col">
                 <ul>
                     <!--Downloads-->
                     @foreach (Download download in Model.MyDownloads)
@@ -54,6 +54,7 @@ else
             </div>
         </div>
         <div class="row">
+            <hr class="solid">
             <p>Note following: &ensp;  1) The maximum amount of dowloads kept for each user is 5.<br> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp; 2) Any download older then 3 days will be deleted.<br> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp; 3) User can have maximum of three concurrently running downloads.</p>
         </div>
     </div>
