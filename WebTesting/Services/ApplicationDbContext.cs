@@ -13,5 +13,6 @@ namespace WebTesting.Services
         public DbSet<Download> Downloads { get; set; }
         public DbSet<DownloadHistory> downloadHistories { get; set; }
         public DbSet<Template> Templates { get; set; }
+        public DbSet<Statistic> Statistics { get; set; }
     }
 }

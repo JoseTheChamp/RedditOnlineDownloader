@@ -2,6 +2,9 @@
 @model WebTesting.Pages.Download.ProgressModel
 @using WebTesting.Models;
 @inject IHttpContextAccessor Accessor
+@{
+    ViewData["Title"] = "Progress";
+}
 
 
 @if (Accessor.HttpContext.Session.GetString("UserName") == null)
@@ -15,7 +18,7 @@ else
     <div class="container-fluid">
         <div class="row">
             <div class="col-6">
-                <h2>Proggres of downloads</h2>
+                <h2 style="color:#009670">Progress of downloads</h2>
             </div>
         </div>
         <div class="row">

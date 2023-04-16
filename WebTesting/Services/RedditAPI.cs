@@ -14,12 +14,13 @@ namespace WebTesting.Services
 {
 	public class RedditAPI
 	{
-		public RedditAPI()
+        private HttpClient client;
+
+        public RedditAPI()
 		{
 			client = new HttpClient();
 			client.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.2");
 		}
-		private HttpClient client;
         /// <summary>
         /// Gets profile info from /api/v1/me endpoint
         /// </summary>

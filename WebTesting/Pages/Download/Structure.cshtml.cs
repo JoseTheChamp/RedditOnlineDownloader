@@ -56,6 +56,7 @@ namespace WebTesting.Pages.Download
             NamePriorityIsSubreddit = true;
             FolderPriorityIsSubreddit = true;
             //going throug each form elemnt and doing corresponding action
+            //Saving to session
             foreach (string key in Request.Form.Keys)
             {
                 string value = Request.Form[key];
@@ -128,19 +129,6 @@ namespace WebTesting.Pages.Download
 
             string redditId = HttpContext.Session.GetString("RedditId");
 
-            //Create download parameters for passing into download function
-            DownloadParameters downloadParameters = new DownloadParameters(
-            Numbering,
-            SubredditName,
-            DomainName,
-            NamePriorityIsSubreddit,
-            Title,
-            SubredditFolder,
-            DomainFolder,
-            FolderPriorityIsSubreddit,
-            Empty,
-            Split);
-
             //Save changes to templates if required
             if (saveToTemplate != null)
             {
@@ -162,10 +150,26 @@ namespace WebTesting.Pages.Download
                 await _db.SaveChangesAsync();
             }
 
+
+
+            //Starting the download
             int userDbId = _db.Users.FirstOrDefault(e => e.RedditId == redditId).Id;
             int numberOfUnfinishedDownloads = _db.Downloads.Where(e => e.User.Id == userDbId && e.IsDownloadable == false).ToList().Count;
             if (numberOfUnfinishedDownloads < 3)
             {
+                //Create download parameters for passing into download function
+                DownloadParameters downloadParameters = new DownloadParameters(
+                Numbering,
+                SubredditName,
+                DomainName,
+                NamePriorityIsSubreddit,
+                Title,
+                SubredditFolder,
+                DomainFolder,
+                FolderPriorityIsSubreddit,
+                Empty,
+                Split);
+
                 //Creating download process, restaritng downoaded ids, by removing it, signaling success
                 User user = _db.Users.FirstOrDefault(e => e.RedditId == redditId);
                 Posts = HttpContext.Session.GetObject<List<Post>>("SelectedPosts");
@@ -266,6 +270,8 @@ namespace WebTesting.Pages.Download
             else {
                 HttpContext.Session.Remove("ChosenTemplate");
             }
+
+            //TODO add new entity to DownloadStats
 
             //Fetch templates
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();

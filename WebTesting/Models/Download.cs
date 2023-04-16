@@ -19,6 +19,8 @@ namespace WebTesting.Models
         public string Lenght { get; set; }
         public bool IsFinished { get; set; }
         public bool IsDownloadable { get; set; }
+
+
         [Required]
         public User User { get; set; }
 

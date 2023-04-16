@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
+using Newtonsoft.Json.Linq;
 using NuGet.Protocol;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -142,7 +146,7 @@ namespace WebTesting.Services
                     //make directory and download part
                     string currentPath = defaultPath + "\\sfw";
                     Directory.CreateDirectory(currentPath);
-                    if (! await SavePart(dp, sfwPosts, currentPath,domains,subreddits)) return; 
+                    if (! await SavePart(dp, sfwPosts, currentPath,domains,subreddits)) return;
                 }
                 List<Post> nsfwPosts = dp.Posts.Where(p => p.Over18 == true).ToList();
                 if (dp.DownloadParameters.Empty && !nsfwPosts.IsNullOrEmpty())
@@ -179,6 +183,98 @@ namespace WebTesting.Services
                     _db.Downloads.Update(downloadDownloadable);
                     _db.SaveChanges();
                 }
+
+                //Update statistics
+                lock (dbLock)
+                {
+                    Statistic systemStat = _db.Statistics.FirstOrDefault(e => e.UserId == "SYSTEM");
+                    Statistic stat = _db.Statistics.FirstOrDefault(e => e.UserId == dp.UserId);
+                    var domainsStats = dp.Posts.GroupBy(i => i.Domain).Select(grp => new { dom = grp.Key, num = grp.Count() });
+                    var subredditsStats = dp.Posts.GroupBy(i => i.Subreddit).Select(grp => new { sub = grp.Key, num = grp.Count() });
+                    int newCount = dp.Posts.Count;
+
+                    Dictionary<string, int> userDomainsStats = stat.DomainsJson.FromJson<Dictionary<string, int>>();
+                    Dictionary<string, int> userSubredditStats = stat.SubredditsJson.FromJson<Dictionary<string, int>>();
+                    Dictionary<string, int> systemDomainsStats = systemStat.DomainsJson.FromJson<Dictionary<string, int>>();
+                    //Dictionary<string, int> systemSubredditStats = systemStat.SubredditsJson.FromJson<Dictionary<string, int>>();
+                    if (userDomainsStats.IsNullOrEmpty())
+                    {
+                        userDomainsStats = new Dictionary<string, int>();
+                    }
+                    if (userSubredditStats.IsNullOrEmpty())
+                    {
+                        userSubredditStats = new Dictionary<string, int>();
+                    }
+                    if (systemDomainsStats.IsNullOrEmpty())
+                    {
+                        systemDomainsStats = new Dictionary<string, int>();
+                    }
+                    /*if (systemSubredditStats.IsNullOrEmpty())
+                    {
+                        systemSubredditStats = new Dictionary<string, int>();
+                    }*/
+
+                    //Calculating stats for user
+                    foreach (var item in domainsStats)
+                    {
+                        if (userDomainsStats.ContainsKey(item.dom))
+                        {
+                            userDomainsStats[item.dom] += item.num;
+                        }
+                        else
+                        {
+                            userDomainsStats.Add(item.dom, item.num);
+                        }
+                    }
+                    stat.DomainsJson = userDomainsStats.ToJson();
+                    foreach (var item in subredditsStats)
+                    {
+                        if (userSubredditStats.ContainsKey(item.sub))
+                        {
+                            userSubredditStats[item.sub] += item.num;
+                        }
+                        else
+                        {
+                            userSubredditStats.Add(item.sub, item.num);
+                        }
+                    }
+                    stat.SubredditsJson = userSubredditStats.ToJson();
+                    stat.Downloads++;
+                    stat.DownloadedPosts += newCount;
+                    _db.Update(stat);
+
+                    //Calculating stats for System
+                    foreach (var item in domainsStats)
+                    {
+                        if (systemDomainsStats.ContainsKey(item.dom))
+                        {
+                            systemDomainsStats[item.dom] += item.num;
+                        }
+                        else
+                        {
+                            systemDomainsStats.Add(item.dom, item.num);
+                        }
+                    }
+                    systemStat.DomainsJson = systemDomainsStats.ToJson();
+                    /*foreach (var item in subredditsStats)
+                    {
+                        if (systemSubredditStats.ContainsKey(item.sub))
+                        {
+                            systemSubredditStats[item.sub] += item.num;
+                        }
+                        else
+                        {
+                            systemSubredditStats.Add(item.sub, item.num);
+                        }
+                    }
+                    systemStat.SubredditsJson = systemSubredditStats.ToJson();*/
+                    systemStat.Downloads++;
+                    systemStat.DownloadedPosts += newCount;
+                    _db.Update(systemStat);
+
+                    _db.SaveChanges();
+                }
+
                 //Check number of downloads if above x then remove oldest.
                 List<Download> downloads = _db.Downloads.Where(e => e.User.RedditId == dp.UserId).ToList();
                 if (downloads.Count > 5)
@@ -186,6 +282,8 @@ namespace WebTesting.Services
                     Download download = downloads.OrderBy(e => e.DownloadStart).FirstOrDefault();
                     RemoveDownloadProcess(download.Id);
                 }
+
+
                 lock (dbLock)
                 {
                     //Removal of needless downloadHistories

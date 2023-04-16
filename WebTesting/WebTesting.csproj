@@ -22,4 +22,11 @@
     <Folder Include="wwwroot\Downloads\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Statistics.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

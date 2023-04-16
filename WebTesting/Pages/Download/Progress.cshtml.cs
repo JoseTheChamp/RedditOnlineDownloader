@@ -34,6 +34,8 @@ namespace WebTesting.Pages.Download
         /// <param name="id">id of donwload, that is to be downloaded.</param>
         /// <returns>Finished zip file.</returns>
         public IActionResult OnGetDownload(int id) {
+            //TODO zkontrolovat autora pozadavku
+            //TODO Zaznamenat stazeni do Tabulky DB Statistics
             string path = Environment.CurrentDirectory;
             OnGet();
             return File(@"/DownloadableFiles/Download" + id + ".zip", "application/zip", "Download" + id + ".zip");

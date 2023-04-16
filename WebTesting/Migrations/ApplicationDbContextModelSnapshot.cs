@@ -89,6 +89,37 @@ namespace WebTesting.Migrations
                     b.ToTable("downloadHistories");
                 });
 
+            modelBuilder.Entity("WebTesting.Models.Statistic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DomainsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DownloadedPosts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Downloads")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubredditsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Statistics");
+                });
+
             modelBuilder.Entity("WebTesting.Models.Template", b =>
                 {
                     b.Property<int>("Id")
