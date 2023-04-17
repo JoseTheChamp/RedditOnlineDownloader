@@ -68,7 +68,7 @@ namespace WebTesting.Pages
                 sPostsPerDownload = Math.Round(((double)sPosts / (double)sDownloads), 1);
 
                 sDomainsAbs = systemStat.DomainsJson.FromJson<Dictionary<string, int>>();
-                sDomainsAbs.OrderByDescending(e => e.Value);
+                sDomainsAbs = sDomainsAbs.OrderByDescending(e => e.Value).ToDictionary(x => x.Key, x => x.Value);
             }
         }
     }

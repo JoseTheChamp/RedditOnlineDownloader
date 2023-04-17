@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "64UzQY6D0Jj3xD2TNXI+p2DaQXR/PoSL49IzihyJ43g=",
+  "Hash": "5q4vGfRjJ4pdCWrTrJbzG0qH1zrdkuAnNHPh4Xun/Jc=",
   "Source": "WebTesting",
   "BasePath": "_content/WebTesting",
   "Mode": "Default",
@@ -102,23 +102,6 @@
       "OriginalItemSpec": "wwwroot\\css\\stylesChosen.css"
     },
     {
-      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download12197.zip",
-      "SourceId": "WebTesting",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
-      "BasePath": "_content/WebTesting",
-      "RelativePath": "DownloadableFiles/Download12197.zip",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download12197.zip"
-    },
-    {
       "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download12198.zip",
       "SourceId": "WebTesting",
       "SourceType": "Discovered",
@@ -134,6 +117,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download12198.zip"
+    },
+    {
+      "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\DownloadableFiles\\Download12199.zip",
+      "SourceId": "WebTesting",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\",
+      "BasePath": "_content/WebTesting",
+      "RelativePath": "DownloadableFiles/Download12199.zip",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\DownloadableFiles\\Download12199.zip"
     },
     {
       "Identity": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\favicon.ico",

@@ -40,6 +40,7 @@ namespace WebTesting.Pages.Download
             _reddit = reddit;
             _db = db;
         }
+
         /// <summary>
         /// Method that launhes on the first visit of the Select. Fetches all the data for JS.
         /// </summary>
@@ -73,18 +74,8 @@ namespace WebTesting.Pages.Download
                 SelectedTemplate = 0;
             }
 
-            //Getting All the posts from session, if not set then fetch from Reddit
-            if (HttpContext.Session.GetString("AllPosts") != null)
-            {
-                AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
-            }
-            else
-            {   
-                //Fetching all the posts from reddit - long operation
-                List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
-                HttpContext.Session.SetObject("AllPosts", posts);
-                AllPosts = posts;
-            }
+            //Getting all posts from session. (Inicialized in Loading)
+            AllPosts = HttpContext.Session.GetObject<List<Post>>("AllPosts");
 
             //Assigning the list of ids, corresponding to which posts were already downloaded.
             await ManageDownloadedIdsAsync();

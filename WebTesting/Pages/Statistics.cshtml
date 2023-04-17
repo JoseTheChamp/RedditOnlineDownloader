@@ -7,7 +7,25 @@
     
 @if (Accessor.HttpContext.Session.GetString("UserName") == null)
 {
-
+    <div class="text-center">
+    <h1 class="display-4" style="color:#009670">Statistics</h1>
+        <div class="row justify-content-center">
+            <div class="col-4 ">
+                <h3 style="color:#009670">All users</h3>
+                Number of registered users: <b style="font-size:18px">@Model.sRegisteredUsers</b><br>
+                Number of active donwloads: <b style="font-size:18px">@Model.sActiveDownloads</b><br><br>
+                Total downloads: <b style="font-size:18px">@Model.sDownloads</b><br>
+                Total downloaded posts: <b style="font-size:18px">@Model.sPosts</b><br>
+                Average number of posts per download: <b style="font-size:18px">@Model.sPostsPerDownload</b><br><br>
+                <h4>Distribution of domains</h4>
+                @foreach(var item in Model.sDomainsAbs)
+                {
+                    double rel = Math.Round(((double)item.Value * 100 / (double)Model.sPosts), 1);
+                    <div style="font-size:18px">@item.Key: &nbsp;<b>@item.Value &nbsp;- &nbsp;@rel%</b></div>
+                }
+            </div>
+        </div>
+    </div>
 }
 else
 {   
