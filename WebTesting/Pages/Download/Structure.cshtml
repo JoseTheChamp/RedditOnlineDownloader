@@ -42,7 +42,7 @@ else
             <!--Here are setting for foldering-->
                 <form id="structure" method="post" asp-page-handler="Download">
                         <hr class="solid">
-                    <h4>Names:</h4>   
+                    <h4 style="color:#009670">Names:</h4>   
                     <label>Numbering:<i data-tippy-content="Choose how will your posts be numbered. Ids - by their reddit Id, Standard - they will be numbered in their scope, None - no numbering(Names will have suffix '_x' if more files have the same name).">&#x1F6C8</i></label><br>
                     @switch (Model.Numbering)
                     {
@@ -69,6 +69,7 @@ else
                         break;
                     }
                     <label for="none">None</label> 
+                        <br><br>
                     <h5>Name contents:<i data-tippy-content="In y/n choose which words you want the name to contain. With priotiy you choose which word will come first.">&#x1F6C8</i></h5>
                     <div class="row">
                         <div class="col-5">
@@ -118,7 +119,7 @@ else
                         }
                     </div>
                     <hr class="solid">
-                    <h4>Folders:</h4>
+                    <h4 style="color:#009670">Folders:</h4>
                     <label>Group by:<i data-tippy-content="In y/n choose how should your posts be foldered. With priotiy you choose which category will be primary.">&#x1F6C8</i></label>
                     <div class="row">
                         <div class="col-5">
@@ -159,6 +160,7 @@ else
                         </div>
                     </div>
                     <div class="row">
+                        <br>
                         <label class="pt-2" for="empty">Remove empty folders:<i data-tippy-content="If checked then all folders then would be empty are removed.">&#x1F6C8</i></label>
                         @if(Model.Empty){
                             <input type="checkbox" id="empty" name="empty" checked>
@@ -167,6 +169,7 @@ else
                         {
                             <input type="checkbox" id="empty" name="empty">
                         }
+                        
                         <label class="pt-2" for="split">Split by nsfw/sfw:<i data-tippy-content="If checked then nsfw and sfw posts will have their own folders.">&#x1F6C8</i></label>
                         @if(Model.Split){
                             <input type="checkbox" id="split" name="split" checked> 

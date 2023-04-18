@@ -29,8 +29,8 @@ namespace WebTesting.Pages.Download
                 //Fetching all the posts from reddit - long operation
                 SessionIds.Add(HttpContext.Session.Id);
                 List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
-                SessionIds.Remove(HttpContext.Session.Id);
                 HttpContext.Session.SetObject("AllPosts", posts);
+                SessionIds.Remove(HttpContext.Session.Id);
             }
             else if(SessionIds.Contains(HttpContext.Session.Id))
             {
