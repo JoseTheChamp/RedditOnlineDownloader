@@ -11,7 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddSingleton<RedditAPI>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<DownloadManager>();
-builder.Services.AddDistributedMemoryCache(); //TODO do i need this?
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(60);
@@ -32,9 +32,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseSession();
+
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.UseSession();
 
 app.Run();

@@ -19,16 +19,20 @@ else
     <div class="text-center">
         <h3>Hello <i>@Model.UserName</i></h3>
         <h1 class="display-4" style="color:#009670">Welcome to Reddit Online Downloader</h1>
-        @if (Model.AllPosts == null)
-        {
-            <p><b style="color:red;font-size:200%;">!!</b>Clicking the "Download" will take a minute to finish proccesing<b style="color:red;font-size:200%;">!!</b></p>
-        }
         <p>Applicaion for easy large scale downloading of saved posts from <a href="https://www.reddit.com/">reddit</a>. All from the comfort of your browser.</p>
+        <br>
         <h3><b>Download posts</b> -> <a asp-page="/Download/Select">Download</a>.</h3>
         <h3><b>Show previously downloaded posts</b> -> <a asp-page="/Download/Progress">Progress</a>.</h3>
-        <p class="pt-5">For more informations about the website visit <a asp-page="/About">About page</a></p>
+        <p class="pt-2">For more informations about the website visit <a asp-page="/About">About page</a></p>
         <p>For more informations about safety visit our <a asp-page="/Privacy">Privacy policy</a></p>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+         $.ajax({
+            url: '/Download/Loading?handler=Posts',
+            data: { }
+        });
+    </script>
 }
     
 

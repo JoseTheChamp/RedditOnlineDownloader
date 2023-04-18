@@ -126,46 +126,6 @@ namespace WebTesting.Pages.Download
             HttpContext.Session.Remove("AllPosts");
             HttpContext.Session.Remove("SelectedPosts");
             return RedirectToPage("/Download/Loading");
-            //Fetch new posts from reddit
-            /*List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
-            HttpContext.Session.SetObject("AllPosts", posts);
-            AllPosts = posts;
-
-            //Fetching previously used settings
-            ShowDownloaded = HttpContext.Session.GetObject<bool>("ShowDownloaded");
-            Nsfw = HttpContext.Session.GetObject<SelectNsfw>("Nsfw");
-            DomainsForm = HttpContext.Session.GetObject<List<string>>("DomainsForm");
-            GroupBySubreddit = HttpContext.Session.GetObject<bool>("GroupBySubreddits");
-            Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
-
-            //Fetching templates
-            TemplatesJson = Templates.ToJson();
-            if (HttpContext.Session.GetObject<string>("ChosenTemplate") != null)
-            {
-                string jsonTemplate = HttpContext.Session.GetObject<string>("ChosenTemplate");
-                dynamic templateParsed = JObject.Parse(jsonTemplate);
-                SelectedTemplate = templateParsed.Id;
-            }
-            else
-            {
-                SelectedTemplate = 0;
-            }
-
-            //Assigning the list of ids, corresponding to which posts were already downloaded.
-            await ManageDownloadedIdsAsync();
-
-            //Creating list of all domains in downloaded posts
-            Domains = new List<string>(); //TDOD linq groupby a select
-            foreach (Post post in AllPosts)
-            {
-                if (!Domains.Contains(post.Domain))
-                {
-                    Domains.Add(post.Domain);
-                }
-            }
-            if (DomainsForm == null) DomainsForm = Domains;
-            PostsJson = JsonConvert.SerializeObject(AllPosts);
-            return Page();*/
         }
         public IActionResult OnGetNewTemplate(string name, bool show, bool group, string domains, string nsfw)
         {
