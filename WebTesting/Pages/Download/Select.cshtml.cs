@@ -123,8 +123,11 @@ namespace WebTesting.Pages.Download
         /// <returns></returns>
         public async Task<IActionResult> OnGetRefresh()
         {
+            HttpContext.Session.Remove("AllPosts");
+            HttpContext.Session.Remove("SelectedPosts");
+            return RedirectToPage("/Download/Loading");
             //Fetch new posts from reddit
-            List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
+            /*List<Post> posts = await _reddit.GetAllSavedPosts(HttpContext.Session.GetString("AccessToken"), HttpContext.Session.GetString("UserName"));
             HttpContext.Session.SetObject("AllPosts", posts);
             AllPosts = posts;
 
@@ -162,7 +165,7 @@ namespace WebTesting.Pages.Download
             }
             if (DomainsForm == null) DomainsForm = Domains;
             PostsJson = JsonConvert.SerializeObject(AllPosts);
-            return Page();
+            return Page();*/
         }
         public IActionResult OnGetNewTemplate(string name, bool show, bool group, string domains, string nsfw)
         {

@@ -113,7 +113,7 @@ else
                     </select>
                 </div>   
             </div>
-            <div class="col-8" style="border:3px solid #009670">
+            <div class="col-7" style="border:3px solid #009670">
             <!--HERE ARE Posts-->
                 <input type="checkbox" name="selectAll" class="form-check-input" id="select-all-checkboxes" value="Select All">
                 <i data-tippy-content="Selects or deselects all posts.">&#x1F6C8</i>
@@ -121,14 +121,14 @@ else
                     <ul id="postList" name="postList" class="p-2"></ul>
                 </form>
             </div>
-            <div class="col-2">
+            <div class="col-3">
             <!--HERE ARE Details-->
                 <hr class="solid">
-                <h4>Details:</h4>
+                <h4 style="color:#009670">Details:</h4>
                 <div id="count"></div>
-                <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
+                <span><b style="color:#009670">Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                 <div id="domains"></div>
-                <span><b>Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
+                <span><b style="color:#009670">Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
                 <div id="nsfwDetail"></div>
                 <div id="subreddits"></div>
                 <div id="subredditsList"></div>
@@ -344,8 +344,8 @@ else
                 li.innerHTML = '&emsp;' + data[i][0] + ' - ' + data[i][1] + '<br>';
                 subredditsList.appendChild(li);
             }
-            subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subreddits).length;
-            countText.innerHTML = '<b>Count</b> - ' + counting;
+            subredditsCount.innerHTML = '<b style="color:#009670">Subreddits:</b> ' + Object.values(subreddits).length;
+            countText.innerHTML = '<b style="color:#009670">Count - </b>' + counting;
 
             //Change checkbox selectAll to proper state
             if(counting == filteredLength){

@@ -179,7 +179,7 @@ else
                     
                 </form>
             </div>
-            <div class="col-8" style="border:3px solid #009670">
+            <div class="col-7" style="border:3px solid #009670">
             <!--Here are Posts-->
                 <ul id="postList" class="p-2">
                 @foreach (Post post in Model.Posts)
@@ -195,14 +195,14 @@ else
                 }
                 </ul>
             </div>
-            <div class="col-2">
+            <div class="col-3">
             <!--Here are Details-->
                     <hr class="solid">
-                    <h4>Details:</h4>
+                    <h4 style="color:#009670">Details:</h4>
                     <div id="count"></div>
-                    <span><b>Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
+                    <span><b style="color:#009670">Domains:</b><i data-tippy-content="Supported domains => IMAGES: i.redd.it - reddit image, reddit.com - image gallery post, i.imgur.com - image hosted on imgur, VIDEOS: v.redd.it - reddit video, gfycat.com - video hosted on gfycat.com, TEXT: text - reddit text post, comment - saved reddit comment, link - saved reddit link.">&#x1F6C8</i></span>
                     <div id="domains"></div>
-                    <span><b>Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
+                    <span><b style="color:#009670">Nsfw/sfw:</b><i data-tippy-content="NSFW - Posts that are marked 18+. SFW - Posts that are not marked 18+.">&#x1F6C8</i></span>
                     <div id="nsfwDetail"></div>
                     <div id="subreddits"></div>
                     <div id="subredditsList"></div>
@@ -229,7 +229,7 @@ else
         //Fetch List<Post> from server
         var value = sessionInput.value;
         var posts = JSON.parse(value);
-        countText.innerHTML = '<b>Count - </b>' + posts.length;
+        countText.innerHTML = '<b style="color:#009670">Count - </b>' + posts.length;
 
         //Getting all inputs
         const i_numbering = document.getElementsByName('numbering');
@@ -468,7 +468,7 @@ else
                 li.innerHTML = '&emsp;' +  subreddits[i][0] + ' - ' + subreddits[i][1] + '<br>';
             subredditsList.appendChild(li);
         }
-        subredditsCount.innerHTML = '<b>Subreddits:</b> ' + Object.values(subredditsObj).length;
+        subredditsCount.innerHTML = '<b style="color:#009670">Subreddits:</b> ' + Object.values(subredditsObj).length;
 
         redraw();
         
