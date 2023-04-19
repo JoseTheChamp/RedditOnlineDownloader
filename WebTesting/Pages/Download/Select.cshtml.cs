@@ -132,7 +132,8 @@ namespace WebTesting.Pages.Download
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             if (!Templates.Select(t => t.Name).ToList().Contains(name))
             {
-                Template tmp = new Template(0, HttpContext.Session.GetString("RedditId"), name, show, group, nsfw, domains, "ids", false, false, true, 60, true, false, true, true, true);
+                Template tmp = new Template(0, HttpContext.Session.GetString("RedditId"), name, show, group, 
+                    nsfw, domains, "ids", false, false, true, 60, true, false, true, true, true);
                 var task = SaveChangesNew(tmp);
                 Template result = task.Result;
                 HttpContext.Session.SetObject("ChosenTemplate", result.ToJson());

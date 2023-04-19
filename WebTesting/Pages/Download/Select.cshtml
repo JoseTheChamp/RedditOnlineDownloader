@@ -572,10 +572,8 @@ else
         }
 
         function deleteTemplate(){
-            let tempVal1 = i_templatesSelect.value;
-            if(tempVal1 != "none"){
-                let tempVal = i_templatesSelect.value;
-                let template = JSON.parse(tempVal);
+            if(i_templatesSelect.value != "none"){
+                let template = JSON.parse(i_templatesSelect.value);
                 if (confirm("Do you truly want to delete Template '" + template.Name + "':") == true) {
                     $.ajax({
                         url: '/Download/Select?handler=DeleteTemplate',

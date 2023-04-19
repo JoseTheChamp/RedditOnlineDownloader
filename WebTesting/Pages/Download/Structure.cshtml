@@ -720,12 +720,19 @@ else
         }
 
         function newTemplate(){
-            var tempName = prompt("Please enter unique name for your Template:", "");
-            if (tempName != null && tempName != "") {
+            var title = prompt("Please enter unique name for your Template:", "");
+            if(title.length > 128){
+                alert("Name of the Template was too long. (Maximum length is 128 characters.)");
+                return;
+            }
+            if (title != null && title != "") {
                 $.ajax({
                     url: '/Download/Structure?handler=NewTemplate',
                     type: 'GET',
-                    data: { name: tempName, numbering: v_numbering, subName: v_subredditName, domName: v_domainName, prioName: v_priorityName, title: v_title, subFol: v_subredditFolder, domFol: v_domainFolder, prioFol: v_priorityFolder, empty: v_empty, split: v_split },
+                    data: { name: title, numbering: v_numbering, subName: v_subredditName, 
+                        domName: v_domainName, prioName: v_priorityName, title: v_title, 
+                        subFol: v_subredditFolder, domFol: v_domainFolder, 
+                        prioFol: v_priorityFolder, empty: v_empty, split: v_split },
                     dataType: 'json',
                     success: function (data) {
                         let template = JSON.parse(data);
@@ -736,17 +743,15 @@ else
                         i_templatesSelect.value = data;
                     },
                     error: function (xhr, status, error) {
-                        alert('Error - Template could not be created. Ensure that your name is unique.'); // handle any errors here
+                        alert('Error - Template could not be created. Ensure that your name is unique.');
                     }
                 });
             }
         }
 
         function deleteTemplate(){
-            let tempVal1 = i_templatesSelect.value;
-            if(tempVal1 != "none"){
-                let tempVal = i_templatesSelect.value;
-                let template = JSON.parse(tempVal);
+            if(i_templatesSelect.value != "none"){
+                let template = JSON.parse(i_templatesSelect.value);
                 if (confirm("Do you truly want to delete Template '" + template.Name + "':") == true) {
                     $.ajax({
                         url: '/Download/Structure?handler=DeleteTemplate',

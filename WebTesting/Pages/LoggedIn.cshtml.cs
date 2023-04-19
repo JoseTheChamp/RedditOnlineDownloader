@@ -15,6 +15,7 @@ namespace WebTesting.Pages
 	{
 		public string Code { get; set; }
 		public string Token { get; set; }
+		public string Error { get; set; }
 
 		private readonly RedditAPI _reddit;
 		private readonly ApplicationDbContext _db;
@@ -87,10 +88,10 @@ namespace WebTesting.Pages
 				return RedirectToPage("/Index");
 			}
 			else {
-				//On failure show this and redurn page
-				Code = "Failed to login through reddit.";
+                //On failure show this and redurn page
+                Error = "Failed to login through reddit.";
 			}
-			Code = "Something went wrong. Try again later.";
+            Error = "Something went wrong. Try again later.";
 			return Page();
 		}
 	}

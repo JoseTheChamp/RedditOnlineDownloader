@@ -19,8 +19,11 @@ namespace WebTesting.Pages.Download
             _reddit = reddit;
         }
 
-        public void OnGet() { 
-        
+        public IActionResult OnGet() {
+            if (HttpContext.Session.GetString("AllPosts") != null) {
+                return RedirectToPage("/Download/Select");
+            }
+            return Page();
         }
         public async Task OnGetPostsAsync()
         {
