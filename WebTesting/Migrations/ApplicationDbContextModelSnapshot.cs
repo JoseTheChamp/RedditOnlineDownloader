@@ -203,7 +203,8 @@ namespace WebTesting.Migrations
 
                     b.Property<string>("RedditId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("Registered")
                         .HasColumnType("datetime2");

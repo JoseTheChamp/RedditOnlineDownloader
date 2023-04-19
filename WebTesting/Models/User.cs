@@ -10,6 +10,7 @@ namespace WebTesting.Models
 		public int Id { get; set; }
 		[Required]
 		[ForeignKey("RedditIdFK")]
+		[MaxLength(10)]
 		public String RedditId { get; set; }
 		[Required]
 		[Display(Name = "Username")]
