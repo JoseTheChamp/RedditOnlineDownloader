@@ -8,6 +8,7 @@ namespace WebTesting.Models
     {
         [Key]
         public int Id { get; set; }
+        [MaxLength(10)]
         public string UserId { get; set; } //SYSTEM - for system statistics
         public int Downloads { get; set; }
         public int DownloadedPosts { get; set; }

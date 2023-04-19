@@ -7,8 +7,10 @@ namespace WebTesting.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [MaxLength(10)]
         public string UserId { get; set; }
         [Required]
+        [MaxLength(128)]
         public string Name { get; set; }
 
 
@@ -16,10 +18,12 @@ namespace WebTesting.Models
 
         public bool ShowDownloaded { get; set; }
         public bool GroupBySubreddit { get; set; }
+        [MaxLength(4)]
         public string Nsfw { get; set; }
         public string DomainsForm { get; set; }
 
 
+        [MaxLength(18)]
         public string Numbering { get; set; }
         public bool SubredditName { get; set; }
         public bool DomainName { get; set; }

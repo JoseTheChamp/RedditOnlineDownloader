@@ -7,6 +7,7 @@ namespace WebTesting.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [MaxLength(10)]
         public string UserId { get; set; }
         [Required]
         public String DownloadedPosts { get; set; }

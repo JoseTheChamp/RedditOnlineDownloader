@@ -16,7 +16,6 @@ namespace WebTesting.Models
         public DateTime DownloadStart { get; set; }
         [AllowNull]
         public DateTime? DownloadFinished { get; set; }
-        public string Lenght { get; set; }
         public bool IsFinished { get; set; }
         public bool IsDownloadable { get; set; }
 
@@ -35,7 +34,6 @@ namespace WebTesting.Models
             ProgressAbsMax = progressAbsMax;
             ProgressRel = 0;
             DownloadStart = downloadStart;
-            Lenght = "Not yet finished.";
             DownloadFinished = null;
             IsFinished = false;
             User = user;

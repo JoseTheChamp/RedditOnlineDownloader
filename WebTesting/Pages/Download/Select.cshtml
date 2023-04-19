@@ -545,12 +545,16 @@ else
         }
 
         function newTemplate(){
-            var person = prompt("Please enter unique name for your Template:", "");
-            if (person != null && person != "") {
+            var title = prompt("Please enter unique name for your Template:", "");
+            if(title.length > 128){
+                alert("Name of the Template was too long. (Maximum length is 128 characters.)");
+                return;
+            }
+            if (title != null && title != "") {
                 $.ajax({
                     url: '/Download/Select?handler=NewTemplate',
                     type: 'GET',
-                    data: { name: person, show: v_showDownloaded, group: v_groupBySubreddits, domains: JSON.stringify(v_multipleSelect), nsfw: v_nsfw },
+                    data: { name: title, show: v_showDownloaded, group: v_groupBySubreddits, domains: JSON.stringify(v_multipleSelect), nsfw: v_nsfw },
                     dataType: 'json',
                     success: function (data) {
                         let template = JSON.parse(data);
