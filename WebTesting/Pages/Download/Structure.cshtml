@@ -28,13 +28,13 @@ else
                 <select form="structure" id="templatesSelect" name="templatesSelect">
                     <option value="none">None</option>
                 </select>
-                <button onclick="newTemplate()">New</button>
-                <button onclick="deleteTemplate()">Delete</button>
+                <button class="btn" onclick="newTemplate()">New</button>
+                <button class="btn" onclick="deleteTemplate()">Delete</button>
                 <i data-tippy-content="Templates can keep your used setting for later ease of use. They save while advancing to the next step or while creating the template.">&#x1F6C8</i>
             </div>
-            <div class="col-3 text-end my-auto">
+            <div class="col-4 text-end my-auto">
                 <a class="btn btn-primary" asp-page="/Download/Select" >Previous step</a> <!--TODO when returning it has to remember its setting-->
-                <input class="btn btn-primary" form="structure" type="submit"></input>
+                <input class="btn btn-primary" form="structure" type="submit" value="Start download process"></input>
             </div>
         </div>
         <div class="row">
