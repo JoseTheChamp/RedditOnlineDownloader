@@ -284,7 +284,7 @@ namespace WebTesting.Pages.Download
             }
             else
             {
-                //If no template was used then save settings to session, if set
+                //If no template was used then get settings from session, if set.
                 if (HttpContext.Session.Get("Numbering") != null) {
                     Numbering = HttpContext.Session.GetObject<Numbering>("Numbering");
                     SubredditName = HttpContext.Session.GetObject<bool>("SubredditName");
