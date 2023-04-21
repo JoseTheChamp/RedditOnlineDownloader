@@ -33,8 +33,8 @@ namespace WebTesting.Pages
 				Code = code;
 
 				HttpClient client = new HttpClient();
-				var auth = Encoding.ASCII.GetBytes("9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg");
-				Dictionary<string, string> data = new Dictionary<string, string>();
+				var auth = Encoding.ASCII.GetBytes("NFLBJ-imPCBhQiRQNQCnxQ:8p9gCl-XFfiHUAFC-5y-nLGbj98r1A"); /*"9RevD-RRlRmNcGc3nsu-pg:N_yUDCCT3l_FrTbXVkF_Jgj8Y3_aLg"*/
+                Dictionary<string, string> data = new Dictionary<string, string>();
 				data.Add("grant_type", "authorization_code");
 				data.Add("code", Code);
 				data.Add("redirect_uri", "https://localhost:44335/LoggedIn");

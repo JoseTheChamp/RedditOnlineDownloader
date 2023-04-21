@@ -19,7 +19,7 @@ namespace WebTesting.Services
         public RedditAPI()
 		{
 			client = new HttpClient();
-			client.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.2");
+			client.DefaultRequestHeaders.Add("user-Agent", "WebTesting/0.0.3");
 		}
         /// <summary>
         /// Gets profile info from /api/v1/me endpoint
