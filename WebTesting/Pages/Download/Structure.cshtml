@@ -70,14 +70,14 @@ else
                     }
                     <label for="none">None</label> 
                         <br><br>
-                    <h5>Name contents:<i data-tippy-content="In y/n choose which words you want the name to contain. With priotiy you choose which word will come first.">&#x1F6C8</i></h5>
+                    <label>Name contents:<i data-tippy-content="In y/n choose which words you want the name to contain. With priotiy you choose which word will come first.">&#x1F6C8</i></label>
                     <div class="row">
                         <div class="col-5">
                             <br>
                             Subreddit:<br>
                             Domain:
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             y/n<br>
                             @if (Model.SubredditName)
                             {
@@ -111,12 +111,14 @@ else
                         </div>
                     </div>
                         <label class="pt-2" for="title">Title:<i data-tippy-content="Enter a number of characters, from post title, that will be in the name.">&#x1F6C8</i></label>
-                    <div class="row">
-                        @if(Model.Title != -1){
-                            <input type="number" id="title" name="title" min="0" max="120" value="@Model.Title">
-                        }else{
-                            <input type="number" id="title" name="title" min="0" max="120" value="60">
-                        }
+                    <div class="row pb-2">
+                        <div class="col-11">
+                            @if(Model.Title != -1){
+                                <input type="number" id="title" name="title" min="0" max="120" value="@Model.Title">
+                            }else{
+                                <input type="number" id="title" name="title" min="0" max="120" value="60">
+                            }
+                        </div>
                     </div>
                     <hr class="solid">
                     <h4 style="color:#009670">Folders:</h4>
@@ -127,7 +129,7 @@ else
                             Subreddits:<br>
                             Domains:
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             y/n<br>
                             @if(Model.SubredditFolder){
                                 <input name="subredditFolder" type="checkbox" checked><br>
@@ -357,7 +359,12 @@ else
             redraw();
         });
         i_title.addEventListener('change', function() {
-            v_title = this.value;
+            if(this.value > 120){
+                v_title = 120;
+                i_title.value = v_title
+            }else{
+                v_title = this.value;
+            }
             redraw();
         });
         i_numbering.forEach(button => {
@@ -723,6 +730,10 @@ else
             var title = prompt("Please enter unique name for your Template:", "");
             if(title.length > 128){
                 alert("Name of the Template was too long. (Maximum length is 128 characters.)");
+                return;
+            }
+            if(title.toLowerCase() == "none"){
+                alert("Your template cannot be named 'None'.)");
                 return;
             }
             if (title != null && title != "") {
