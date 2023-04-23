@@ -63,32 +63,32 @@ else
                         <input form="selectedPosts" name="groupBySubreddits" type="checkbox">
                     }
                 </div>
-                    <div class="row pb-2">
-                        <div class="col-11">
-                            <label for="nsfw">Nsfw/sfw:<i data-tippy-content="Both - All posts will be visible. NSFW - Only posts that are marked 18+ will be visible. SFW - Only posts that are not marked 18+ will be visible.">&#x1F6C8</i></label>
-                        </div>
-                        <div class="col-11">
-                            <select form="selectedPosts" name="nsfw">
-                            @switch (Model.Nsfw)
-                            {
-                                case SelectNsfw.SFW:
-                                            <option value="both">Both</option>
-                                            <option selected value="sfw">SFW</option>
-                                            <option value="nsfw">NSFW</option>
-                                    break;
-                                case SelectNsfw.NSFW:
-                                            <option value="both">Both</option>
-                                            <option value="sfw">SFW</option>
-                                            <option selected value="nsfw">NSFW</option>
-                                    break;
-                                default:
-                                            <option selected value="both">Both</option>
-                                            <option value="sfw">SFW</option>
-                                            <option value="nsfw">NSFW</option>
-                                    break;
-                            }
-                            </select>
-                        </div>
+                <div class="row pb-2">
+                    <div class="col-11">
+                        <label for="nsfw">Nsfw/sfw:<i data-tippy-content="Both - All posts will be visible. NSFW - Only posts that are marked 18+ will be visible. SFW - Only posts that are not marked 18+ will be visible.">&#x1F6C8</i></label>
+                    </div>
+                    <div class="col-11">
+                        <select form="selectedPosts" name="nsfw">
+                        @switch (Model.Nsfw)
+                        {
+                            case SelectNsfw.SFW:
+                                        <option value="both">Both</option>
+                                        <option selected value="sfw">SFW</option>
+                                        <option value="nsfw">NSFW</option>
+                                break;
+                            case SelectNsfw.NSFW:
+                                        <option value="both">Both</option>
+                                        <option value="sfw">SFW</option>
+                                        <option selected value="nsfw">NSFW</option>
+                                break;
+                            default:
+                                        <option selected value="both">Both</option>
+                                        <option value="sfw">SFW</option>
+                                        <option value="nsfw">NSFW</option>
+                                break;
+                        }
+                        </select>
+                    </div>
                 </div>
                 <div class="row pb-2 pt-3">
                     <div class="col-5 pl-0">
@@ -548,6 +548,10 @@ else
             var title = prompt("Please enter unique name for your Template:", "");
             if(title.length > 128){
                 alert("Name of the Template was too long. (Maximum length is 128 characters.)");
+                return;
+            }
+            if(title.toLowerCase() == "none"){
+                alert("Your template cannot be named 'None'.)");
                 return;
             }
             if (title != null && title != "") {
