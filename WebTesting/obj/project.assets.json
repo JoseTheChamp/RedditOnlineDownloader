@@ -10721,9 +10721,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\WebTesting.csproj",
-      "projectName": "WebTesting",
-      "projectPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\WebTesting.csproj",
+      "projectUniqueName": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj",
+      "projectName": "RedditOnlineDownloader",
+      "projectPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj",
       "packagesPath": "C:\\Users\\Apepk\\.nuget\\packages\\",
       "outputPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\obj\\",
       "projectStyle": "PackageReference",

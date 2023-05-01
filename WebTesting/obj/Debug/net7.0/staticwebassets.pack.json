@@ -1,8 +1,8 @@
 {
   "Files": [
     {
-      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\obj\\Debug\\net7.0\\scopedcss\\projectbundle\\WebTesting.bundle.scp.css",
-      "PackagePath": "staticwebassets\\WebTesting.bundle.scp.css"
+      "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\obj\\Debug\\net7.0\\scopedcss\\projectbundle\\RedditOnlineDownloader.bundle.scp.css",
+      "PackagePath": "staticwebassets\\RedditOnlineDownloader.bundle.scp.css"
     },
     {
       "Id": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\wwwroot\\css\\bootswatch_cyborg.css",
@@ -253,20 +253,20 @@
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
     },
     {
-      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.WebTesting.Microsoft.AspNetCore.StaticWebAssets.props",
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.RedditOnlineDownloader.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
     {
-      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.WebTesting.props",
-      "PackagePath": "build\\WebTesting.props"
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.RedditOnlineDownloader.props",
+      "PackagePath": "build\\RedditOnlineDownloader.props"
     },
     {
-      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.WebTesting.props",
-      "PackagePath": "buildMultiTargeting\\WebTesting.props"
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.RedditOnlineDownloader.props",
+      "PackagePath": "buildMultiTargeting\\RedditOnlineDownloader.props"
     },
     {
-      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.WebTesting.props",
-      "PackagePath": "buildTransitive\\WebTesting.props"
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.RedditOnlineDownloader.props",
+      "PackagePath": "buildTransitive\\RedditOnlineDownloader.props"
     }
   ],
   "ElementsToRemove": []

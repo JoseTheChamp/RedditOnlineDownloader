@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "b21LdxZcU5WCUYxPc4mN4TioC9CR+Ko6qzByYHi4zdSFkD4b/HTkRnc5ByETMiNJALiT/pbkX7OH7BanjP2+Sw==",
+  "dgSpecHash": "4OmWz9yvkNyckbZrfJ4s52mr1QKrA22MOpge+HEvjWwCCWPZNFcNskZFVZKwBFH5M4uW2Z/caoqNXPhEe9KsRw==",
   "success": true,
-  "projectFilePath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\WebTesting.csproj",
+  "projectFilePath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Apepk\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\Apepk\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

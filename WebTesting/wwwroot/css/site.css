@@ -21,6 +21,15 @@ body {
   margin-bottom: 60px;
 }
 
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px; /* Height of the footer */
+    background: #6cf;
+}
+
+
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */
     border-top: 16px solid #3498db; /* Blue */
