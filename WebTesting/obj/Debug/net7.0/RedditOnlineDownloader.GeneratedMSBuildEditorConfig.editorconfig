@@ -9,73 +9,73 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = RedditOnlineDownloader
 build_property.RootNamespace = RedditOnlineDownloader
-build_property.ProjectDir = C:\Projects\C#\BCSH2_Semestralka\WebTesting\WebTesting\
+build_property.ProjectDir = C:\Projects\C#\BCSH2_Semestralka\RedditOnlineDownloader\WebTesting\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Projects\C#\BCSH2_Semestralka\WebTesting\WebTesting
+build_property.MSBuildProjectDirectory = C:\Projects\C#\BCSH2_Semestralka\RedditOnlineDownloader\WebTesting
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/About.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWJvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Loading.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Download/Loading.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcTG9hZGluZy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Progress.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Download/Progress.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcUHJvZ3Jlc3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Select.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Download/Select.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcU2VsZWN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Download/Structure.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Download/Structure.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRG93bmxvYWRcU3RydWN0dXJlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Error.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Index.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/LoggedIn.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/LoggedIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nZ2VkSW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Privacy.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_Notifications.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Shared/_Notifications.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Ob3RpZmljYXRpb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_ToolTipsScriptsPartial.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Shared/_ToolTipsScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9Ub29sVGlwc1NjcmlwdHNQYXJ0aWFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Statistics.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Statistics.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3RhdGlzdGljcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/_ViewImports.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/_ViewStart.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Projects/C\#/BCSH2_Semestralka/WebTesting/WebTesting/Pages/Shared/_Layout.cshtml]
+[C:/Projects/C\#/BCSH2_Semestralka/RedditOnlineDownloader/WebTesting/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-e77h8bumix

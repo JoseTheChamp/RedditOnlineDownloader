@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj": {}
+    "C:\\Projects\\C#\\BCSH2_Semestralka\\RedditOnlineDownloader\\WebTesting\\RedditOnlineDownloader.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj": {
+    "C:\\Projects\\C#\\BCSH2_Semestralka\\RedditOnlineDownloader\\WebTesting\\RedditOnlineDownloader.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj",
+        "projectUniqueName": "C:\\Projects\\C#\\BCSH2_Semestralka\\RedditOnlineDownloader\\WebTesting\\RedditOnlineDownloader.csproj",
         "projectName": "RedditOnlineDownloader",
-        "projectPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\RedditOnlineDownloader.csproj",
+        "projectPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\RedditOnlineDownloader\\WebTesting\\RedditOnlineDownloader.csproj",
         "packagesPath": "C:\\Users\\Apepk\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\WebTesting\\WebTesting\\obj\\",
+        "outputPath": "C:\\Projects\\C#\\BCSH2_Semestralka\\RedditOnlineDownloader\\WebTesting\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Apepk\\AppData\\Roaming\\NuGet\\NuGet.Config",
