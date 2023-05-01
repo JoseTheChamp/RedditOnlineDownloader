@@ -33,26 +33,26 @@ else
                             {
                                 @if (download.IsDownloadable)
                                 {
-                                                    <div>
-                                                        Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Done
-                                                        <a asp-page-handler="Download" asp-route-id="@download.Id" class="btn btn-primary">Download</a>
-                                                        <a asp-page-handler="Delete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
-                                                    </div>
+                                    <div>
+                                        Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Done
+                                        <a asp-page-handler="Download" asp-route-id="@download.Id" class="btn btn-primary">Download</a>
+                                        <a asp-page-handler="Delete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
+                                    </div>
                                 }
                                 else
                                 { 
-                                                <div>
-                                                    Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Zipping
-                                                </div>
+                                    <div>
+                                        Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - Zipping
+                                    </div>
                                 }
 
                             }
                             else
                             {
-                                            <div>
-                                                Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - @download.ProgressRel %
-                                                <a asp-page-handler="StopAndDelete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
-                                            </div>
+                                <div>
+                                    Download @download.Id - @download.DownloadStart - @download.ProgressAbs / @download.ProgressAbsMax - @download.ProgressRel %
+                                    <a asp-page-handler="StopAndDelete" asp-route-id="@download.Id" class="btn btn-danger">X</a>
+                                </div>
                             }
                         }
                     }

@@ -69,13 +69,13 @@ namespace WebTesting.Services
             HttpRequestMessage request;
             dynamic jsonData;
 
-            //Send requests until returned number of posts were not 100(max it can return) or until all posts (1000) were returned. And make all these posts be in 1 JSON array
+            //Send requests until returned number of posts are not 100 or until all posts were returned. And make all these posts be in 1 JSON array
             while (returnedNumber == 100 && count < 10)
             {
                 if (after != "")
                 {
                     request = new HttpRequestMessage();
-                    request.RequestUri = new Uri($"https://oauth.reddit.com/user/{userName}/saved?limit=100&after=" + after);
+                    request.RequestUri = new Uri($"https://oauth.reddit.com/user/{userName}/saved?limit=100&after={after}");
                     request.Method = HttpMethod.Get;
                     request.Headers.Add("Authorization", $"Bearer {token}");
                     
@@ -91,13 +91,13 @@ namespace WebTesting.Services
                 jsonData = JObject.Parse(contents);
                 list = "" + jsonData.data.children;
                 list = list.Substring(1, list.Length - 2);
-                if (after == "")
+                if (after != "")
                 {
-                    sb.Append(list);
+                    sb.Append("," + list); 
                 }
                 else
                 {
-                    sb.Append("," + list);
+                    sb.Append(list);
                 }
                 returnedNumber = jsonData.data.dist;
                 after = jsonData.data.after;
