@@ -271,8 +271,6 @@ namespace WebTesting.Pages.Download
                 HttpContext.Session.Remove("ChosenTemplate");
             }
 
-            //TODO add new entity to DownloadStats
-
             //Fetch templates
             Templates = _db.Templates.Where(p => p.UserId == HttpContext.Session.GetString("RedditId")).ToList();
             TemplatesJson = Templates.ToJson();

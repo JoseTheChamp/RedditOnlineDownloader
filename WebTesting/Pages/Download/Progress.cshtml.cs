@@ -35,7 +35,6 @@ namespace WebTesting.Pages.Download
         /// <returns>Finished zip file.</returns>
         public IActionResult OnGetDownload(int id) {
             //TODO zkontrolovat autora pozadavku
-            //TODO Zaznamenat stazeni do Tabulky DB Statistics
             string path = Environment.CurrentDirectory;
             OnGet();
             return File(@"/DownloadableFiles/Download" + id + ".zip", "application/zip", "Download" + id + ".zip");
@@ -47,7 +46,7 @@ namespace WebTesting.Pages.Download
         /// <param name="id">Id of download, that is to be removed.</param>
         /// <returns></returns>
         public async Task<IActionResult> OnGetDeleteAsync(int id) {
-            //TODO check if no hacker id is users
+            //TODO check if id is user's
             if (await _dm.RemoveDownloadProcess(id))
             {
                 TempData["success"] = "Download succesfully deleted.";

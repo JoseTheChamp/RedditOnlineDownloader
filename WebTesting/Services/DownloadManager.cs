@@ -74,8 +74,8 @@ namespace WebTesting.Services
         /// <returns></returns>
         public async Task<string> NewDownloadProcessAsync(User user, List<Post> posts, List<string> AllIds, DownloadParameters downloadParams) {
             //Starting the method to remove too old posts
-            if (RemoveTimer == null) { //TODO bad solution
-                RemoveTimer = new System.Timers.Timer(60000); //TODO Parametr - set to something like 1800000 add 0
+            if (RemoveTimer == null) { 
+                RemoveTimer = new System.Timers.Timer(120000);
                 RemoveTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
                 RemoveTimer.Start();
             }
@@ -788,7 +788,7 @@ namespace WebTesting.Services
             {
                 tries++;
                 if (tries > 10) {
-                    throw ex; //TODO return in build
+                    throw ex;
                 }
                 Thread.Sleep(2000);
                 goto start;
