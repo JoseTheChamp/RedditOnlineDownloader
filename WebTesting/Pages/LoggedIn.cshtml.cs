@@ -33,7 +33,7 @@ namespace WebTesting.Pages
 				Code = code;
 
 				HttpClient client = new HttpClient();
-				var auth = Encoding.ASCII.GetBytes("NFLBJ-imPCBhQiRQNQCnxQ:8p9gCl-XFfiHUAFC-5y-nLGbj98r1A"); //REPLACE Reddit ID a Reddit Secret
+				var auth = Encoding.ASCII.GetBytes("[ID:SECRET]"); //REPLACE Reddit ID a Reddit Secret
                 Dictionary<string, string> data = new Dictionary<string, string>();
 				data.Add("grant_type", "authorization_code");
 				data.Add("code", Code);
