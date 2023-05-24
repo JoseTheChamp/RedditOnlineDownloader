@@ -16,11 +16,11 @@ The goal of this work is creation of web application, which will allow users to 
 
 #### Functions of the App
 - Login - Redirect to Reddit site for login and permissions
-- Fetching Posts - Starts right after succesfull login in backgroud, using Reddit API.
-- Post filtering - based on Subreddit, Domain, 18+
-- Post naming - based on Subreddit, Domain, title, id/numbering
-- Post structure - how will the posts be structured
-- Post downloading - images, imagce galleries, videos, text, comments
+- Fetching Posts - Start's right after succesfull login in backgroud, using Reddit API.
+- Post filtering - Based on Subreddit, Domain, 18+
+- Post naming - Based on Subreddit, Domain, title, id/numbering
+- Post structure - How will the posts be structured
+- Post downloading - Images, imagce galleries, videos, text, comments
 - History of downloads - App keeps track of what ids the user already downloaded
 - Templates - User can save his favorite settings for future use
 - Stats - App's and user's stats (total downloads, total downloaded posts, distribution of subreddits)
