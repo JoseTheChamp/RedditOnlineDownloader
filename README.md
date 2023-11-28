@@ -28,3 +28,5 @@ The goal of this work is creation of web application, which will allow users to 
 
 #### Running the program
 In order to run this project you will need Microsoft SQL Server. Use the file called "DDL.sql" to create the databse. You will need to modify the "DefaultConnection" in file called "appsettings.json" to your connection info. Aditionaly you will need to create your own Reddit App (https://www.reddit.com/prefs/apps). With your new Reddit app you will need to replace [ID:SECRET] in "LoggedIn.cshtml.cs" and also [ID] in "_layout.cshtml" and "Index.cshtml". This project is from Visual Studio 2022 17.4.1. In the file called KnotekJ_WebovaAplikace_JM_2023.pdf you can see the Bachelor thesis (in czech) including user's manual starting on page 48.
+
+NOTE THAT THIS PROJECT IS NOT COMPLETED AND THEREFORE IS NOT EASY TO GET RUNNING
